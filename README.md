@@ -1816,7 +1816,7 @@ TeensyTimerInterrupt:stopTimer TEENSY_TIMER_1
 
 ---
 
-5. The following is the sample terminal output when running example [ISR_Timer_Complex](examples/ESP32/ISR_Timer_Complex) to demonstrate the accuracy of ISR Hardware Timer, **especially when system is very busy**.  The ISR timer is **programmed for 2s, is activated exactly after 2.000s !!!**
+5. The following is the sample terminal output when running example [ISR_Timer_Complex](examples/ESP32/ISR_Timer_Complex) on **ESP32_DEV** to demonstrate the accuracy of ISR Hardware Timer, **especially when system is very busy**.  The ISR timer is **programmed for 2s, is activated exactly after 2.000s !!!**
 
 While software timer, **programmed for 2s, is activated after 3.435s !!!**
 
@@ -1882,7 +1882,7 @@ blynkDoingSomething2s: Delta programmed ms = 2000, actual = 3000
 
 ---
 
-6. The following is the sample terminal output when running example [ISR_Timer_Complex](examples/ESP8266/ISR_Timer_Complex) to demonstrate the accuracy of ISR Hardware Timer, **especially when system is very busy**.  The ISR timer is **programmed for 2s, is activated exactly after 2.000s !!!**
+6. The following is the sample terminal output when running example [ISR_Timer_Complex](examples/ESP8266/ISR_Timer_Complex) on **ESP8266_NODEMCU** to demonstrate the accuracy of ISR Hardware Timer, **especially when system is very busy**.  The ISR timer is **programmed for 2s, is activated exactly after 2.000s !!!**
 
 While software timer, **programmed for 2s, is activated after 4.258s !!!**
 
