@@ -1,0 +1,262 @@
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+##############################
+# Class ESP32TimerInterrupt
+##############################
+
+ESP32TimerInterrupt	KEYWORD1
+ESP32Timer	KEYWORD1
+
+##############################
+# Class ESP8266TimerInterrupt
+##############################
+
+ESP8266TimerInterrupt	KEYWORD1
+ESP8266Timer	KEYWORD1
+
+##############################
+# Class NRF52TimerInterrupt
+##############################
+
+NRF52TimerInterrupt	KEYWORD1
+NRF52Timer	KEYWORD1
+NRF52TimerNumber KEYWORD1
+timerCallback KEYWORD1
+timerCallback_p KEYWORD1
+
+##############################
+# Class SAMDTimerInterrupt
+##############################
+
+SAMDTimerInterrupt	KEYWORD1
+SAMDTimer	KEYWORD1
+SAMDTimerNumber KEYWORD1
+timerCallback KEYWORD1
+timerCallback_p KEYWORD1
+
+##############################
+# Class DueTimerInterrupt
+##############################
+
+DueTimerInterrupt	KEYWORD1
+DueTimerIRQInfo KEYWORD1
+DueTimerIRQInfoStr  KEYWORD1
+SAMDUETimerNumber KEYWORD1
+timerCallback  KEYWORD1
+
+##############################
+# Class TeensyTimerInterrupt
+##############################
+
+TeensyTimerInterrupt	KEYWORD1
+TeensyTimer	KEYWORD1
+TeensyTimerNumber KEYWORD1
+timerCallback KEYWORD1
+
+
+##############################
+# Class ISR_Timer
+##############################
+
+timerCallback KEYWORD1
+timerCallback_p KEYWORD1
+ISRTimer KEYWORD1
+ISR_Timer KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+##############################
+# Class ESP32TimerInterrupt
+##############################
+
+setFrequency	KEYWORD2
+setInterval	KEYWORD2
+attachInterrupt	KEYWORD2
+attachInterruptInterval	KEYWORD2
+detachInterrupt	KEYWORD2
+disableTimer	KEYWORD2
+reattachInterrupt	KEYWORD2
+enableTimer	KEYWORD2
+stopTimer	KEYWORD2
+restartTimer	KEYWORD2
+init  KEYWORD2
+run KEYWORD2
+setTimeout  KEYWORD2
+setTimer  KEYWORD2
+changeInterval  KEYWORD2
+deleteTimer KEYWORD2
+restartTimer  KEYWORD2
+isEnabled KEYWORD2
+enable  KEYWORD2
+disable KEYWORD2
+enableAll KEYWORD2
+disableAll  KEYWORD2
+toggle  KEYWORD2
+getNumTimers  KEYWORD2
+getNumAvailableTimers KEYWORD2
+
+##############################
+# Class ESP8266TimerInterrupt
+##############################
+
+setFrequency	KEYWORD2
+setInterval	KEYWORD2
+attachInterrupt	KEYWORD2
+attachInterruptInterval	KEYWORD2
+detachInterrupt	KEYWORD2
+disableTimer	KEYWORD2
+reattachInterrupt	KEYWORD2
+enableTimer	KEYWORD2
+stopTimer	KEYWORD2
+restartTimer	KEYWORD2
+init  KEYWORD2
+run KEYWORD2
+setTimeout  KEYWORD2
+setTimer  KEYWORD2
+changeInterval  KEYWORD2
+deleteTimer KEYWORD2
+restartTimer  KEYWORD2
+isEnabled KEYWORD2
+enable  KEYWORD2
+disable KEYWORD2
+enableAll KEYWORD2
+disableAll  KEYWORD2
+toggle  KEYWORD2
+getNumTimers  KEYWORD2
+getNumAvailableTimers KEYWORD2
+
+##############################
+# Class NRF52TimerInterrupt
+##############################
+
+setFrequency	KEYWORD2
+setInterval	KEYWORD2
+attachInterrupt	KEYWORD2
+attachInterruptInterval	KEYWORD2
+detachInterrupt	KEYWORD2
+disableTimer	KEYWORD2
+reattachInterrupt	KEYWORD2
+enableTimer	KEYWORD2
+stopTimer	KEYWORD2
+restartTimer	KEYWORD2
+getCallback KEYWORD2
+getTimerIRQn  KEYWORD2
+
+##############################
+# Class SAMDTimerInterrupt
+##############################
+
+setFrequency	KEYWORD2
+setInterval	KEYWORD2
+attachInterrupt	KEYWORD2
+attachInterruptInterval	KEYWORD2
+detachInterrupt	KEYWORD2
+disableTimer	KEYWORD2
+reattachInterrupt	KEYWORD2
+enableTimer	KEYWORD2
+stopTimer	KEYWORD2
+restartTimer	KEYWORD2
+
+##############################
+# Class DueTimerInterrupt
+##############################
+
+getAvailable
+attachInterruptInterval	KEYWORD2
+attachInterrupt	KEYWORD2
+detachInterrupt	KEYWORD2
+startTimer	KEYWORD2
+restartTimer	KEYWORD2
+stopTimer	KEYWORD2
+disableTimer	KEYWORD2
+bestClock KEYWORD2
+setFrequency	KEYWORD2
+setPeriod KEYWORD2
+setInterval	KEYWORD2
+getPeriod KEYWORD2
+getTimerNumber
+
+##############################
+# Class TeensyTimerInterrupt
+##############################
+
+setFrequency	KEYWORD2
+setInterval	KEYWORD2
+attachInterrupt	KEYWORD2
+attachInterruptInterval	KEYWORD2
+detachInterrupt	KEYWORD2
+disableTimer	KEYWORD2
+reattachInterrupt	KEYWORD2
+startTimer  KEYWORD2
+stopTimer	KEYWORD2
+restartTimer	KEYWORD2
+resumeTimer KEYWORD2
+getPeriod KEYWORD2
+getPrescale KEYWORD2
+getRealPeriod KEYWORD2
+getCallback KEYWORD2
+getTimerIRQn  KEYWORD2
+
+##############################
+# Class ISR_Timer
+##############################
+
+run KEYWORD2
+setTimeout  KEYWORD2
+setTimer  KEYWORD2
+changeInterval  KEYWORD2
+deleteTimer KEYWORD2
+restartTimer  KEYWORD2
+isEnabled KEYWORD2
+enable  KEYWORD2
+disable KEYWORD2
+enableAll KEYWORD2
+disableAll  KEYWORD2
+toggle  KEYWORD2
+getNumTimers  KEYWORD2
+getNumAvailableTimers KEYWORD2
+
+##############################
+# NRF52 IRQ Handlers
+##############################
+
+TIMER1_IRQHandler KEYWORD2
+TIMER2_IRQHandler KEYWORD2
+TIMER3_IRQHandler KEYWORD2
+TIMER4_IRQHandler KEYWORD2
+
+##############################
+# SAM DUE IRQ Handlers
+##############################
+
+TC0_Handler KEYWORD2
+TC1_Handler KEYWORD2
+TC2_Handler KEYWORD2
+TC3_Handler KEYWORD2
+TC4_Handler KEYWORD2
+TC5_Handler KEYWORD2
+TC6_Handler KEYWORD2
+TC7_Handler KEYWORD2
+TC8_Handler KEYWORD2
+
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+
+##############################
+# Class NRF52TimerInterrupt
+##############################
+
+NRF_TIMER_0 LITERAL1
+NRF_TIMER_1 LITERAL1
+NRF_TIMER_2 LITERAL1
+NRF_TIMER_3 LITERAL1
+NRF_TIMER_4 LITERAL1
+NRF_MAX_TIMER LITERAL1
+
+
