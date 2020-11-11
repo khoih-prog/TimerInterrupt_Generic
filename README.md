@@ -109,7 +109,7 @@ The catch is **your function is now part of an ISR (Interrupt Service Routine), 
 14. [`WiFiNINA_Generic library v1.7.2+`](https://github.com/khoih-prog/WiFiNINA_Generic) to use WiFiNINA modules/shields. To install. check [![arduino-library-badge](https://www.ardu-badge.com/badge/WiFiNINA_Generic.svg?)](https://www.ardu-badge.com/WiFiNINA_Generic) if using WiFiNINA for boards such as Nano 33 IoT, nRF52, Teensy, etc.
 15. [`Blynk_WiFiNINA_WM library 1.0.4+`](hhttps://github.com/khoih-prog/Blynk_WiFiNINA_WM) to use with Blynk-WiFiNINA-related example. To install. check [![arduino-library-badge](https://www.ardu-badge.com/badge/Blynk_WiFiNINA_WM.svg?)](https://www.ardu-badge.com/Blynk_WiFiNINA_WM)
 16. To use with certain example
-   - [`SimpleTimer library`](https://github.com/schinken/SimpleTimer) for [ISR_16_Timers_Array example](examples/ISR_16_Timers_Array).
+   - [`SimpleTimer library`](https://github.com/schinken/SimpleTimer) for [ISR_16_Timers_Array examples](examples/NRF52/ISR_16_Timers_Array).
    
 ---
 ---
@@ -448,7 +448,7 @@ Timer 3,4,5 are only available on Arduino Mega boards. These timers are all 16-b
 Now with these new `16 ISR-based timers` (while consuming only **1 hardware timer**), the maximum interval is practically unlimited (limited only by unsigned long miliseconds). The accuracy is nearly perfect compared to software timers. The most important feature is they're ISR-based timers Therefore, their executions are not blocked by bad-behaving functions / tasks.
 This important feature is absolutely necessary for mission-critical tasks. 
 
-The [**ISR_16_Timers_Array**](examples/ISR_16_Timers_Array) and [**ISR_Timer_Complex_Ethernet**](examples/ISR_Timer_Complex_Ethernet) examples will demonstrate the nearly perfect accuracy compared to software timers by printing the actual elapsed millisecs of each type of timers.
+The [**ISR_16_Timers_Array**](examples/SAMD/ISR_16_Timers_Array) and [**ISR_Timer_Complex_Ethernet**](examples/SAMDUE/ISR_Timer_Complex_Ethernet) examples will demonstrate the nearly perfect accuracy compared to software timers by printing the actual elapsed millisecs of each type of timers.
 Being ISR-based timers, their executions are not blocked by bad-behaving functions / tasks, such as connecting to WiFi, Internet and Blynk services. You can also have many `(up to 16)` timers to use.
 This non-being-blocked important feature is absolutely necessary for mission-critical tasks. 
 You'll see blynkTimer Software is blocked while system is connecting to WiFi / Internet / Blynk, as well as by blocking task 
