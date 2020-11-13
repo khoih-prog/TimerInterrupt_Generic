@@ -55,6 +55,10 @@ The catch is **your function is now part of an ISR (Interrupt Service Routine), 
 ---
 ---
 
+### Releases v1.2.0
+
+1. Add STM32_TimerInterrupt Library
+
 ### Releases v1.1.0
 
 1. Initial Super-Library coding to merge all TimerInterrupt Libraries
@@ -439,6 +443,121 @@ In the Arduino work the tone() function uses Timer2.
 #### 4. Timer3, Timer4, Timer5:
 
 Timer 3,4,5 are only available on Arduino Mega boards. These timers are all 16-bit timers.
+
+---
+
+### 4. For STM32F/L/H/G/WB/MP1
+
+The Timers of STM32s are numerous, yet very sophisticated and powerful.
+
+In general, across the STM32 microcontrollers families, the timer peripherals that have the same name also have the same features set, but there are a few exceptions. 
+
+For example, the **TIM1** timer peripheral is shared across the STM32F1 Series, STM32F2 Series and STM32F4 Series, but for the specific case of STM32F30x microcontrollers family, the TIM1 timer peripheral features a bit richer features set than the TIM1 present in the other families.
+
+The general purpose timers embedded by the STM32 microcontrollers share the same backbone structure; they differ only on the level of features embedded by a given timer peripheral. 
+
+The level of features integration for a given timer peripheral is decided based on the applications field that it targets.
+
+The timer peripherals can be classified as:
+• Advanced-configuration timers like TIM1 and TIM8 among others.
+• General-purpose configuration timers like TIM2 and TIM3 among others
+• Lite-configuration timers like TIM9, TIM10, TIM12 and TIM16 among others
+• Basic-configuration timers like TIM6 and TIM7 among others.
+
+For example, **STM32F103C8T6** has one advance timer, while **STM32F103VET6** has two advanced timers. **Nucleo-144 STM32F767ZI boards have 14 Timers, TIM1-TIM14**.
+
+
+<p align="center">
+    <img src="https://github.com/khoih-prog/STM32_TimerInterrupt/blob/main/pics/STM32Timers.png">
+</p>
+
+
+More information can be found at [**Embedded-Lab STM32 TIMERS**](http://embedded-lab.com/blog/stm32-timers/)
+
+To be sure which Timer is available for the board you're using, check the Core Package's related files. For example, for **Nucleo-144 STM32F767ZI**, check these files:
+1. `~/.arduino15/packages/STM32/hardware/stm32/1.9.0/system/Drivers/CMSIS/Device/ST/STM32F7xx/Include/stm32f7xx.h`
+2. `~/.arduino15/packages/STM32/hardware/stm32/1.9.0/system/Drivers/CMSIS/Device/ST/STM32F7xx/Include/stm32f767xx.h`
+
+The information will be as follows:
+
+```
+typedef struct
+{
+  __IO uint32_t CR1;         /*!< TIM control register 1,              Address offset: 0x00 */
+  __IO uint32_t CR2;         /*!< TIM control register 2,              Address offset: 0x04 */
+  __IO uint32_t SMCR;        /*!< TIM slave mode control register,     Address offset: 0x08 */
+  __IO uint32_t DIER;        /*!< TIM DMA/interrupt enable register,   Address offset: 0x0C */
+  __IO uint32_t SR;          /*!< TIM status register,                 Address offset: 0x10 */
+  __IO uint32_t EGR;         /*!< TIM event generation register,       Address offset: 0x14 */
+  __IO uint32_t CCMR1;       /*!< TIM capture/compare mode register 1, Address offset: 0x18 */
+  __IO uint32_t CCMR2;       /*!< TIM capture/compare mode register 2, Address offset: 0x1C */
+  __IO uint32_t CCER;        /*!< TIM capture/compare enable register, Address offset: 0x20 */
+  __IO uint32_t CNT;         /*!< TIM counter register,                Address offset: 0x24 */
+  __IO uint32_t PSC;         /*!< TIM prescaler,                       Address offset: 0x28 */
+  __IO uint32_t ARR;         /*!< TIM auto-reload register,            Address offset: 0x2C */
+  __IO uint32_t RCR;         /*!< TIM repetition counter register,     Address offset: 0x30 */
+  __IO uint32_t CCR1;        /*!< TIM capture/compare register 1,      Address offset: 0x34 */
+  __IO uint32_t CCR2;        /*!< TIM capture/compare register 2,      Address offset: 0x38 */
+  __IO uint32_t CCR3;        /*!< TIM capture/compare register 3,      Address offset: 0x3C */
+  __IO uint32_t CCR4;        /*!< TIM capture/compare register 4,      Address offset: 0x40 */
+  __IO uint32_t BDTR;        /*!< TIM break and dead-time register,    Address offset: 0x44 */
+  __IO uint32_t DCR;         /*!< TIM DMA control register,            Address offset: 0x48 */
+  __IO uint32_t DMAR;        /*!< TIM DMA address for full transfer,   Address offset: 0x4C */
+  __IO uint32_t OR;          /*!< TIM option register,                 Address offset: 0x50 */
+  __IO uint32_t CCMR3;       /*!< TIM capture/compare mode register 3,      Address offset: 0x54 */
+  __IO uint32_t CCR5;        /*!< TIM capture/compare mode register5,       Address offset: 0x58 */
+  __IO uint32_t CCR6;        /*!< TIM capture/compare mode register6,       Address offset: 0x5C */
+  __IO uint32_t AF1;         /*!< TIM Alternate function option register 1, Address offset: 0x60 */
+  __IO uint32_t AF2;         /*!< TIM Alternate function option register 2, Address offset: 0x64 */
+
+} TIM_TypeDef;
+```
+
+and
+
+```
+#define PERIPH_BASE            0x40000000UL /*!< Base address of : AHB/ABP Peripherals   
+/*!< Peripheral memory map */
+#define APB1PERIPH_BASE        PERIPH_BASE
+
+/*!< APB1 peripherals */
+#define TIM2_BASE             (APB1PERIPH_BASE + 0x0000UL)
+#define TIM3_BASE             (APB1PERIPH_BASE + 0x0400UL)
+#define TIM4_BASE             (APB1PERIPH_BASE + 0x0800UL)
+#define TIM5_BASE             (APB1PERIPH_BASE + 0x0C00UL)
+#define TIM6_BASE             (APB1PERIPH_BASE + 0x1000UL)
+#define TIM7_BASE             (APB1PERIPH_BASE + 0x1400UL)
+#define TIM12_BASE            (APB1PERIPH_BASE + 0x1800UL)
+#define TIM13_BASE            (APB1PERIPH_BASE + 0x1C00UL)
+#define TIM14_BASE            (APB1PERIPH_BASE + 0x2000UL)
+
+/*!< APB2 peripherals */
+#define TIM1_BASE             (APB2PERIPH_BASE + 0x0000UL)
+#define TIM8_BASE             (APB2PERIPH_BASE + 0x0400UL)
+#define TIM9_BASE             (APB2PERIPH_BASE + 0x4000UL)
+#define TIM10_BASE            (APB2PERIPH_BASE + 0x4400UL)
+#define TIM11_BASE            (APB2PERIPH_BASE + 0x4800UL)
+
+...
+
+#define TIM2                ((TIM_TypeDef *) TIM2_BASE)
+#define TIM3                ((TIM_TypeDef *) TIM3_BASE)
+#define TIM4                ((TIM_TypeDef *) TIM4_BASE)
+#define TIM5                ((TIM_TypeDef *) TIM5_BASE)
+#define TIM6                ((TIM_TypeDef *) TIM6_BASE)
+#define TIM7                ((TIM_TypeDef *) TIM7_BASE)
+#define TIM12               ((TIM_TypeDef *) TIM12_BASE)
+#define TIM13               ((TIM_TypeDef *) TIM13_BASE)
+#define TIM14               ((TIM_TypeDef *) TIM14_BASE)
+...
+#define TIM1                ((TIM_TypeDef *) TIM1_BASE)
+#define TIM8                ((TIM_TypeDef *) TIM8_BASE)
+...
+#define TIM9                ((TIM_TypeDef *) TIM9_BASE)
+#define TIM10               ((TIM_TypeDef *) TIM10_BASE)
+#define TIM11               ((TIM_TypeDef *) TIM11_BASE)
+
+```
 
 ---
 ---
@@ -960,6 +1079,116 @@ void setup()
 
 ---
 
+## Usage for STM32F/L/H/G/WB/MP1
+
+Before using any Timer, you have to make sure the Timer has not been used by any other purpose.
+
+### 1. Using only Hardware Timer directly
+
+#### 1.1 Init Hardware Timer
+
+```
+// Init STM32 timer TIM1
+STM32Timer ITimer0(TIM1);
+```
+
+#### 1.2 Set Hardware Timer Interval and attach Timer Interrupt Handler function
+
+```
+void TimerHandler0(void)
+{
+  // Doing something here inside ISR
+}
+
+#define TIMER0_INTERVAL_MS        1000      // 1s = 1000ms
+void setup()
+{
+  ....
+  
+  // Interval in microsecs
+  if (ITimer0.attachInterruptInterval(TIMER0_INTERVAL_MS * 1000, TimerHandler0))
+    Serial.println("Starting  ITimer0 OK, millis() = " + String(millis()));
+  else
+    Serial.println("Can't set ITimer0. Select another freq. or timer");
+}  
+```
+
+### 2. Using 16 ISR_based Timers from 1 Hardware Timers
+
+
+#### 2.1 Init Hardware Timer and ISR-based Timer
+
+```
+// Init STM32 timer TIM1
+STM32Timer ITimer(TIM1);
+
+// Init STM32_ISR_Timer
+// Each STM32_ISR_Timer can service 16 different ISR-based timers
+STM32_ISR_Timer ISR_Timer;
+```
+
+#### 2.2 Set Hardware Timer Interval and attach Timer Interrupt Handler functions
+
+```
+void TimerHandler(void)
+{
+  ISR_Timer.run();
+}
+
+#define HW_TIMER_INTERVAL_US          100L
+
+#define TIMER_INTERVAL_2S             2000L
+#define TIMER_INTERVAL_5S             5000L
+#define TIMER_INTERVAL_11S            11000L
+#define TIMER_INTERVAL_101S           101000L
+
+// In STM32, avoid doing something fancy in ISR, for example complex Serial.print with String() argument
+// The pure simple Serial.prints here are just for demonstration and testing. Must be eliminate in working environment
+// Or you can get this run-time error / crash
+void doingSomething2s()
+{
+  // Doing something here inside ISR
+}
+  
+void doingSomething5s()
+{
+  // Doing something here inside ISR
+}
+
+void doingSomething11s()
+{
+  // Doing something here inside ISR
+}
+
+void doingSomething101s()
+{
+  // Doing something here inside ISR
+}
+
+void setup()
+{
+  ....
+  
+  // Interval in microsecs
+  if (ITimer.attachInterruptInterval(HW_TIMER_INTERVAL_US, TimerHandler))
+  {
+    lastMillis = millis();
+    Serial.println("Starting  ITimer OK, millis() = " + String(lastMillis));
+  }
+  else
+    Serial.println("Can't set ITimer correctly. Select another freq. or interval");
+
+  // Just to demonstrate, don't use too many ISR Timers if not absolutely necessary
+  // You can use up to 16 timer for each ISR_Timer
+  ISR_Timer.setInterval(TIMER_INTERVAL_2S, doingSomething2s);
+  ISR_Timer.setInterval(TIMER_INTERVAL_5S, doingSomething5s);
+  ISR_Timer.setInterval(TIMER_INTERVAL_11S, doingSomething11s);
+  ISR_Timer.setInterval(TIMER_INTERVAL_101S, doingSomething101s);
+}  
+```
+
+---
+
 ## Usage for Arduino AVR
 
 Before using any Timer, you have to make sure the **Timer has not been used by any other purpose.**
@@ -1036,8 +1265,18 @@ Only **Timer1 and Timer2** are supported for Nano, UNO, etc. boards possessing 3
  7. [TimerInterruptTest](examples/SAMDUE/TimerInterruptTest)
  8. [TimerInterruptLEDDemo](examples/SAMDUE/TimerInterruptLEDDemo)
 
+### 6. STM32F/L/H/G/WB/MP1
 
-### 6. Teensy
+ 1. [Argument_None](examples/STM32/Argument_None)
+ 2. [ISR_16_Timers_Array](examples/STM32/ISR_16_Timers_Array)
+ 3. [ISR_RPM_Measure](examples/STM32/ISR_RPM_Measure)
+ 4. [ISR_Timer_Complex](examples/STM32/ISR_Timer_Complex)
+ 5. [RPM_Measure](examples/STM32/RPM_Measure)
+ 6. [SwitchDebounce](examples/STM32/SwitchDebounce)
+ 7. [TimerInterruptTest](examples/STM32/TimerInterruptTest)
+ 8. [TimerInterruptLEDDemo](examples/STM32/TimerInterruptLEDDemo)
+ 
+### 7. Teensy
 
  1. [Argument_None](examples/TEENSY/Argument_None)
  2. [ISR_16_Timers_Array](examples/TEENSY/ISR_16_Timers_Array)
@@ -1048,7 +1287,7 @@ Only **Timer1 and Timer2** are supported for Nano, UNO, etc. boards possessing 3
  7. [TimerInterruptTest](examples/TEENSY/TimerInterruptTest)
  8. [TimerInterruptLEDDemo](examples/TEENSY/TimerInterruptLEDDemo)
 
-### 7. Arduino AVR
+### 8. Arduino AVR
 
  1. [Argument_Complex](examples/AVR/Argument_Complex)
  2. [Argument_None](examples/AVR/Argument_None)
@@ -1062,6 +1301,7 @@ Only **Timer1 and Timer2** are supported for Nano, UNO, etc. boards possessing 3
 10. [SwitchDebounce](examples/AVR/SwitchDebounce)
 11. [TimerDuration](examples/AVR/TimerDuration)
 12. [TimerInterruptTest](examples/AVR/TimerInterruptTest)
+
 
 ---
 ---
@@ -1475,7 +1715,7 @@ While software timer, **programmed for 2s, is activated after 10.917s !!!**. The
 
 ```
 Starting ISR_Timer_Complex_Ethernet on SAM DUE
-Version : 1.1.0
+Version : 1.2.0
 Using Timer(0) = TC0, channel = 0, IRQ = TC0_IRQn
 Timer(0), us = 50000.00
 ITimer attached to Timer(0)
@@ -1565,7 +1805,7 @@ While software timer, **programmed for 2s, is activated after 4.867s !!!**. Then
 
 ```
 Starting ISR_Timer_Complex_Ethernet on NRF52840_FEATHER
-Version : 1.1.0
+Version : 1.2.0
 NRF52TimerInterrupt: F_CPU (MHz) = 64, Timer = NRF_TIMER2
 NRF52TimerInterrupt: _fre = 1000000.00, _count = 50000
 Starting  ITimer OK, millis() = 1419
@@ -1657,7 +1897,7 @@ In this example, 16 independent ISR Timers are used, yet utilized just one Hardw
 
 ```
 Starting ISR_16_Timers_Array on SAMD_NANO_33_IOT
-Version : 1.1.0
+Version : 1.2.0
 CPU Frequency = 48 MHz
 F_CPU (MHz) = 48, TIMER_HZ = 48
 TC_Timer::startTimer _Timer = 0x42002c00, TC3 = 0x42002c00
@@ -1779,7 +2019,7 @@ simpleTimerDoingSomething2s: Delta programmed ms = 2000, actual = 10000
 
 ```
 Starting TimerInterruptTest on Teensy 4.0/4.1
-Version : 1.1.0
+Version : 1.2.0
 CPU Frequency = 600 MHz
 TEENSY_TIMER_1, F_BUS_ACTUAL (MHz) = 150, request interval = 30000, actual interval (us) = 29999
 Prescale = 7, _timerCount = 17578
@@ -1823,7 +2063,7 @@ While software timer, **programmed for 2s, is activated after 3.435s !!!**
 ```
 
 Starting Argument_None on ESP32_DEV
-Version : 1.1.0
+Version : 1.2.0
 CPU Frequency = 240 MHz
 ESP32TimerInterrupt: _timerNo = 1, _fre = 1000000.00, _count = 0 - 50000
 Starting  ITimer OK, millis() = 2140
@@ -1888,7 +2128,7 @@ While software timer, **programmed for 2s, is activated after 4.258s !!!**
 
 ```
 Starting ISR_Timer_Complex on ESP8266_NODEMCU
-Version : 1.1.0
+Version : 1.2.0
 CPU Frequency = 160 MHz
 ESP8266TimerInterrupt: _fre = 312500.00, _count = 15625
 Starting  ITimer OK, millis() = 64
@@ -1927,8 +2167,125 @@ doingSomething2s: Delta ms = 2000
 doingSomething5s: Delta ms = 5000
 doingSomething10s: Delta ms = 10000
 ```
+
+---
+
+7. The following is the sample terminal output when running example [ISR_Timer_Complex](examples/STM32/ISR_Timer_Complex) on **STM32F7 Nucleo-144 F767ZI using Built-in LAN8742A Ethernet and STM32Ethernet Library** to demonstrate the accuracy of ISR Hardware Timer, **especially when system is very busy**.  The ISR timer is **programmed for 2s, is activated exactly after 2.000s !!!**
+
+While software timer, **programmed for 2s, is activated after 9.782s !!!**. Then in loop(), it's also activated **every 3s**.
+
+```
+Starting ISR_Timer_Complex on NUCLEO_F767ZI
+Version : 1.2.0
+CPU Frequency = 216 MHz
+STM32TimerInterrupt: Timer Input Freq (Hz) = 216000000, _fre = 1000000.00, _count = 50000
+Starting  ITimer OK, millis() = 6
+[9] MAC:FE-E1-88-EC-DD-95
+2s: Delta ms = 2000
+2s: Delta ms = 2000
+[6626] IP:192.168.2.116
+[6626] 
+    ___  __          __
+   / _ )/ /_ _____  / /__
+  / _  / / // / _ \/  '_/
+ /____/_/\_, /_//_/_/\_\
+        /___/ v0.6.1 on STM32 NUCLEO_F767ZI
+
+[6636] BlynkArduinoClient.connect: Connecting to account.duckdns.org:8080
+[6721] Ready (ping: 6ms).
+IP = 192.168.2.116
+2s: Delta ms = 2000
+blynkDoingSomething2s: Delta programmed ms = 2000, actual = 9782
+2s: Delta ms = 2000
+5s: Delta ms = 5000
+2s: Delta ms = 2000
+blynkDoingSomething2s: Delta programmed ms = 2000, actual = 3000
+2s: Delta ms = 2000
+5s: Delta ms = 5000
+blynkDoingSomething2s: Delta programmed ms = 2000, actual = 3000
+2s: Delta ms = 2000
+2s: Delta ms = 2000
+blynkDoingSomething2s: Delta programmed ms = 2000, actual = 3000
+2s: Delta ms = 2000
+5s: Delta ms = 5000
+blynkDoingSomething2s: Delta programmed ms = 2000, actual = 3000
+2s: Delta ms = 2000
+11s: Delta ms = 11000
+2s: Delta ms = 2000
+blynkDoingSomething2s: Delta programmed ms = 2000, actual = 3000
+5s: Delta ms = 5000
+2s: Delta ms = 2000
+blynkDoingSomething2s: Delta programmed ms = 2000, actual = 3000
+2s: Delta ms = 2000
+2s: Delta ms = 2000
+5s: Delta ms = 5000
+blynkDoingSomething2s: Delta programmed ms = 2000, actual = 3000
+2s: Delta ms = 2000
+11s: Delta ms = 11000
+blynkDoingSomething2s: Delta programmed ms = 2000, actual = 3000
+2s: Delta ms = 2000
+5s: Delta ms = 5000
+2s: Delta ms = 2000
+```
+
+---
+
+8. The following is the sample terminal output when running example [**TimerInterruptTest**](examples/STM32/TimerInterruptTest) on **STM32F7 Nucleo-144 F767ZI** to demonstrate how to start/stop Hardware Timers.
+
+```
+
+Starting TimerInterruptTest on NUCLEO_F767ZI
+Version : 1.0.1
+STM32TimerInterrupt: Timer Input Freq (Hz) = 216000000, _fre = 1000000.00, _count = 1000000
+Starting  ITimer0 OK, millis() = 108
+STM32TimerInterrupt: Timer Input Freq (Hz) = 108000000, _fre = 1000000.00, _count = 3000000
+Starting  ITimer1 OK, millis() = 119
+Stop ITimer0, millis() = 5001
+Start ITimer0, millis() = 10002
+Stop ITimer1, millis() = 15001
+Stop ITimer0, millis() = 15003
+Start ITimer0, millis() = 20004
+Stop ITimer0, millis() = 25005
+Start ITimer1, millis() = 30002
+Start ITimer0, millis() = 30006
+Stop ITimer0, millis() = 35007
+Start ITimer0, millis() = 40008
+Stop ITimer1, millis() = 45003
+Stop ITimer0, millis() = 45009
+Start ITimer0, millis() = 50010
+Stop ITimer0, millis() = 55011
+Start ITimer1, millis() = 60004
+Start ITimer0, millis() = 60012
+Stop ITimer0, millis() = 65013
+Start ITimer0, millis() = 70014
+Stop ITimer1, millis() = 75005
+Stop ITimer0, millis() = 75015
+Start ITimer0, millis() = 80016
+Stop ITimer0, millis() = 85017
+Start ITimer1, millis() = 90006
+Start ITimer0, millis() = 90018
+Stop ITimer0, millis() = 95019
+Start ITimer0, millis() = 100020
+Stop ITimer1, millis() = 105007
+Stop ITimer0, millis() = 105021
+Start ITimer0, millis() = 110022
+Stop ITimer0, millis() = 115023
+Start ITimer1, millis() = 120008
+Start ITimer0, millis() = 120024
+Stop ITimer0, millis() = 125025
+Start ITimer0, millis() = 130026
+Stop ITimer1, millis() = 135009
+Stop ITimer0, millis() = 135027
+Start ITimer0, millis() = 140028
+
+```
+
 ---
 ---
+
+### Releases v1.2.0
+
+1. Add STM32_TimerInterrupt Library
 
 ### Releases v1.1.0
 

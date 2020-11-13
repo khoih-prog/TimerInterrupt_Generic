@@ -19,11 +19,12 @@
    Built by Khoi Hoang https://github.com/khoih-prog/TimerInterrupt_Generic
    Licensed under MIT license
 
-   Version: 1.1.0
+   Version: 1.2.0
 
    Version Modified By   Date      Comments
    ------- -----------  ---------- -----------
    1.1.0   K Hoang      10/11/2020 Initial Super-Library coding to merge all TimerInterrupt Libraries
+   1.2.0   K Hoang      12/11/2020 Add STM32_TimerInterrupt Library
 *****************************************************************************************************************************/
 /*
    Notes:
@@ -150,232 +151,226 @@ void printStatus(uint16_t index, unsigned long deltaMillis, unsigned long curren
 // Or you can get this run-time error / crash
 void doingSomething0()
 {
+#if (TIMER_INTERRUPT_DEBUG > 0)
   static unsigned long previousMillis = startMillis;
   
   unsigned long currentMillis = millis();
   unsigned long deltaMillis   = currentMillis - previousMillis;
-
-#if (TIMER_INTERRUPT_DEBUG > 0)
+  
   printStatus(0, deltaMillis, currentMillis);
-#endif
 
   previousMillis = currentMillis;
+#endif
 }
 
 void doingSomething1()
 {
+#if (TIMER_INTERRUPT_DEBUG > 1)
   static unsigned long previousMillis = startMillis;
   
   unsigned long currentMillis = millis();
   unsigned long deltaMillis   = currentMillis - previousMillis;
-
-#if (TIMER_INTERRUPT_DEBUG > 0)
+  
   printStatus(1, deltaMillis, currentMillis);
-#endif
 
   previousMillis = currentMillis;
+#endif
 }
 
 void doingSomething2()
 {
+#if (TIMER_INTERRUPT_DEBUG > 1)
   static unsigned long previousMillis = startMillis;
   
   unsigned long currentMillis = millis();
   unsigned long deltaMillis   = currentMillis - previousMillis;
-
-#if (TIMER_INTERRUPT_DEBUG > 0)
+  
   printStatus(2, deltaMillis, currentMillis);
-#endif
 
   previousMillis = currentMillis;
+#endif
 }
 
 void doingSomething3()
 {
+#if (TIMER_INTERRUPT_DEBUG > 1)
   static unsigned long previousMillis = startMillis;
   
   unsigned long currentMillis = millis();
   unsigned long deltaMillis   = currentMillis - previousMillis;
-
-#if (TIMER_INTERRUPT_DEBUG > 0)
+  
   printStatus(3, deltaMillis, currentMillis);
-#endif
 
   previousMillis = currentMillis;
+#endif
 }
 
 void doingSomething4()
 {
+#if (TIMER_INTERRUPT_DEBUG > 1)
   static unsigned long previousMillis = startMillis;
   
   unsigned long currentMillis = millis();
   unsigned long deltaMillis   = currentMillis - previousMillis;
-
-#if (TIMER_INTERRUPT_DEBUG > 0)
+  
   printStatus(4, deltaMillis, currentMillis);
-#endif
 
   previousMillis = currentMillis;
+#endif
 }
 
 void doingSomething5()
 {
+#if (TIMER_INTERRUPT_DEBUG > 1)
   static unsigned long previousMillis = startMillis;
   
   unsigned long currentMillis = millis();
   unsigned long deltaMillis   = currentMillis - previousMillis;
-
-#if (TIMER_INTERRUPT_DEBUG > 0)
+  
   printStatus(5, deltaMillis, currentMillis);
-#endif
 
   previousMillis = currentMillis;
+#endif
 }
 
 void doingSomething6()
 {
+#if (TIMER_INTERRUPT_DEBUG > 1)
   static unsigned long previousMillis = startMillis;
   
   unsigned long currentMillis = millis();
   unsigned long deltaMillis   = currentMillis - previousMillis;
-
-#if (TIMER_INTERRUPT_DEBUG > 0)
+  
   printStatus(6, deltaMillis, currentMillis);
-#endif
 
   previousMillis = currentMillis;
+#endif
 }
 
 void doingSomething7()
 {
+#if (TIMER_INTERRUPT_DEBUG > 1)
   static unsigned long previousMillis = startMillis;
   
   unsigned long currentMillis = millis();
   unsigned long deltaMillis   = currentMillis - previousMillis;
-
-#if (TIMER_INTERRUPT_DEBUG > 0)
+  
   printStatus(7, deltaMillis, currentMillis);
-#endif
 
   previousMillis = currentMillis;
+#endif
 }
 
 void doingSomething8()
 {
+#if (TIMER_INTERRUPT_DEBUG > 1)
   static unsigned long previousMillis = startMillis;
   
   unsigned long currentMillis = millis();
   unsigned long deltaMillis   = currentMillis - previousMillis;
-
-#if (TIMER_INTERRUPT_DEBUG > 0)
+  
   printStatus(8, deltaMillis, currentMillis);
-#endif
 
   previousMillis = currentMillis;
+#endif
 }
 
 void doingSomething9()
 {
+#if (TIMER_INTERRUPT_DEBUG > 1)
   static unsigned long previousMillis = startMillis;
   
   unsigned long currentMillis = millis();
   unsigned long deltaMillis   = currentMillis - previousMillis;
-
-#if (TIMER_INTERRUPT_DEBUG > 0)
+  
   printStatus(9, deltaMillis, currentMillis);
-#endif
 
   previousMillis = currentMillis;
+#endif
 }
 
 void doingSomething10()
 {
+#if (TIMER_INTERRUPT_DEBUG > 1)
   static unsigned long previousMillis = startMillis;
   
   unsigned long currentMillis = millis();
   unsigned long deltaMillis   = currentMillis - previousMillis;
-
-#if (TIMER_INTERRUPT_DEBUG > 0)
+  
   printStatus(10, deltaMillis, currentMillis);
-#endif
 
   previousMillis = currentMillis;
+#endif
 }
 
-// In Teensy, avoid doing something fancy in ISR, for example complex Serial.print with String() argument
-// The pure simple Serial.prints here are just for demonstration and testing. Must be eliminate in working environment
-// Or you can get this run-time error / crash
 void doingSomething11()
 {
+#if (TIMER_INTERRUPT_DEBUG > 1)
   static unsigned long previousMillis = startMillis;
   
   unsigned long currentMillis = millis();
   unsigned long deltaMillis   = currentMillis - previousMillis;
-
-#if (TIMER_INTERRUPT_DEBUG > 0)
+  
   printStatus(11, deltaMillis, currentMillis);
-#endif
 
   previousMillis = currentMillis;
+#endif
 }
 
-// In Teensy, avoid doing something fancy in ISR, for example complex Serial.print with String() argument
-// The pure simple Serial.prints here are just for demonstration and testing. Must be eliminate in working environment
-// Or you can get this run-time error / crash
 void doingSomething12()
 {
+#if (TIMER_INTERRUPT_DEBUG > 1)
   static unsigned long previousMillis = startMillis;
   
   unsigned long currentMillis = millis();
   unsigned long deltaMillis   = currentMillis - previousMillis;
-
-#if (TIMER_INTERRUPT_DEBUG > 0)
+  
   printStatus(12, deltaMillis, currentMillis);
-#endif
 
   previousMillis = currentMillis;
+#endif
 }
 
 void doingSomething13()
 {
+#if (TIMER_INTERRUPT_DEBUG > 1)
   static unsigned long previousMillis = startMillis;
   
   unsigned long currentMillis = millis();
   unsigned long deltaMillis   = currentMillis - previousMillis;
-
-#if (TIMER_INTERRUPT_DEBUG > 0)
+  
   printStatus(13, deltaMillis, currentMillis);
-#endif
 
   previousMillis = currentMillis;
+#endif
 }
 
 void doingSomething14()
 {
+#if (TIMER_INTERRUPT_DEBUG > 1)
   static unsigned long previousMillis = startMillis;
   
   unsigned long currentMillis = millis();
   unsigned long deltaMillis   = currentMillis - previousMillis;
-
-#if (TIMER_INTERRUPT_DEBUG > 0)
+  
   printStatus(14, deltaMillis, currentMillis);
-#endif
 
   previousMillis = currentMillis;
+#endif
 }
 
 void doingSomething15()
 {
+#if (TIMER_INTERRUPT_DEBUG > 1)
   static unsigned long previousMillis = startMillis;
   
   unsigned long currentMillis = millis();
   unsigned long deltaMillis   = currentMillis - previousMillis;
-
-#if (TIMER_INTERRUPT_DEBUG > 0)
+  
   printStatus(15, deltaMillis, currentMillis);
-#endif
 
   previousMillis = currentMillis;
+#endif
 }
 
 irqCallback irqCallbackFunc[NUMBER_ISR_TIMERS] =

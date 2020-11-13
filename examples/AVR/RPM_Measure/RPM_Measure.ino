@@ -25,11 +25,12 @@
    Built by Khoi Hoang https://github.com/khoih-prog/TimerInterrupt_Generic
    Licensed under MIT license
 
-   Version: 1.1.0
+   Version: 1.2.0
 
    Version Modified By   Date      Comments
    ------- -----------  ---------- -----------
    1.1.0   K Hoang      10/11/2020 Initial Super-Library coding to merge all TimerInterrupt Libraries
+   1.2.0   K Hoang      12/11/2020 Add STM32_TimerInterrupt Library
 *****************************************************************************************************************************/
 /* RPM Measuring uses high frequency hardware timer 1Hz == 1ms) to measure the time from of one rotation, in ms
    then convert to RPM. One rotation is detected by reading the state of a magnetic REED SW or IR LED Sensor
