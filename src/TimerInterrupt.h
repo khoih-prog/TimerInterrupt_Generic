@@ -26,11 +26,12 @@
    Built by Khoi Hoang https://github.com/khoih-prog/TimerInterrupt_Generic
    Licensed under MIT license
 
-   Version: 1.1.0
+   Version: 1.2.0
 
    Version Modified By   Date      Comments
    ------- -----------  ---------- -----------
    1.1.0   K Hoang      10/11/2020 Initial Super-Library coding to merge all TimerInterrupt Libraries
+   1.2.0   K Hoang      12/11/2020 Add STM32_TimerInterrupt Library
 *****************************************************************************************************************************/
 
 

@@ -19,16 +19,17 @@
    Built by Khoi Hoang https://github.com/khoih-prog/TimerInterrupt_Generic
    Licensed under MIT license
 
-   Version: 1.1.0
+   Version: 1.2.0
 
    Version Modified By   Date      Comments
    ------- -----------  ---------- -----------
    1.1.0   K Hoang      10/11/2020 Initial Super-Library coding to merge all TimerInterrupt Libraries
+   1.2.0   K Hoang      12/11/2020 Add STM32_TimerInterrupt Library
 *****************************************************************************************************************************/
 
 #pragma once
 
-#define TIMER_INTERRUPT_GENERIC_VERSION       "1.1.0"
+#define TIMER_INTERRUPT_GENERIC_VERSION       "1.2.0"
 
 #if defined(__AVR_ATmega8__) || defined(__AVR_ATmega128__) || defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__) || defined(__AVR_ATmega1284__) || defined(__AVR_ATmega1284P__) || defined(__AVR_ATmega644__) || defined(__AVR_ATmega644A__) || defined(__AVR_ATmega644P__) || defined(__AVR_ATmega644PA__)
 
@@ -74,6 +75,12 @@
   #define TIMER_INTERRUPT_USING_TEENSY     true
   #include "TeensyTimerInterrupt.h" 
 
+#elif ( defined(STM32F0) || defined(STM32F1) || defined(STM32F2) || defined(STM32F3)  ||defined(STM32F4) || defined(STM32F7) || \
+       defined(STM32L0) || defined(STM32L1) || defined(STM32L4) || defined(STM32H7)  ||defined(STM32G0) || defined(STM32G4) || \
+       defined(STM32WB) || defined(STM32MP1) )
+       
+  #define TIMER_INTERRUPT_USING_STM32      true
+  #include "STM32TimerInterrupt.h"        
 #else
 
   #error Unsupported Board! Please check your Tools->Board setting.
