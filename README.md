@@ -249,7 +249,9 @@ theses files must be copied into the corresponding directory:
 
 ---
 
-### Libraries' Patches
+### Optional Libraries' Patches
+
+##### Notes: These patches are totally optional and necessary only when you use the related Ethernet library and get certain error or issues.
 
 1. If your application requires 2K+ HTML page, the current [`Ethernet library`](https://www.arduino.cc/en/Reference/Ethernet) must be modified if you are using W5200/W5500 Ethernet shields. W5100 is not supported for 2K+ buffer. If you use boards requiring different CS/SS pin for W5x00 Ethernet shield, for example ESP32, ESP8266, nRF52, etc., you also have to modify the following libraries to be able to specify the CS/SS pin correctly.
 
@@ -2235,7 +2237,8 @@ blynkDoingSomething2s: Delta programmed ms = 2000, actual = 3000
 ```
 
 Starting TimerInterruptTest on NUCLEO_F767ZI
-Version : 1.0.1
+Version : 1.2.0
+CPU Frequency = 216 MHz
 STM32TimerInterrupt: Timer Input Freq (Hz) = 216000000, _fre = 1000000.00, _count = 1000000
 Starting  ITimer0 OK, millis() = 108
 STM32TimerInterrupt: Timer Input Freq (Hz) = 108000000, _fre = 1000000.00, _count = 3000000
