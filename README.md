@@ -228,16 +228,18 @@ This file must be copied into the directory:
 
 - `~/.arduino15/packages/adafruit/hardware/samd/x.yy.zz/platform.txt`
 
- 6. ***To be able to automatically detect and display BOARD_NAME on Seeeduino SAMD (XIAO M0, Wio Terminal, etc) boards***, you have to copy the file [Seeeduino SAMD platform.txt](Packages_Patches/Seeeduino/hardware/samd/1.8.1) into Adafruit samd directory (~/.arduino15/packages/Seeeduino/hardware/samd/1.8.1). 
+ 6. ***To be able to automatically detect and display BOARD_NAME on Seeeduino SAMD (XIAO M0, Wio Terminal, etc) boards***, you have to copy the files in [Seeeduino SAMD core](Packages_Patches/Seeeduino/hardware/samd/1.8.1) into Adafruit samd directory (~/.arduino15/packages/Seeeduino/hardware/samd/1.8.1). 
 
 Supposing the Seeeduino SAMD core version is 1.8.1. This file must be copied into the directory:
 
 - `~/.arduino15/packages/Seeeduino/hardware/samd/1.8.1/platform.txt`
+- `~/.arduino15/packages/Seeeduino/hardware/samd/1.8.1/cores/arduino/Arduino.h`
 
 Whenever a new version is installed, remember to copy this file into the new version directory. For example, new version is x.yy.zz
 This file must be copied into the directory:
 
 - `~/.arduino15/packages/Seeeduino/hardware/samd/x.yy.zz/platform.txt`
+- `~/.arduino15/packages/Seeeduino/hardware/samd/x.yy.zz/cores/arduino/Arduino.h`
 
 7. **To use Serial1 on some STM32 boards without Serial1 definition (Nucleo-144 NUCLEO_F767ZI, Nucleo-64 NUCLEO_L053R8, etc.) boards**, you have to copy the files [STM32 variant.h](Packages_Patches/STM32/hardware/stm32/1.9.0) into STM32 stm32 directory (~/.arduino15/packages/STM32/hardware/stm32/1.9.0). You have to modify the files corresponding to your boards, this is just an illustration how to do.
 
@@ -661,7 +663,7 @@ NRF52Timer ITimer(NRF_TIMER_2);
 
 // Init NRF52_ISR_Timer
 // Each NRF52_ISR_Timer can service 16 different ISR-based timers
-NRF52_ISR_Timer ISR_Timer;
+ISR_Timer NRF52_ISR_Timer;
 ```
 
 #### 2.2 Set Hardware Timer Interval and attach Timer Interrupt Handler functions
@@ -669,7 +671,7 @@ NRF52_ISR_Timer ISR_Timer;
 ```
 void TimerHandler(void)
 {
-  ISR_Timer.run();
+  NRF52_ISR_Timer.run();
 }
 
 #define HW_TIMER_INTERVAL_MS          50L
@@ -717,10 +719,10 @@ void setup()
 
   // Just to demonstrate, don't use too many ISR Timers if not absolutely necessary
   // You can use up to 16 timer for each ISR_Timer
-  ISR_Timer.setInterval(TIMER_INTERVAL_2S, doingSomething2s);
-  ISR_Timer.setInterval(TIMER_INTERVAL_5S, doingSomething5s);
-  ISR_Timer.setInterval(TIMER_INTERVAL_11S, doingSomething11s);
-  ISR_Timer.setInterval(TIMER_INTERVAL_101S, doingSomething101s);
+  NRF52_ISR_Timer.setInterval(TIMER_INTERVAL_2S, doingSomething2s);
+  NRF52_ISR_Timer.setInterval(TIMER_INTERVAL_5S, doingSomething5s);
+  NRF52_ISR_Timer.setInterval(TIMER_INTERVAL_11S, doingSomething11s);
+  NRF52_ISR_Timer.setInterval(TIMER_INTERVAL_101S, doingSomething101s);
 }  
 ```
 
@@ -775,7 +777,7 @@ SAMDTimer ITimer0(TIMER_TC3);
 
 // Init SAMD_ISR_Timer
 // Each SAMD_ISR_Timer can service 16 different ISR-based timers
-SAMD_ISR_Timer ISR_Timer;
+ISR_Timer SAMD_ISR_Timer;
 ```
 
 #### 2.2 Set Hardware Timer Interval and attach Timer Interrupt Handler functions
@@ -783,7 +785,7 @@ SAMD_ISR_Timer ISR_Timer;
 ```
 void TimerHandler(void)
 {
-  ISR_Timer.run();
+  SAMD_ISR_Timer.run();
 }
 
 #define HW_TIMER_INTERVAL_MS          50L
@@ -831,10 +833,10 @@ void setup()
 
   // Just to demonstrate, don't use too many ISR Timers if not absolutely necessary
   // You can use up to 16 timer for each ISR_Timer
-  ISR_Timer.setInterval(TIMER_INTERVAL_2S, doingSomething2s);
-  ISR_Timer.setInterval(TIMER_INTERVAL_5S, doingSomething5s);
-  ISR_Timer.setInterval(TIMER_INTERVAL_11S, doingSomething11s);
-  ISR_Timer.setInterval(TIMER_INTERVAL_101S, doingSomething101s);
+  SAMD_ISR_Timer.setInterval(TIMER_INTERVAL_2S, doingSomething2s);
+  SAMD_ISR_Timer.setInterval(TIMER_INTERVAL_5S, doingSomething5s);
+  SAMD_ISR_Timer.setInterval(TIMER_INTERVAL_11S, doingSomething11s);
+  SAMD_ISR_Timer.setInterval(TIMER_INTERVAL_101S, doingSomething101s);
 }  
 ```
 
@@ -901,9 +903,13 @@ attachDueInterrupt(TIMER1_INTERVAL_MS * 1000, TimerHandler1, "ITimer1");
 #### 2.2 Set Hardware Timer Interval and attach Timer Interrupt Handler functions
 
 ```
+// Init SAMDUE_ISR_Timer
+// Each SAMDUE_ISR_Timer can service 16 different ISR-based timers
+ISR_Timer SAMDUE_ISR_Timer;
+
 void TimerHandler(void)
 {
-  ISR_Timer.run();
+  SAMDUE_ISR_Timer.run();
 }
 
 #define HW_TIMER_INTERVAL_MS          1L
@@ -961,10 +967,10 @@ void setup()
 
   // Just to demonstrate, don't use too many ISR Timers if not absolutely necessary
   // You can use up to 16 timer for each ISR_Timer
-  ISR_Timer.setInterval(TIMER_INTERVAL_2S, doingSomething2s);
-  ISR_Timer.setInterval(TIMER_INTERVAL_5S, doingSomething5s);
-  ISR_Timer.setInterval(TIMER_INTERVAL_11S, doingSomething11s);
-  ISR_Timer.setInterval(TIMER_INTERVAL_101S, doingSomething101s);
+  SAMDUE_ISR_Timer.setInterval(TIMER_INTERVAL_2S, doingSomething2s);
+  SAMDUE_ISR_Timer.setInterval(TIMER_INTERVAL_5S, doingSomething5s);
+  SAMDUE_ISR_Timer.setInterval(TIMER_INTERVAL_11S, doingSomething11s);
+  SAMDUE_ISR_Timer.setInterval(TIMER_INTERVAL_101S, doingSomething101s);
 }  
 ```
 
@@ -1021,7 +1027,7 @@ TeensyTimer ITimer(TEENSY_TIMER_1);
 
 // Init Teensy_ISR_Timer
 // Each Teensy_ISR_Timer can service 16 different ISR-based timers
-Teensy_ISR_Timer ISR_Timer;
+ISR_Timer Teensy_ISR_Timer;
 ```
 
 #### 2.2 Set Hardware Timer Interval and attach Timer Interrupt Handler functions
@@ -1029,7 +1035,7 @@ Teensy_ISR_Timer ISR_Timer;
 ```
 void TimerHandler(void)
 {
-  ISR_Timer.run();
+  Teensy_ISR_Timer.run();
 }
 
 #define HW_TIMER_INTERVAL_MS          50L
@@ -1077,10 +1083,10 @@ void setup()
 
   // Just to demonstrate, don't use too many ISR Timers if not absolutely necessary
   // You can use up to 16 timer for each ISR_Timer
-  ISR_Timer.setInterval(TIMER_INTERVAL_2S, doingSomething2s);
-  ISR_Timer.setInterval(TIMER_INTERVAL_5S, doingSomething5s);
-  ISR_Timer.setInterval(TIMER_INTERVAL_11S, doingSomething11s);
-  ISR_Timer.setInterval(TIMER_INTERVAL_101S, doingSomething101s);
+  Teensy_ISR_Timer.setInterval(TIMER_INTERVAL_2S, doingSomething2s);
+  Teensy_ISR_Timer.setInterval(TIMER_INTERVAL_5S, doingSomething5s);
+  Teensy_ISR_Timer.setInterval(TIMER_INTERVAL_11S, doingSomething11s);
+  Teensy_ISR_Timer.setInterval(TIMER_INTERVAL_101S, doingSomething101s);
 }  
 ```
 
@@ -1131,7 +1137,7 @@ STM32Timer ITimer(TIM1);
 
 // Init STM32_ISR_Timer
 // Each STM32_ISR_Timer can service 16 different ISR-based timers
-STM32_ISR_Timer ISR_Timer;
+ISR_Timer STM32_ISR_Timer;
 ```
 
 #### 2.2 Set Hardware Timer Interval and attach Timer Interrupt Handler functions
@@ -1139,7 +1145,7 @@ STM32_ISR_Timer ISR_Timer;
 ```
 void TimerHandler(void)
 {
-  ISR_Timer.run();
+  STM32_ISR_Timer.run();
 }
 
 #define HW_TIMER_INTERVAL_US          100L
@@ -1187,10 +1193,126 @@ void setup()
 
   // Just to demonstrate, don't use too many ISR Timers if not absolutely necessary
   // You can use up to 16 timer for each ISR_Timer
-  ISR_Timer.setInterval(TIMER_INTERVAL_2S, doingSomething2s);
-  ISR_Timer.setInterval(TIMER_INTERVAL_5S, doingSomething5s);
-  ISR_Timer.setInterval(TIMER_INTERVAL_11S, doingSomething11s);
-  ISR_Timer.setInterval(TIMER_INTERVAL_101S, doingSomething101s);
+  STM32_ISR_Timer.setInterval(TIMER_INTERVAL_2S, doingSomething2s);
+  STM32_ISR_Timer.setInterval(TIMER_INTERVAL_5S, doingSomething5s);
+  STM32_ISR_Timer.setInterval(TIMER_INTERVAL_11S, doingSomething11s);
+  STM32_ISR_Timer.setInterval(TIMER_INTERVAL_101S, doingSomething101s);
+}  
+```
+
+---
+
+## Usage for NRF52840-based board using mbed-RTOS such as Nano-33-BLE.
+
+Before using any Timer, you have to make sure the Timer has not been used by any other purpose.
+
+### 1. Using only Hardware Timer directly
+
+#### 1.1 Init Hardware Timer
+
+```
+// Depending on the board, you can select NRF52 Hardware Timer from NRF_TIMER_1-NRF_TIMER_4 (1 to 4)
+// If you select the already-used NRF_TIMER_0, it'll be auto modified to use NRF_TIMER_1
+
+// Init NRF52 timer NRF_TIMER1
+NRF52_MBED_Timer ITimer(NRF_TIMER_1);
+```
+
+#### 1.2 Set Hardware Timer Interval and attach Timer Interrupt Handler function
+
+```
+void TimerHandler(void)
+{
+  // Doing something here inside ISR
+}
+
+#define TIMER_INTERVAL_MS        1000      // 1s = 1000ms
+void setup()
+{
+  ....
+  
+  // Interval in microsecs
+  if (ITimer.attachInterruptInterval(TIMER_INTERVAL_MS * 1000, TimerHandler0))
+    Serial.println("Starting  ITimer OK, millis() = " + String(millis()));
+  else
+    Serial.println("Can't set ITimer. Select another freq. or timer");
+}  
+```
+
+### 2. Using 16 ISR_based Timers from 1 Hardware Timers
+
+
+#### 2.1 Init Hardware Timer and ISR-based Timer
+
+```
+/// Depending on the board, you can select NRF52 Hardware Timer from NRF_TIMER_1-NRF_TIMER_4 (1 to 4)
+// If you select the already-used NRF_TIMER_0, it'll be auto modified to use NRF_TIMER_1
+
+// Init NRF52 timer NRF_TIMER2
+NRF52_MBED_Timer ITimer(NRF_TIMER_2);
+
+// Init NRF52_ISR_Timer
+// Each NRF52_ISR_Timer can service 16 different ISR-based timers
+ISR_Timer NRF52_ISR_Timer;
+```
+
+#### 2.2 Set Hardware Timer Interval and attach Timer Interrupt Handler functions
+
+```
+void TimerHandler(void)
+{
+  NRF52_ISR_Timer.run();
+}
+
+#define HW_TIMER_INTERVAL_MS          50L
+
+#define TIMER_INTERVAL_2S             2000L
+#define TIMER_INTERVAL_5S             5000L
+#define TIMER_INTERVAL_11S            11000L
+#define TIMER_INTERVAL_101S           101000L
+
+// In NRF52, avoid doing something fancy in ISR, for example complex Serial.print with String() argument
+// The pure simple Serial.prints here are just for demonstration and testing. Must be eliminate in working environment
+// Or you can get this run-time error / crash
+void doingSomething2s()
+{
+  // Doing something here inside ISR
+}
+  
+void doingSomething5s()
+{
+  // Doing something here inside ISR
+}
+
+void doingSomething11s()
+{
+  // Doing something here inside ISR
+}
+
+void doingSomething101s()
+{
+  // Doing something here inside ISR
+}
+
+void setup()
+{
+  ....
+  
+  // Interval in microsecs
+  if (ITimer.attachInterruptInterval(HW_TIMER_INTERVAL_MS * 1000, TimerHandler))
+  {
+    lastMillis = millis();
+    Serial.println("Starting  ITimer OK, millis() = " + String(lastMillis));
+  }
+  else
+    Serial.println("Can't set ITimer correctly. Select another freq. or interval");
+
+  // Just to demonstrate, don't use too many ISR Timers if not absolutely necessary
+  // You can use up to 16 timer for each ISR_Timer
+  NRF52_ISR_Timer.setInterval(TIMER_INTERVAL_2S, doingSomething2s);
+  NRF52_ISR_Timer.setInterval(TIMER_INTERVAL_5S, doingSomething5s);
+  NRF52_ISR_Timer.setInterval(TIMER_INTERVAL_11S, doingSomething11s);
+  NRF52_ISR_Timer.setInterval(TIMER_INTERVAL_101S, doingSomething101s);
 }  
 ```
 
