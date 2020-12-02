@@ -3,6 +3,18 @@
 #######################################
 
 ##############################
+# Class TimerInterrupt
+##############################
+
+TimerInterrupt	KEYWORD1
+
+ITimer1	KEYWORD1
+ITimer2	KEYWORD1
+ITimer3	KEYWORD1
+ITimer4	KEYWORD1
+ITimer5	KEYWORD1
+
+##############################
 # Class ESP32TimerInterrupt
 ##############################
 
@@ -63,6 +75,18 @@ TeensyTimerInterrupt	KEYWORD1
 STM32Timer	KEYWORD1
 timerCallback KEYWORD1
 
+#################################
+# Class NRF52_MBED_TimerInterrupt
+#################################
+
+NRF52_MBED_TimerInterrupt	KEYWORD1
+NRF52_MBED_Timer	KEYWORD1
+NRF52_MBED_ISRTimer KEYWORD1
+NRF52_MBED_ISR_Timer KEYWORD1
+NRF52_MBED_TimerNumber KEYWORD1
+timerCallback KEYWORD1
+timerCallback_p KEYWORD1
+
 ##############################
 # Class ISR_Timer
 ##############################
@@ -75,6 +99,47 @@ ISR_Timer KEYWORD1
 #######################################
 # Methods and Functions (KEYWORD2)
 #######################################
+
+##############################
+# Class TimerInterrupt
+##############################
+
+init	KEYWORD2
+set_OCR KEYWORD2
+callback	KEYWORD2
+setFrequency	KEYWORD2
+setInterval	KEYWORD2
+attachInterrupt	KEYWORD2
+attachInterruptInterval	KEYWORD2
+detachInterrupt	KEYWORD2
+disableTimer	KEYWORD2
+reattachInterrupt	KEYWORD2
+enableTimer	KEYWORD2
+pauseTimer	KEYWORD2
+resumeTimer	KEYWORD2
+stopTimer	KEYWORD2
+restartTimer	KEYWORD2
+getTimer	KEYWORD2
+getCount	KEYWORD2
+setCount	KEYWORD2
+get_OCRValue  KEYWORD2
+get_OCRValueRemaining KEYWORD2
+adjust_OCRValue KEYWORD2
+reload_OCRValue KEYWORD2
+checkTimerDone  KEYWORD2
+run KEYWORD2
+setTimeout  KEYWORD2
+setTimer  KEYWORD2
+changeInterval  KEYWORD2
+deleteTimer KEYWORD2
+isEnabled KEYWORD2
+enable  KEYWORD2
+disable KEYWORD2
+enableAll KEYWORD2
+disableAll  KEYWORD2
+toggle  KEYWORD2
+getNumTimers  KEYWORD2
+getNumAvailableTimers KEYWORD2
 
 ##############################
 # Class ESP32TimerInterrupt
@@ -223,6 +288,22 @@ enableTimer KEYWORD2
 stopTimer	KEYWORD2
 restartTimer	KEYWORD2
 
+##############################
+# Class NRF52_MBED_TimerInterrupt
+##############################
+
+setFrequency	KEYWORD2
+setInterval	KEYWORD2
+attachInterrupt	KEYWORD2
+attachInterruptInterval	KEYWORD2
+detachInterrupt	KEYWORD2
+disableTimer	KEYWORD2
+reattachInterrupt	KEYWORD2
+enableTimer	KEYWORD2
+stopTimer	KEYWORD2
+restartTimer	KEYWORD2
+getCallback KEYWORD2
+getTimerIRQn  KEYWORD2
 
 ##############################
 # Class ISR_Timer

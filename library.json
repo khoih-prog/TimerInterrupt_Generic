@@ -1,7 +1,7 @@
 {
   "name": "TimerInterrupt_Generic",
-  "version": "1.2.0",
-  "keywords": "timing,device,control,timer,interrupt,hardware,avr,esp8266,esp32,due,sam-due,samd,nrf52,teensy,stm32,mission-critical,precise,non-blocking,isr",
+  "version": "1.3.0",
+  "keywords": "timing,device,control,timer,interrupt,hardware,avr,esp8266,esp32,due,sam-due,samd,nrf52,teensy,stm32,mission-critical,precise,non-blocking,isr,mbed,nano-33-ble",
   "description": "This library enables you to use Interrupt from Hardware Timers on a supported board. These hardware timers, using interrupt, still work even if other functions are blocking. Moreover, they are much more precise (certainly depending on clock frequency accuracy) than other software timers using millis() or micros(). That's necessary if you need to measure some data requiring better accuracy.",
   "authors":
   {
