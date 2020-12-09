@@ -19,13 +19,14 @@
    Built by Khoi Hoang https://github.com/khoih-prog/TimerInterrupt_Generic
    Licensed under MIT license
 
-   Version: 1.3.0
+   Version: 1.3.1
 
    Version Modified By   Date      Comments
    ------- -----------  ---------- -----------
    1.1.0   K Hoang      10/11/2020 Initial Super-Library coding to merge all TimerInterrupt Libraries
    1.2.0   K Hoang      12/11/2020 Add STM32_TimerInterrupt Library
    1.3.0   K Hoang      01/12/2020 Add Mbed Mano-33-BLE Library. Add support to AVR UNO, Nano, Arduino Mini, Ethernet, BT. etc.
+   1.3.1   K.Hoang      09/12/2020 Add complex examples and board Version String. Fix SAMD bug.
 *****************************************************************************************************************************/
 /*
   nRF52 has 5 Hardware TIMERs: NRF_TIMER0-NRF_TIMER4
@@ -76,6 +77,8 @@
 
 #include <Arduino.h>
 #include "nrf_timer.h"
+
+#define NRF52_TIMER_INTERRUPT_VERSION       "NRF52TimerInterrupt v1.1.1"
 
 #ifndef TIMER_INTERRUPT_DEBUG
   #define TIMER_INTERRUPT_DEBUG       0

@@ -55,6 +55,13 @@ The catch is **your function is now part of an ISR (Interrupt Service Routine), 
 ---
 ---
 
+### Releases v1.3.1
+
+1. Add many complex examples.
+2. Add board Version String.
+3. Fix SAMD bug.
+
+
 ### Releases v1.3.0
 
 1. Add [**NRF52_MBED_TimerInterrupt Library**](https://github.com/khoih-prog/NRF52_MBED_TimerInterrupt) to support **NRF52840-based board using mbed-RTOS such as Nano-33-BLE.**
@@ -95,7 +102,7 @@ The catch is **your function is now part of an ISR (Interrupt Service Routine), 
 ---
 ---
 
-## Prerequisite
+## Prerequisites
 
  1. [`Arduino IDE 1.8.13+` for Arduino](https://www.arduino.cc/en/Main/Software)
  2. [`Arduino AVR core 1.8.3+`](https://github.com/arduino/ArduinoCore-avr) for Arduino AVR boards. Use Arduino Board Manager to install.
@@ -143,7 +150,7 @@ Another way to install is to:
 
 1. Install [VS Code](https://code.visualstudio.com/)
 2. Install [PlatformIO](https://platformio.org/platformio-ide)
-3. Install [**TimerInterrupt_Generic** library](https://platformio.org/lib/show/11437/TimerInterrupt_Generic) by using [Library Manager](https://platformio.org/lib/show/11437/TimerInterrupt_Generic/installation). Search for **TimerInterrupt_Generic** in [Platform.io Author's Libraries](https://platformio.org/lib/search?query=author:%22Khoi%20Hoang%22)
+3. Install [**TimerInterrupt_Generic** library](https://platformio.org/lib/show/11437/TimerInterrupt_Generic) or [**TimerInterrupt_Generic** library](https://platformio.org/lib/show/11463/TimerInterrupt_Generic) by using [Library Manager](https://platformio.org/lib/show/11437/TimerInterrupt_Generic/installation). Search for **TimerInterrupt_Generic** in [Platform.io Author's Libraries](https://platformio.org/lib/search?query=author:%22Khoi%20Hoang%22)
 4. Use included [platformio.ini](platformio/platformio.ini) file from examples to ensure that all dependent libraries will installed automatically. Please visit documentation for the other options and examples at [Project Configuration File](https://docs.platformio.org/page/projectconf.html)
 
 ---
@@ -173,16 +180,18 @@ These files must be copied into the directory:
 - `~/.arduino15/packages/adafruit/hardware/nrf52/x.yy.z/variants/NINA_B112_ublox/variant.cpp`
 - **`~/.arduino15/packages/adafruit/hardware/nrf52/x.yy.z/cores/nRF5/Udp.h`**
 
- 2. **To be able to compile and run on Teensy boards**, you have to copy the file [Teensy boards.txt](Packages_Patches/hardware/teensy/avr/boards.txt) into Teensy hardware directory (./arduino-1.8.12/hardware/teensy/avr/boards.txt). 
+ 2. **To be able to compile and run on Teensy boards**, you have to copy the file [Teensy boards.txt](Packages_Patches/hardware/teensy/avr/boards.txt) into Teensy hardware directory (./arduino-1.8.13/hardware/teensy/avr/boards.txt). 
 
-Supposing the Arduino version is 1.8.12. This file must be copied into the directory:
+Supposing the Arduino version is 1.8.13. These files must be copied into the directory:
 
-- `./arduino-1.8.12/hardware/teensy/avr/boards.txt`
+- `./arduino-1.8.13/hardware/teensy/avr/boards.txt`
+- ***`./arduino-1.8.13/hardware/teensy/avr/cores/teensy4/Stream.h`***
 
 Whenever a new version is installed, remember to copy this file into the new version directory. For example, new version is x.yy.zz
-This file must be copied into the directory:
+These files must be copied into the directory:
 
 - `./arduino-x.yy.zz/hardware/teensy/avr/boards.txt`
+- ***`./arduino-x.yy.zz/hardware/teensy/avr/cores/teensy4/Stream.h`***
 
  3. **To be able to compile and run on SAM DUE boards**, you have to copy the whole [SAM DUE](Packages_Patches/arduino/hardware/sam/1.6.12) directory into Arduino sam directory (~/.arduino15/packages/arduino/hardware/sam/1.6.12). 
 
@@ -1344,6 +1353,7 @@ Only **Timer1 and Timer2** are supported for Nano, UNO, etc. boards possessing 3
  8. [RPM_Measure](examples/ESP32/RPM_Measure)
  9. [SwitchDebounce](examples/ESP32/SwitchDebounce)
 10. [TimerInterruptTest](examples/ESP32/TimerInterruptTest)
+11. [**Change_Interval**](examples/ESP32/Change_Interval). New.
 
 ### 2. ESP8266
 
@@ -1357,6 +1367,7 @@ Only **Timer1 and Timer2** are supported for Nano, UNO, etc. boards possessing 3
  8. [RPM_Measure](examples/ESP8266/RPM_Measure)
  9. [SwitchDebounce](examples/ESP8266/SwitchDebounce)
 10. [TimerInterruptTest](examples/ESP8266/TimerInterruptTest)
+11. [**Change_Interval**](examples/ESP8266/Change_Interval)
 
 
 ### 3. NRF52
@@ -1368,8 +1379,11 @@ Only **Timer1 and Timer2** are supported for Nano, UNO, etc. boards possessing 3
  5. [ISR_Timer_Complex_WiFiNINA](examples/NRF52/ISR_Timer_Complex_WiFiNINA)
  6. [RPM_Measure](examples/NRF52/RPM_Measure)
  7. [SwitchDebounce](examples/NRF52/SwitchDebounce)
- 8. [TimerInterruptTest](examples/NRF52/TimerInterruptTest)
-10. [**ISR_16_Timers_Array_Complex**](examples/NRF52/TimerInterruptLEDDemo). New.
+ 8. [TimerInterruptLEDDemo](examples/NRF52/TimerInterruptLEDDemo). 
+ 9. [TimerInterruptTest](examples/NRF52/TimerInterruptTest)
+10. [**ISR_16_Timers_Array_Complex**](examples/NRF52/ISR_16_Timers_Array_Complex). New.
+11. [**Change_Interval**](examples/NRF52/Change_Interval). New.
+12. [**FakeAnalogWrite**](examples/NRF52/FakeAnalogWrite). New.
  
  
 ### 4. SAMD21/SAMD51
@@ -1383,7 +1397,9 @@ Only **Timer1 and Timer2** are supported for Nano, UNO, etc. boards possessing 3
  7. [SwitchDebounce](examples/SAMD/SwitchDebounce)
  8. [TimerInterruptTest](examples/SAMD/TimerInterruptTest)
  9. [TimerInterruptLEDDemo](examples/SAMD/TimerInterruptLEDDemo)
- 
+10. [**ISR_16_Timers_Array_Complex**](examples/SAMD/ISR_16_Timers_Array_Complex). New.
+11. [**Change_Interval**](examples/SAMD/Change_Interval). New.
+
 ### 5. SAM DUE
 
  1. [Argument_None](examples/SAMDUE/Argument_None)
@@ -1394,6 +1410,8 @@ Only **Timer1 and Timer2** are supported for Nano, UNO, etc. boards possessing 3
  6. [SwitchDebounce](examples/SAMDUE/SwitchDebounce)
  7. [TimerInterruptTest](examples/SAMDUE/TimerInterruptTest)
  8. [TimerInterruptLEDDemo](examples/SAMDUE/TimerInterruptLEDDemo)
+ 9. [**ISR_16_Timers_Array_Complex**](examples/SAMDUE/ISR_16_Timers_Array_Complex). New.
+10. [**Change_Interval**](examples/SAMDUE/Change_Interval). New.
 
 ### 6. STM32F/L/H/G/WB/MP1
 
@@ -1405,6 +1423,8 @@ Only **Timer1 and Timer2** are supported for Nano, UNO, etc. boards possessing 3
  6. [SwitchDebounce](examples/STM32/SwitchDebounce)
  7. [TimerInterruptTest](examples/STM32/TimerInterruptTest)
  8. [TimerInterruptLEDDemo](examples/STM32/TimerInterruptLEDDemo)
+ 9. [**ISR_16_Timers_Array_Complex**](examples/STM32/ISR_16_Timers_Array_Complex). New.
+10. [**Change_Interval**](examples/STM32/Change_Interval). New.
  
 ### 7. Teensy
 
@@ -1416,6 +1436,8 @@ Only **Timer1 and Timer2** are supported for Nano, UNO, etc. boards possessing 3
  6. [SwitchDebounce](examples/TEENSY/SwitchDebounce)
  7. [TimerInterruptTest](examples/TEENSY/TimerInterruptTest)
  8. [TimerInterruptLEDDemo](examples/TEENSY/TimerInterruptLEDDemo)
+ 9. [**ISR_16_Timers_Array_Complex**](examples/TEENSY/ISR_16_Timers_Array_Complex). New.
+10. [**Change_Interval**](examples/TEENSY/Change_Interval). New.
 
 ### 8. Arduino AVR
 
@@ -1433,6 +1455,7 @@ Only **Timer1 and Timer2** are supported for Nano, UNO, etc. boards possessing 3
 12. [TimerInterruptTest](examples/AVR/TimerInterruptTest)
 13. [**ISR_16_Timers_Array_Complex**](examples/AVR/ISR_16_Timers_Array_Complex). New
 14. [**ISR_Timers_Array_Simple**](examples/AVR/TimerInterruptTest). New.
+15. [**Change_Interval**](examples/AVR/Change_Interval). New.
 
 ### 9. Nano-33-BLE. New
 
@@ -1442,26 +1465,26 @@ Only **Timer1 and Timer2** are supported for Nano, UNO, etc. boards possessing 3
  4. [SwitchDebounce](examples/NANO33BLE/SwitchDebounce)
  5. [TimerInterruptLEDDemo](examples/NANO33BLE/TimerInterruptLEDDemo)
  6. [TimerInterruptTest](examples/NANO33BLE/TimerInterruptTest)
+ 7. [**FakeAnalogWrite**](examples/NANO33BLE/FakeAnalogWrite). New.
+ 8. [**Change_Interval**](examples/NANO33BLE/Change_Interval). New.
 
 ---
 ---
 
-### Example [ISR_16_Timers_Array](examples/TEENSY/ISR_16_Timers_Array) for Teensy boards
+### Example [**ISR_16_Timers_Array_Complex**](examples/TEENSY/ISR_16_Timers_Array_Complex) for Teensy boards
 
 ```
-#if !(defined(NRF52840_FEATHER) || defined(NRF52832_FEATHER) || defined(NRF52_SERIES) || defined(ARDUINO_NRF52_ADAFRUIT) || \
-      defined(NRF52840_FEATHER_SENSE) || defined(NRF52840_ITSYBITSY) || defined(NRF52840_CIRCUITPLAY) || \
-      defined(NRF52840_CLUE) || defined(NRF52840_METRO) || defined(NRF52840_PCA10056) || defined(PARTICLE_XENON) \
-      || defined(NINA_B302_ublox) || defined(NINA_B112_ublox) )
-  #error This code is designed to run on nRF52 platform! Please check your Tools->Board setting.
+#if !( defined(CORE_TEENSY) || defined(TEENSYDUINO) )
+  #error This code is designed to run on Teensy platform! Please check your Tools->Board setting.
 #endif
 
-// These define's must be placed at the beginning before #include "NRF52TimerInterrupt.h"
-// Don't define NRF52_TIMER_INTERRUPT_DEBUG > 0. Only for special ISR debugging only. Can hang the system.
-#define NRF52_TIMER_INTERRUPT_DEBUG      1
+// These define's must be placed at the beginning before #include "TimerInterrupt_Generic.h"
+// Don't define Teensy_TIMER_INTERRUPT_DEBUG > 0. Only for special ISR debugging only. Can hang the system.
+#define TIMER_INTERRUPT_DEBUG      0
 
-#include "NRF52TimerInterrupt.h"
-#include "NRF52_ISR_Timer.h"
+#include "TimerInterrupt_Generic.h"
+
+#include "ISR_Timer_Generic.h"
 
 #include <SimpleTimer.h>              // https://github.com/schinken/SimpleTimer
 
@@ -1470,26 +1493,25 @@ Only **Timer1 and Timer2** are supported for Nano, UNO, etc. boards possessing 3
 #endif
 
 #ifndef LED_BLUE
-  #define LED_BLUE          7
+  #define LED_BLUE          2
 #endif
 
 #ifndef LED_RED
-  #define LED_RED           8
+  #define LED_RED           3
 #endif
 
 #define HW_TIMER_INTERVAL_US      10000L
 
 volatile uint32_t startMillis = 0;
 
-// Depending on the board, you can select NRF52 Hardware Timer from NRF_TIMER_1-NRF_TIMER_4 (1 to 4)
-// If you select the already-used NRF_TIMER_0, it'll be auto modified to use NRF_TIMER_1
+// You can select Teensy Hardware Timer  from TEENSY_TIMER_1 or TEENSY_TIMER_3
 
-// Init NRF52 timer NRF_TIMER1
-NRF52Timer ITimer(NRF_TIMER_2);
+// Init Teensy timer TEENSY_TIMER_1
+TeensyTimer ITimer(TEENSY_TIMER_1);
 
-// Init NRF52_ISR_Timer
-// Each NRF52_ISR_Timer can service 16 different ISR-based timers
-NRF52_ISR_Timer ISR_Timer;
+// Init Teensy_ISR_Timer
+// Each Teensy_ISR_Timer can service 16 different ISR-based timers
+ISR_Timer Teensy_ISR_Timer;
 
 #define LED_TOGGLE_INTERVAL_MS        2000L
 
@@ -1498,7 +1520,7 @@ void TimerHandler(void)
   static bool toggle  = false;
   static int timeRun  = 0;
 
-  ISR_Timer.run();
+  Teensy_ISR_Timer.run();
 
   // Toggle LED every LED_TOGGLE_INTERVAL_MS = 2000ms = 2s
   if (++timeRun == ((LED_TOGGLE_INTERVAL_MS * 1000) / HW_TIMER_INTERVAL_US) )
@@ -1724,7 +1746,7 @@ void setup()
   while (!Serial);
 
   Serial.println("\nStarting ISR_16_Timers_Array_Complex on " + String(BOARD_NAME));
-  Serial.println("Version : " + String(NRF52_TIMER_INTERRUPT_VERSION));
+  Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
   Serial.println("CPU Frequency = " + String(F_CPU / 1000000) + " MHz");
 
   // Interval in microsecs
@@ -1737,15 +1759,15 @@ void setup()
     Serial.println("Can't set ITimer correctly. Select another freq. or interval");
 
   // Just to demonstrate, don't use too many ISR Timers if not absolutely necessary
-  // You can use up to 16 timer for each ISR_Timer
+  // You can use up to 16 timer for each Teensy_ISR_Timer
   for (int i = 0; i < NUMBER_ISR_TIMERS; i++)
   {
 #if USE_COMPLEX_STRUCT
     curISRTimerData[i].previousMillis = startMillis;
-    ISR_Timer.setInterval(curISRTimerData[i].TimerInterval, curISRTimerData[i].irqCallbackFunc);
+    Teensy_ISR_Timer.setInterval(curISRTimerData[i].TimerInterval, curISRTimerData[i].irqCallbackFunc);
 #else
     previousMillis[i] = startMillis;
-    ISR_Timer.setInterval(TimerInterval[i], irqCallbackFunc[i]);
+    Teensy_ISR_Timer.setInterval(TimerInterval[i], irqCallbackFunc[i]);
 #endif    
   }
 
@@ -1758,13 +1780,13 @@ void setup()
 void loop()
 {
   // This unadvised blocking task is used to demonstrate the blocking effects onto the execution and accuracy to Software timer
-  // You see the time elapse of ISR_Timer still accurate, whereas very unaccurate for Software Timer
+  // You see the time elapse of Teensy_ISR_Timer still accurate, whereas very unaccurate for Software Timer
   // The time elapse for 2000ms software timer now becomes 3000ms (BLOCKING_TIME_MS)
-  // While that of ISR_Timer is still prefect.
+  // While that of Teensy_ISR_Timer is still prefect.
   delay(BLOCKING_TIME_MS);
 
   // You need this Software timer for non-critical tasks. Avoid abusing ISR if not absolutely necessary
-  // You don't need to and never call ISR_Timer.run() here in the loop(). It's already handled by ISR timer.
+  // You don't need to and never call Teensy_ISR_Timer.run() here in the loop(). It's already handled by ISR timer.
   simpleTimer.run();
 }
 ```
@@ -1779,7 +1801,7 @@ While software timer, **programmed for 2s, is activated after 10.917s !!!**. The
 
 ```
 Starting ISR_Timer_Complex_Ethernet on SAM DUE
-Version : 1.3.0
+TimerInterrupt_Generic v1.3.1
 Using Timer(0) = TC0, channel = 0, IRQ = TC0_IRQn
 Timer(0), us = 50000.00
 ITimer attached to Timer(0)
@@ -1869,7 +1891,7 @@ While software timer, **programmed for 2s, is activated after 4.867s !!!**. Then
 
 ```
 Starting ISR_Timer_Complex_Ethernet on NRF52840_FEATHER
-Version : 1.3.0
+TimerInterrupt_Generic v1.3.1
 NRF52TimerInterrupt: F_CPU (MHz) = 64, Timer = NRF_TIMER2
 NRF52TimerInterrupt: _fre = 1000000.00, _count = 50000
 Starting  ITimer OK, millis() = 1419
@@ -1961,7 +1983,7 @@ In this example, 16 independent ISR Timers are used, yet utilized just one Hardw
 
 ```
 Starting ISR_16_Timers_Array on SAMD_NANO_33_IOT
-Version : 1.3.0
+TimerInterrupt_Generic v1.3.1
 CPU Frequency = 48 MHz
 F_CPU (MHz) = 48, TIMER_HZ = 48
 TC_Timer::startTimer _Timer = 0x42002c00, TC3 = 0x42002c00
@@ -2083,7 +2105,7 @@ simpleTimerDoingSomething2s: Delta programmed ms = 2000, actual = 10000
 
 ```
 Starting TimerInterruptTest on Teensy 4.0/4.1
-Version : 1.3.0
+TimerInterrupt_Generic v1.3.1
 CPU Frequency = 600 MHz
 TEENSY_TIMER_1, F_BUS_ACTUAL (MHz) = 150, request interval = 30000, actual interval (us) = 29999
 Prescale = 7, _timerCount = 17578
@@ -2127,7 +2149,7 @@ While software timer, **programmed for 2s, is activated after 3.435s !!!**
 ```
 
 Starting Argument_None on ESP32_DEV
-Version : 1.3.0
+TimerInterrupt_Generic v1.3.1
 CPU Frequency = 240 MHz
 ESP32TimerInterrupt: _timerNo = 1, _fre = 1000000.00, _count = 0 - 50000
 Starting  ITimer OK, millis() = 2140
@@ -2192,7 +2214,7 @@ While software timer, **programmed for 2s, is activated after 4.258s !!!**
 
 ```
 Starting ISR_Timer_Complex on ESP8266_NODEMCU
-Version : 1.3.0
+TimerInterrupt_Generic v1.3.1
 CPU Frequency = 160 MHz
 ESP8266TimerInterrupt: _fre = 312500.00, _count = 15625
 Starting  ITimer OK, millis() = 64
@@ -2240,7 +2262,7 @@ While software timer, **programmed for 2s, is activated after 9.782s !!!**. Then
 
 ```
 Starting ISR_Timer_Complex on NUCLEO_F767ZI
-Version : 1.3.0
+TimerInterrupt_Generic v1.3.1
 CPU Frequency = 216 MHz
 STM32TimerInterrupt: Timer Input Freq (Hz) = 216000000, _fre = 1000000.00, _count = 50000
 Starting  ITimer OK, millis() = 6
@@ -2299,7 +2321,7 @@ blynkDoingSomething2s: Delta programmed ms = 2000, actual = 3000
 ```
 
 Starting TimerInterruptTest on NUCLEO_F767ZI
-Version : 1.3.0
+TimerInterrupt_Generic v1.3.1
 CPU Frequency = 216 MHz
 STM32TimerInterrupt: Timer Input Freq (Hz) = 216000000, _fre = 1000000.00, _count = 1000000
 Starting  ITimer0 OK, millis() = 108
@@ -2353,7 +2375,7 @@ While software timer, **programmed for 2s, is activated after more than 3.000s i
 
 ```
 Starting ISR_16_Timers_Array_Complex on Nano 33 BLE
-Version : 1.0.2
+TimerInterrupt_Generic v1.3.1
 NRF52_MBED_TimerInterrupt: Timer = NRF_TIMER3
 NRF52_MBED_TimerInterrupt: _fre = 1000000.00, _count = 10000
 Starting  ITimer OK, millis() = 714
@@ -2821,6 +2843,12 @@ Timer : 15, programmed : 80000, actual : 80009
 
 ---
 ---
+
+### Releases v1.3.1
+
+1. Add many complex examples.
+2. Add board Version String.
+3. Fix SAMD bug.
 
 ### Releases v1.3.0
 
