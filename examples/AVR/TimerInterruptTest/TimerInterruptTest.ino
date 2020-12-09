@@ -24,14 +24,6 @@
    
    Built by Khoi Hoang https://github.com/khoih-prog/TimerInterrupt_Generic
    Licensed under MIT license
-
-   Version: 1.3.0
-
-   Version Modified By   Date      Comments
-   ------- -----------  ---------- -----------
-   1.1.0   K Hoang      10/11/2020 Initial Super-Library coding to merge all TimerInterrupt Libraries
-   1.2.0   K Hoang      12/11/2020 Add STM32_TimerInterrupt Library
-   1.3.0   K Hoang      01/12/2020 Add Mbed Mano-33-BLE Library. Add support to AVR UNO, Nano, Arduino Mini, Ethernet, BT. etc.
 *****************************************************************************************************************************/
 
 //These define's must be placed at the beginning before #include "TimerInterrupt.h"
@@ -100,7 +92,7 @@ void setup()
   while (!Serial);
 
   Serial.println("\nStarting TimerInterruptTest on Arduino AVR board");
-  Serial.println("Version : " + String(TIMER_INTERRUPT_GENERIC_VERSION));
+  Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
   Serial.println("CPU Frequency = " + String(F_CPU / 1000000) + " MHz");
 
   // Timer0 is used for micros(), millis(), delay(), etc and can't be used

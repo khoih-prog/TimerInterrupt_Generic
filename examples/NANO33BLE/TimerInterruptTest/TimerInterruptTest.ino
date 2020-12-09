@@ -18,14 +18,6 @@
 
    Built by Khoi Hoang https://github.com/khoih-prog/TimerInterrupt_Generic
    Licensed under MIT license
-
-   Version: 1.3.0
-
-   Version Modified By   Date      Comments
-   ------- -----------  ---------- -----------
-   1.1.0   K Hoang      10/11/2020 Initial Super-Library coding to merge all TimerInterrupt Libraries
-   1.2.0   K Hoang      12/11/2020 Add STM32_TimerInterrupt Library
-   1.3.0   K Hoang      01/12/2020 Add Mbed Nano-33-BLE Library. Add support to AVR UNO, Nano, Arduino Mini, Ethernet, BT. etc.
 *****************************************************************************************************************************/
 /*
    Notes:
@@ -112,7 +104,7 @@ void setup()
   delay(100);
   
   Serial.printf("\nStarting TimerInterruptTest on %s\n", BOARD_NAME);
-  Serial.printf("Version : v%s\n", TIMER_INTERRUPT_GENERIC_VERSION);
+  Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
 
   // Interval in microsecs
   if (ITimer0.attachInterruptInterval(TIMER0_INTERVAL_MS * 1000, TimerHandler0))

@@ -1,6 +1,9 @@
 /****************************************************************************************************************************
   ISR_16_Timers_Array_Complex.ino
-  TCNTx - Timer/Counter Register. The actual timer value is stored here.
+  For Arduino AVR boards (UNO, Nano, Mega, etc. )
+   Written by Khoi Hoang
+  
+   TCNTx - Timer/Counter Register. The actual timer value is stored here.
    OCRx - Output Compare Register
    ICRx - Input Capture Register (only for 16bit timer)
    TIMSKx - Timer/Counter Interrupt Mask Register. To enable/disable timer interrupts.
@@ -21,16 +24,7 @@
    
    Built by Khoi Hoang https://github.com/khoih-prog/TimerInterrupt_Generic
    Licensed under MIT license
-
-   Version: 1.3.0
-
-   Version Modified By   Date      Comments
-   ------- -----------  ---------- -----------
-   1.1.0   K Hoang      10/11/2020 Initial Super-Library coding to merge all TimerInterrupt Libraries
-   1.2.0   K Hoang      12/11/2020 Add STM32_TimerInterrupt Library
-   1.3.0   K Hoang      01/12/2020 Add Mbed Mano-33-BLE Library. Add support to AVR UNO, Nano, Arduino Mini, Ethernet, BT. etc.
 *****************************************************************************************************************************/
-
 
 #define TIMER_INTERRUPT_DEBUG      0
 
@@ -293,7 +287,7 @@ void setup()
   while (!Serial);
 
   Serial.println("\nStarting ISR_16_Timers_Array_Complex");
-  Serial.println("Version : " + String(TIMER_INTERRUPT_GENERIC_VERSION));
+  Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
   Serial.println("CPU Frequency = " + String(F_CPU / 1000000) + " MHz");
 
   ITimer2.init();

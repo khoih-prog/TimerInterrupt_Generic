@@ -23,14 +23,6 @@
    
    Built by Khoi Hoang https://github.com/khoih-prog/TimerInterrupt_Generic
    Licensed under MIT license
-
-   Version: 1.3.0
-
-   Version Modified By   Date      Comments
-   ------- -----------  ---------- -----------
-   1.1.0   K Hoang      10/11/2020 Initial Super-Library coding to merge all TimerInterrupt Libraries
-   1.2.0   K Hoang      12/11/2020 Add STM32_TimerInterrupt Library
-   1.3.0   K Hoang      01/12/2020 Add Mbed Mano-33-BLE Library. Add support to AVR UNO, Nano, Arduino Mini, Ethernet, BT. etc.
 *****************************************************************************************************************************/
 /* Notes:
    Special design is necessary to share data between interrupt code and the rest of your program.
@@ -468,7 +460,7 @@ void setup()
   while (!Serial);
   
   Serial.println("\nStarting ISR_Timer_4_Switches on " + String(ARDUINO_BOARD));
-  Serial.println("Version : " + String(TIMER_INTERRUPT_GENERIC_VERSION));
+  Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
   Serial.println("CPU Frequency = " + String(F_CPU / 1000000) + " MHz");
 
   for (int index = 0; index < NUMBER_OF_LAMPS; index++)

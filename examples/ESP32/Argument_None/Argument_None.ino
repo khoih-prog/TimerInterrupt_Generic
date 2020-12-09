@@ -23,14 +23,6 @@
    
    Built by Khoi Hoang https://github.com/khoih-prog/TimerInterrupt_Generic
    Licensed under MIT license
-
-   Version: 1.3.0
-
-   Version Modified By   Date      Comments
-   ------- -----------  ---------- -----------
-   1.1.0   K Hoang      10/11/2020 Initial Super-Library coding to merge all TimerInterrupt Libraries
-   1.2.0   K Hoang      12/11/2020 Add STM32_TimerInterrupt Library
-   1.3.0   K Hoang      01/12/2020 Add Mbed Mano-33-BLE Library. Add support to AVR UNO, Nano, Arduino Mini, Ethernet, BT. etc.
 *****************************************************************************************************************************/
 
 /*
@@ -49,7 +41,7 @@
   #error This code is designed to run on ESP32 platform, not Arduino nor ESP8266! Please check your Tools->Board setting.
 #endif
 
-// These define's must be placed at the beginning before #include "ESP32TimerInterrupt.h"
+// These define's must be placed at the beginning before #include "TimerInterrupt_Generic.h"
 // Don't define TIMER_INTERRUPT_DEBUG > 2. Only for special ISR debugging only. Can hang the system.
 #define TIMER_INTERRUPT_DEBUG      1
 
@@ -117,7 +109,7 @@ void setup()
   delay(100);
   
   Serial.println("\nStarting Argument_None on " + String(ARDUINO_BOARD));
-  Serial.println("Version : " + String(TIMER_INTERRUPT_GENERIC_VERSION));
+  Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
   Serial.println("CPU Frequency = " + String(F_CPU / 1000000) + " MHz");
 
   // Using ESP32  => 80 / 160 / 240MHz CPU clock ,
