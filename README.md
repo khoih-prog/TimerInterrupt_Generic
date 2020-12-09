@@ -1367,7 +1367,7 @@ Only **Timer1 and Timer2** are supported for Nano, UNO, etc. boards possessing 3
  8. [RPM_Measure](examples/ESP8266/RPM_Measure)
  9. [SwitchDebounce](examples/ESP8266/SwitchDebounce)
 10. [TimerInterruptTest](examples/ESP8266/TimerInterruptTest)
-11. [**Change_Interval**](examples/ESP8266/Change_Interval)
+11. [**Change_Interval**](examples/ESP8266/Change_Interval). New.
 
 
 ### 3. NRF52
