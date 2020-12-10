@@ -2,12 +2,12 @@
   FakeAnalogWrite.ino
   For Arduino AVR boards (UNO, Nano, Mega, etc. )
    Written by Khoi Hoang
-  
+
    TCNTx - Timer/Counter Register. The actual timer value is stored here.
    OCRx - Output Compare Register
    ICRx - Input Capture Register (only for 16bit timer)
    TIMSKx - Timer/Counter Interrupt Mask Register. To enable/disable timer interrupts.
-   TIFRx - Timer/Counter Interrupt Flag Register. Indicates a pending timer interrupt. 
+   TIFRx - Timer/Counter Interrupt Flag Register. Indicates a pending timer interrupt.
 
    Now even you use all these new 16 ISR-based timers,with their maximum interval practically unlimited (limited only by
    unsigned long miliseconds), you just consume only one Hardware timer and avoid conflicting with other cores' tasks.
@@ -21,7 +21,7 @@
 
    Based on BlynkTimer.h
    Author: Volodymyr Shymanskyy
-   
+
    Built by Khoi Hoang https://github.com/khoih-prog/TimerInterrupt_Generic
    Licensed under MIT license
 *****************************************************************************************************************************/
@@ -50,9 +50,9 @@
     defined(__AVR_ATmega644P__) || defined(__AVR_ATmega644PA__) || defined(ARDUINO_AVR_UNO) || defined(ARDUINO_AVR_NANO) || \
     defined(ARDUINO_AVR_MINI) || defined(ARDUINO_AVR_ETHERNET) || defined(ARDUINO_AVR_FIO) || defined(ARDUINO_AVR_BT) || \
     defined(ARDUINO_AVR_LILYPAD) || defined(ARDUINO_AVR_PRO) || defined(ARDUINO_AVR_NG) || defined(ARDUINO_AVR_UNO_WIFI_DEV_ED))
-  #error This is designed only for Arduino AVR board! Please check your Tools->Board setting.
+#error This is designed only for Arduino AVR board! Please check your Tools->Board setting.
 #endif
-  
+
 #define TIMER_INTERRUPT_DEBUG      0
 
 #define USE_TIMER_1     false
@@ -66,7 +66,7 @@
 #include "TimerInterrupt_Generic.h"
 
 #ifndef LED_BUILTIN
-  #define LED_BUILTIN       13
+#define LED_BUILTIN       13
 #endif
 
 // For PWM_Value from 0-255.You can change to 1024 or 2048
@@ -107,7 +107,7 @@ void TimerHandler(void)
 
   // Toggle LED every LED_TOGGLE_INTERVAL_MS = 500ms = 0.5s
   if (++timeRun == ((LED_TOGGLE_INTERVAL_MS * TIMER2_FREQUENCY_HZ) / 1000) )
-  {   
+  {
     timeRun = 0;
 
     //timer interrupt toggles pin LED_BUILTIN
@@ -207,7 +207,7 @@ void setup()
   if (ITimer2.attachInterrupt(TIMER2_FREQUENCY_HZ, TimerHandler))
     Serial.println("Starting  ITimer2 OK, millis() = " + String(millis()));
   else
-    Serial.println("Can't set ITimer2. Select another freq., duration or timer"); 
+    Serial.println("Can't set ITimer2. Select another freq., duration or timer");
 
   // Just to demonstrate, don't use too many ISR Timers if not absolutely necessary
   // You can use up to 16 timer for each ISR_Timer
@@ -221,6 +221,8 @@ void setup()
   }
 }
 
+#define USING_MAPPING_TABLE   false
+
 void fakeAnalogWrite(uint16_t pin, uint16_t value)
 {
   uint16_t localValue;
@@ -232,20 +234,20 @@ void fakeAnalogWrite(uint16_t pin, uint16_t value)
     if ( (curISRTimerData[i].beingUsed) && (curISRTimerData[i].pin == pin) )
     {
       localValue = (value < MAX_PWM_VALUE) ? value : MAX_PWM_VALUE;
-      
+
       if (curISRTimerData[i].PWM_PremapValue == localValue)
       {
-#if (LOCAL_DEBUG > 0)        
+#if (LOCAL_DEBUG > 0)
         Serial.print("Ignore : Same Value for index = ");
         Serial.println(i);
 #endif
-        
+
         return;
       }
       else if (curISRTimerData[i].PWM_Value >= 0)
-      {     
+      {
         curISRTimerData[i].PWM_PremapValue = localValue;
-        
+
         // Mapping to corect value
         if ( ( localValue == 0) || ( localValue == MAX_PWM_VALUE - 1) )
         {
@@ -254,6 +256,9 @@ void fakeAnalogWrite(uint16_t pin, uint16_t value)
         }
         else
         {
+
+#if USING_MAPPING_TABLE
+
           // Get the mapping index
           for (int j = 0; j < MAPPING_TABLE_SIZE; j++)
           {
@@ -272,18 +277,22 @@ void fakeAnalogWrite(uint16_t pin, uint16_t value)
           // Can use map() function
           // Can use map() function
           curISRTimerData[i].PWM_Value = (uint16_t) ( (localIndex * 10 ) +
-                                         ( (value - mappingTable[localIndex]) * 10 ) /  (mappingTable[localIndex + 1] - mappingTable[localIndex]) );
+                                         ( (localValue - mappingTable[localIndex]) * 10 ) /  (mappingTable[localIndex + 1] - mappingTable[localIndex]) );
+
+#else
+          curISRTimerData[i].PWM_Value = localValue;
+#endif
 
 #if (LOCAL_DEBUG > 0)
-      Serial.print("Update index = ");
-      Serial.print(i);
-      Serial.print(", pin = ");
-      Serial.print(pin);
-      Serial.print(", input PWM_Value = ");
-      Serial.print(value);
-      Serial.print(", mapped PWM_Value = ");
-      Serial.println(curISRTimerData[i].PWM_Value);
-#endif                           
+          Serial.print("Update index = ");
+          Serial.print(i);
+          Serial.print(", pin = ");
+          Serial.print(pin);
+          Serial.print(", input PWM_Value = ");
+          Serial.print(value);
+          Serial.print(", mapped PWM_Value = ");
+          Serial.println(curISRTimerData[i].PWM_Value);
+#endif
         }
       }
       else
@@ -317,6 +326,10 @@ void fakeAnalogWrite(uint16_t pin, uint16_t value)
       }
       else
       {
+        curISRTimerData[i].PWM_PremapValue = localValue;
+
+#if USING_MAPPING_TABLE
+
         // Get the mapping index
         for (int j = 0; j < MAPPING_TABLE_SIZE; j++)
         {
@@ -334,7 +347,10 @@ void fakeAnalogWrite(uint16_t pin, uint16_t value)
         // Can use map() function
         // Can use map() function
         curISRTimerData[i].PWM_Value = (uint16_t) ( (localIndex * 10 ) +
-                                       ( (value - mappingTable[localIndex]) * 10 ) /  (mappingTable[localIndex + 1] - mappingTable[localIndex]) );
+                                       ( (localValue - mappingTable[localIndex]) * 10 ) /  (mappingTable[localIndex + 1] - mappingTable[localIndex]) );
+#else
+        curISRTimerData[i].PWM_Value = localValue;
+#endif
       }
 
       curISRTimerData[i].countPWM     = 0;
@@ -412,7 +428,7 @@ void loop()
     Serial.print(", max = ");
     Serial.println(MAX_PWM_VALUE - 1);
 #endif
-    
+
     delay(DELAY_BETWEEN_CHANGE_MS);
   }
 
