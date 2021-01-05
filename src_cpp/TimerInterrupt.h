@@ -26,14 +26,13 @@
    Built by Khoi Hoang https://github.com/khoih-prog/TimerInterrupt_Generic
    Licensed under MIT license
 
-   Version: 1.3.1
+   Version: 1.3.0
 
    Version Modified By   Date      Comments
    ------- -----------  ---------- -----------
    1.1.0   K Hoang      10/11/2020 Initial Super-Library coding to merge all TimerInterrupt Libraries
    1.2.0   K Hoang      12/11/2020 Add STM32_TimerInterrupt Library
    1.3.0   K Hoang      01/12/2020 Add Mbed Mano-33-BLE Library. Add support to AVR UNO, Nano, Arduino Mini, Ethernet, BT. etc.
-   1.3.1   K.Hoang      09/12/2020 Add complex examples and board Version String. Fix SAMD bug.
 *****************************************************************************************************************************/
 
 
@@ -42,8 +41,6 @@
 #ifndef TIMER_INTERRUPT_DEBUG
   #define TIMER_INTERRUPT_DEBUG      0
 #endif
-
-#define TIMER_INTERRUPT_VERSION       "TimerInterrupt v1.1.1"
 
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>
@@ -203,31 +200,21 @@ class TimerInterrupt
        
   public:
 
-  TimerInterrupt()
-    {
-      _timer              = -1;
-      _frequency          = 0;
-      _callback           = NULL;
-      _params             = NULL;
-      _timerDone          = false;
-      _prescalerIndex     = NO_PRESCALER;
-      _OCRValue           = 0;
-      _OCRValueRemaining  = 0;
-      _toggle_count       = -1;
-    };
-
-    explicit TimerInterrupt(uint8_t timerNo)
-    {
-      _timer              = timerNo;
-      _frequency          = 0;
-      _callback           = NULL;
-      _params             = NULL;
-      _timerDone          = false;
-      _prescalerIndex     = NO_PRESCALER;
-      _OCRValue           = 0;
-      _OCRValueRemaining  = 0;
-      _toggle_count       = -1;
-    };
+  TimerInterrupt() 
+  { 
+    _timer = -1; 
+    _frequency = 0; 
+    _callback = NULL; 
+    _params = NULL; 
+  };
+  
+  TimerInterrupt(uint8_t timerNo) 
+  { 
+    _timer = timerNo; 
+    _frequency = 0; 
+    _callback = NULL; 
+    _params = NULL; 
+  };
   
   void callback() __attribute__((always_inline))
   {
@@ -574,7 +561,7 @@ class TimerInterrupt
   
 
   // frequency (in hertz) and duration (in milliseconds). Duration = 0 or not specified => run indefinitely
-  bool setFrequency(float frequency, timer_callback callback, unsigned long duration = 0)
+  bool setFrequency(float frequency, timer_callback callback, unsigned long duration)
   {
     return setFrequency(frequency, reinterpret_cast<timer_callback_p>(callback), /*NULL*/ 0, duration);
   }
@@ -588,7 +575,7 @@ class TimerInterrupt
   }
 
   // interval (in ms) and duration (in milliseconds). Duration = 0 or not specified => run indefinitely
-  bool setInterval(unsigned long interval, timer_callback callback, unsigned long duration = 0)
+  bool setInterval(unsigned long interval, timer_callback callback, unsigned long duration)
   { 
     return setFrequency((float) (1000.0f / interval), reinterpret_cast<timer_callback_p>(callback), /*NULL*/ 0, duration);  
   }
@@ -600,7 +587,7 @@ class TimerInterrupt
     return setFrequency(frequency, reinterpret_cast<timer_callback_p>(callback), (uint32_t) params, duration);
   }
 
-  bool attachInterrupt(float frequency, timer_callback callback, unsigned long duration = 0)
+  bool attachInterrupt(float frequency, timer_callback callback, unsigned long duration)
   {
     return setFrequency(frequency, reinterpret_cast<timer_callback_p>(callback), /*NULL*/ 0, duration);
   }
@@ -902,7 +889,7 @@ class TimerInterrupt
     return _timer; 
   };
   
-  long getCount() __attribute__((always_inline))
+  volatile long getCount() __attribute__((always_inline))
   { 
     return _toggle_count;    
   };
@@ -918,12 +905,12 @@ class TimerInterrupt
     //interrupts();
   };
 
-  long get_OCRValue() __attribute__((always_inline))
+  volatile long get_OCRValue() __attribute__((always_inline))
   { 
     return _OCRValue;    
   };
 
-  long get_OCRValueRemaining() __attribute__((always_inline))
+  volatile long get_OCRValueRemaining() __attribute__((always_inline))
   { 
     return _OCRValueRemaining;    
   };
@@ -938,7 +925,7 @@ class TimerInterrupt
     else
       _OCRValueRemaining -= min(MAX_COUNT_8BIT, _OCRValueRemaining);      
       
-    if (_OCRValueRemaining == 0)
+    if (_OCRValueRemaining <= 0)
     {
        // Reset value for next cycle
       _OCRValueRemaining = _OCRValue;
