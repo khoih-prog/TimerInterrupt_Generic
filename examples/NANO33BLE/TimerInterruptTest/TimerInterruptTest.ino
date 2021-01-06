@@ -35,9 +35,9 @@
   #error This code is designed to run on nRF52-based Nano-33-BLE boards using mbed-RTOS platform! Please check your Tools->Board setting.
 #endif
 
-// These define's must be placed at the beginning before #include "NRF52_MBED_TimerInterrupt.h"
+// These define's must be placed at the beginning before #include "TimerInterrupt_Generic.h"
 // For Nano33-BLE, don't use Serial.print() in ISR as system will definitely hang.
-#define TIMER_INTERRUPT_DEBUG      1
+#define TIMER_INTERRUPT_DEBUG      0
 
 #include "TimerInterrupt_Generic.h"
 
@@ -103,26 +103,26 @@ void setup()
   
   delay(100);
   
-  Serial.printf("\nStarting TimerInterruptTest on %s\n", BOARD_NAME);
+  Serial.print(F("\nStarting TimerInterruptTest on ")); Serial.println(BOARD_NAME);
   Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
 
   // Interval in microsecs
   if (ITimer0.attachInterruptInterval(TIMER0_INTERVAL_MS * 1000, TimerHandler0))
   {
     preMillisTimer0 = millis();
-    Serial.printf("Starting  ITimer0 OK, millis() = %ld\n", preMillisTimer0);
+    Serial.print(F("Starting ITimer0 OK, millis() = ")); Serial.println(preMillisTimer0);
   }
   else
-    Serial.println("Can't set ITimer0. Select another freq. or timer");
+    Serial.println(F("Can't set ITimer0. Select another freq. or timer"));
 
   // Interval in microsecs
   if (ITimer1.attachInterruptInterval(TIMER1_INTERVAL_MS * 1000, TimerHandler1))
   {
     preMillisTimer1 = millis();
-    Serial.printf("Starting  ITimer1 OK, millis() = %ld\n", preMillisTimer1);
+    Serial.print(F("Starting ITimer1 OK, millis() = ")); Serial.println(preMillisTimer1);
   }
   else
-    Serial.println("Can't set ITimer1. Select another freq. or timer");
+    Serial.println(F("Can't set ITimer1. Select another freq. or timer"));
 }
 
 void loop()
@@ -141,12 +141,12 @@ void loop()
     if (timer0Stopped)
     {
       preMillisTimer0 = millis();
-      Serial.println("Start ITimer0, millis() = " + String(preMillisTimer0));
+      Serial.print(F("Start ITimer0, millis() = ")); Serial.println(preMillisTimer0);
       ITimer0.restartTimer();
     }
     else
     {
-      Serial.println("Stop ITimer0, millis() = " + String(millis()));
+      Serial.print(F("Stop ITimer0, millis() = ")); Serial.println(millis());
       ITimer0.stopTimer();
     }
     timer0Stopped = !timer0Stopped;
@@ -159,12 +159,12 @@ void loop()
     if (timer1Stopped)
     {
       preMillisTimer1 = millis();
-      Serial.println("Start ITimer1, millis() = " + String(preMillisTimer1));
+      Serial.print(F("Start ITimer1, millis() = ")); Serial.println(preMillisTimer1);
       ITimer1.restartTimer();
     }
     else
     {
-      Serial.println("Stop ITimer1, millis() = " + String(millis()));
+      Serial.print(F("Stop ITimer1, millis() = ")); Serial.println(millis());
       ITimer1.stopTimer();
     }
     

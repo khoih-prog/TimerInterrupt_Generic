@@ -44,10 +44,21 @@
     To run MEGA+WiFi combined, turn ON SW 1+2 (MCU <-> ESP) and SW 3+4 (USB <-> MCU)
  *****************************************************************************************************************************/
 
+#if defined(__AVR_ATmega8__) || defined(__AVR_ATmega128__) || defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__) || \
+    defined(__AVR_ATmega1284__) || defined(__AVR_ATmega1284P__) || defined(__AVR_ATmega644__) || defined(__AVR_ATmega644A__) || \
+    defined(__AVR_ATmega644P__) || defined(__AVR_ATmega644PA__) || defined(ARDUINO_AVR_UNO) || defined(ARDUINO_AVR_NANO) || \
+    defined(ARDUINO_AVR_MINI) || defined(ARDUINO_AVR_ETHERNET) || defined(ARDUINO_AVR_FIO) || defined(ARDUINO_AVR_BT) || \
+    defined(ARDUINO_AVR_LILYPAD) || defined(ARDUINO_AVR_PRO) || defined(ARDUINO_AVR_NG) || defined(ARDUINO_AVR_UNO_WIFI_DEV_ED)
+
+#else
+  #error This is designed only for Arduino AVR board! Please check your Tools->Board setting.
+#endif
+
 #define BLYNK_PRINT Serial
 //#define BLYNK_DEBUG true
 
-//These define's must be placed at the beginning before #include "TimerInterrupt.h"
+// These define's must be placed at the beginning before #include "TimerInterrupt_Generic.h"
+// Don't define TIMER_INTERRUPT_DEBUG > 0. Only for special ISR debugging only. Can hang the system.
 #define TIMER_INTERRUPT_DEBUG      0
 
 #define USE_TIMER_1     true
@@ -124,7 +135,7 @@ void TimerHandler(void)
     }
 
 #if (TIMER_INTERRUPT_DEBUG > 0)
-    Serial.println("Delta ms = " + String(millis() - lastMillis));
+    Serial.print("Delta ms = "); Serial.println(millis() - lastMillis);
     lastMillis = millis();
 #endif
 
@@ -136,30 +147,46 @@ void TimerHandler(void)
 
 void doingSomething2s()
 {
+#if (TIMER_INTERRUPT_DEBUG > 0)  
   static unsigned long previousMillis = lastMillis;
-  Serial.println("doingSomething2s: Delta ms = " + String(millis() - previousMillis));
+
+  Serial.print("doingSomething2s: Delta ms = "); Serial.println(millis() - previousMillis);
+
   previousMillis = millis();
+#endif
 }
 
 void doingSomething5s()
 {
+#if (TIMER_INTERRUPT_DEBUG > 0)  
   static unsigned long previousMillis = lastMillis;
-  Serial.println("doingSomething5s: Delta ms = " + String(millis() - previousMillis));
+
+  Serial.print("doingSomething5s: Delta ms = "); Serial.println(millis() - previousMillis);
+
   previousMillis = millis();
+#endif
 }
 
 void doingSomething10s()
 {
+#if (TIMER_INTERRUPT_DEBUG > 0)  
   static unsigned long previousMillis = lastMillis;
-  Serial.println("doingSomething10s: Delta ms = " + String(millis() - previousMillis));
+
+  Serial.print("doingSomething10s: Delta ms = "); Serial.println(millis() - previousMillis);
+
   previousMillis = millis();
+#endif  
 }
 
 void doingSomething50s()
 {
+#if (TIMER_INTERRUPT_DEBUG > 0)  
   static unsigned long previousMillis = lastMillis;
-  Serial.println("doingSomething50s: Delta ms = " + String(millis() - previousMillis));
+
+  Serial.print("doingSomething50s: Delta ms = "); Serial.println(millis() - previousMillis);
+
   previousMillis = millis();
+#endif  
 }
 
 #define BLYNK_TIMER_MS        2000L
@@ -167,7 +194,10 @@ void doingSomething50s()
 void blynkDoingSomething2s()
 {
   static unsigned long previousMillis = lastMillis;
-  Serial.println("blynkDoingSomething2s: Delta programmed ms = " + String(BLYNK_TIMER_MS) + ", actual = " + String(millis() - previousMillis));
+  
+  Serial.print(F("blynkDoingSomething2s: Delta programmed ms = ")); Serial.print(BLYNK_TIMER_MS);
+  Serial.print(F(", actual = ")); Serial.println(millis() - previousMillis);
+  
   previousMillis = millis();
 }
 
@@ -176,18 +206,15 @@ void setup()
   Serial.begin(115200);
   while (!Serial);
 
+  Serial.println(F("\nStarting ISR_Timer_Complex on Arduino AVR board"));
+  Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
+  Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
+
   // Set ESP8266 baud rate
   EspSerial.begin(ESP8266_BAUD);
   delay(10);
 
-  Serial.println("\nStarting ISR_Timer_Complex on Arduino AVR board");
-  Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
-  Serial.println("CPU Frequency = " + String(F_CPU / 1000000) + " MHz");
-  
-  Serial.print("ESPSerial using ");
-  Serial.println(ESP8266_BAUD);
-
-  Serial.println("\nStarting Timer Interrupt");
+  Serial.print(F("ESPSerial using ")); Serial.println(ESP8266_BAUD);
 
   // Select Timer 1-2 for UNO, 0-5 for MEGA
   // Timer 2 is 8-bit timer, only for higher frequency
@@ -201,10 +228,10 @@ void setup()
   if (ITimer1.attachInterruptInterval(HW_TIMER_INTERVAL_MS, TimerHandler))
   {
     lastMillis = millis();
-    Serial.println("Starting  ITimer1 OK, millis() = " + String(lastMillis));
+    Serial.print(F("Starting  ITimer1 OK, millis() = ")); Serial.println(lastMillis);
   }
   else
-    Serial.println("Can't set ITimer1 correctly. Select another freq. or interval");
+    Serial.println(F("Can't set ITimer1 correctly. Select another freq. or interval"));
 
   // Just to demonstrate, don't use too many ISR Timers if not absolutely necessary
   ISR_Timer1.setInterval(2000L, doingSomething2s);
@@ -218,9 +245,9 @@ void setup()
   Blynk.begin(auth, wifi, ssid, pass, blynk_server, BLYNK_HARDWARE_PORT);
 
   if (Blynk.connected())
-    Serial.println("Blynk connected");
+    Serial.println(F("Blynk connected"));
   else
-    Serial.println("Blynk not connected yet");
+    Serial.println(F("Blynk not connected yet"));
 }
 
 #define BLOCKING_TIME_MS      3000L

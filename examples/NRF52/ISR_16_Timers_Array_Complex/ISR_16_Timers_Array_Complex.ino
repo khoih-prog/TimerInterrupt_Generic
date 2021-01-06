@@ -46,9 +46,9 @@
   #error This code is designed to run on nRF52 platform! Please check your Tools->Board setting.
 #endif
 
-// These define's must be placed at the beginning before #include "NRF52TimerInterrupt.h"
+// These define's must be placed at the beginning before #include "TimerInterrupt_Generic.h"
 // Don't define TIMER_INTERRUPT_DEBUG > 0. Only for special ISR debugging only. Can hang the system.
-#define TIMER_INTERRUPT_DEBUG      1
+#define TIMER_INTERRUPT_DEBUG      0
 
 #include "TimerInterrupt_Generic.h"
 #include "ISR_Timer_Generic.h"
@@ -293,15 +293,21 @@ void simpleTimerDoingSomething2s()
 
   unsigned long currMillis = millis();
 
-  Serial.printf("SimpleTimer : %lus, ms = %lu, Dms : %lu\n", SIMPLE_TIMER_MS / 1000, currMillis, currMillis - previousMillis);
+  Serial.print(F("SimpleTimer : "));Serial.print(SIMPLE_TIMER_MS / 1000);
+  Serial.print(F(", ms : ")); Serial.print(currMillis);
+  Serial.print(F(", Dms : ")); Serial.println(currMillis - previousMillis);
 
-  for (int i = 0; i < NUMBER_ISR_TIMERS; i++)
+  for (uint16_t i = 0; i < NUMBER_ISR_TIMERS; i++)
   {
-#if USE_COMPLEX_STRUCT    
-    Serial.printf("Timer : %d, programmed : %lu, actual : %lu\n", i, curISRTimerData[i].TimerInterval, curISRTimerData[i].deltaMillis);
+#if USE_COMPLEX_STRUCT
+    Serial.print(F("Timer : ")); Serial.print(i);
+    Serial.print(F(", programmed : ")); Serial.print(curISRTimerData[i].TimerInterval);
+    Serial.print(F(", actual : ")); Serial.println(curISRTimerData[i].deltaMillis);
 #else
-    Serial.printf("Timer : %d, programmed : %lu, actual : %lu\n", i, TimerInterval[i], deltaMillis[i]);
-#endif    
+    Serial.print(F("Timer : ")); Serial.print(i);
+    Serial.print(F(", programmed : ")); Serial.print(TimerInterval[i]);
+    Serial.print(F(", actual : ")); Serial.println(deltaMillis[i]);
+#endif
   }
 
   previousMillis = currMillis;
@@ -314,22 +320,22 @@ void setup()
   Serial.begin(115200);
   while (!Serial);
 
-  Serial.println("\nStarting ISR_16_Timers_Array_Complex on " + String(BOARD_NAME));
+  Serial.print(F("\nStarting ISR_16_Timers_Array_Complex on ")); Serial.println(BOARD_NAME);
   Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
-  Serial.println("CPU Frequency = " + String(F_CPU / 1000000) + " MHz");
+  Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
 
   // Interval in microsecs
   if (ITimer.attachInterruptInterval(HW_TIMER_INTERVAL_US, TimerHandler))
   {
     startMillis = millis();
-    Serial.printf("Starting  ITimer OK, millis() = %ld\n", startMillis);
+    Serial.print(F("Starting ITimer OK, millis() = ")); Serial.println(startMillis);
   }
   else
-    Serial.println("Can't set ITimer correctly. Select another freq. or interval");
+    Serial.println(F("Can't set ITimer correctly. Select another freq. or interval"));
 
   // Just to demonstrate, don't use too many ISR Timers if not absolutely necessary
   // You can use up to 16 timer for each ISR_Timer
-  for (int i = 0; i < NUMBER_ISR_TIMERS; i++)
+  for (uint16_t i = 0; i < NUMBER_ISR_TIMERS; i++)
   {
 #if USE_COMPLEX_STRUCT
     curISRTimerData[i].previousMillis = startMillis;

@@ -90,8 +90,8 @@ char auth[]     = "****";
 char ssid[]     = "****";
 char pass[]     = "****";
 
-// These define's must be placed at the beginning before #include "ESP32TimerInterrupt.h"
-// Don't define TIMER_INTERRUPT_DEBUG > 2. Only for special ISR debugging only. Can hang the system.
+// These define's must be placed at the beginning before #include "TimerInterrupt_Generic.h"
+// Don't define TIMER_INTERRUPT_DEBUG > 0. Only for special ISR debugging only. Can hang the system.
 #define TIMER_INTERRUPT_DEBUG      0
 
 #include "TimerInterrupt_Generic.h"
@@ -149,20 +149,18 @@ void IRAM_ATTR TimerHandler(void)
 // Or you can get this run-time error / crash : "Guru Meditation Error: Core 1 panic'ed (Cache disabled but cached memory region accessed)"
 void IRAM_ATTR doingSomething2s()
 {
+#if (TIMER_INTERRUPT_DEBUG > 0)  
   static unsigned long previousMillis = lastMillis;
   unsigned long deltaMillis = millis() - previousMillis;
-
-#if (TIMER_INTERRUPT_DEBUG > 0)
-  Serial.print("2s: D ms = ");
-  Serial.println(deltaMillis);
-#if (TIMER_INTERRUPT_DEBUG > 1)
-  Serial.print("2s: core ");
-  Serial.println(xPortGetCoreID());
-#endif
-
-#endif
-
+  
+  Serial.print("2s: D ms = "); Serial.println(deltaMillis);
+  
   previousMillis = millis();
+#endif
+
+#if (TIMER_INTERRUPT_DEBUG > 1)
+  Serial.print("2s: core "); Serial.println(xPortGetCoreID());
+#endif
 }
 
 // In ESP32, avoid doing something fancy in ISR, for example complex Serial.print with String() argument
@@ -170,20 +168,18 @@ void IRAM_ATTR doingSomething2s()
 // Or you can get this run-time error / crash : "Guru Meditation Error: Core 1 panic'ed (Cache disabled but cached memory region accessed)"
 void IRAM_ATTR doingSomething5s()
 {
+#if (TIMER_INTERRUPT_DEBUG > 0)  
   static unsigned long previousMillis = lastMillis;
   unsigned long deltaMillis = millis() - previousMillis;
-
-#if (TIMER_INTERRUPT_DEBUG > 0)
-  Serial.print("5s: D ms = ");
-  Serial.println(deltaMillis);
-#if (TIMER_INTERRUPT_DEBUG > 1)
-  Serial.print("5s: core ");
-  Serial.println(xPortGetCoreID());
-#endif
-
-#endif
-
+  
+  Serial.print("5s: D ms = "); Serial.println(deltaMillis);
+  
   previousMillis = millis();
+#endif
+  
+#if (TIMER_INTERRUPT_DEBUG > 1)
+  Serial.print("5s: core "); Serial.println(xPortGetCoreID());
+#endif
 }
 
 // In ESP32, avoid doing something fancy in ISR, for example complex Serial.print with String() argument
@@ -191,15 +187,14 @@ void IRAM_ATTR doingSomething5s()
 // Or you can get this run-time error / crash : "Guru Meditation Error: Core 1 panic'ed (Cache disabled but cached memory region accessed)"
 void IRAM_ATTR doingSomething11s()
 {
+#if (TIMER_INTERRUPT_DEBUG > 0)  
   static unsigned long previousMillis = lastMillis;
   unsigned long deltaMillis = millis() - previousMillis;
-
-#if (TIMER_INTERRUPT_DEBUG > 0)
-  Serial.print("11s: D ms = ");
-  Serial.println(deltaMillis);
-#endif
+  
+  Serial.print("11s: D ms = "); Serial.println(deltaMillis);
 
   previousMillis = millis();
+#endif
 }
 
 // In ESP32, avoid doing something fancy in ISR, for example complex Serial.print with String() argument
@@ -207,15 +202,14 @@ void IRAM_ATTR doingSomething11s()
 // Or you can get this run-time error / crash : "Guru Meditation Error: Core 1 panic'ed (Cache disabled but cached memory region accessed)"
 void IRAM_ATTR doingSomething101s()
 {
+#if (TIMER_INTERRUPT_DEBUG > 0)  
   static unsigned long previousMillis = lastMillis;
   unsigned long deltaMillis = millis() - previousMillis;
-
-#if (TIMER_INTERRUPT_DEBUG > 0)
-  Serial.print("101s: D ms = ");
-  Serial.println(deltaMillis);
-#endif
+  
+  Serial.print("101s: D ms = "); Serial.println(deltaMillis);
 
   previousMillis = millis();
+#endif
 }
 
 #define BLYNK_TIMER_MS        2000L
@@ -227,7 +221,10 @@ void IRAM_ATTR doingSomething101s()
 void blynkDoingSomething2s()
 {
   static unsigned long previousMillis = lastMillis;
-  Serial.println("blynkDoingSomething2s: Delta programmed ms = " + String(BLYNK_TIMER_MS) + ", actual = " + String(millis() - previousMillis));
+  
+  Serial.print(F("blynkDoingSomething2s: Delta programmed ms = ")); Serial.print(BLYNK_TIMER_MS);
+  Serial.print(F(", actual = ")); Serial.println(millis() - previousMillis);
+  
   previousMillis = millis();
 }
 
@@ -242,9 +239,9 @@ void setup()
   Serial.begin(115200);
   while (!Serial);
   
-  Serial.println("\nStarting ISR_Timer_Complex on " + String(ARDUINO_BOARD));
+  Serial.print(F("\nStarting ISR_Timer_Complex on ")); Serial.println(ARDUINO_BOARD);
   Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
-  Serial.println("CPU Frequency = " + String(F_CPU / 1000000) + " MHz");
+  Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
 
   // You need this timer for non-critical tasks. Avoid abusing ISR if not absolutely necessary.
   blynkTimer.setInterval(BLYNK_TIMER_MS, blynkDoingSomething2s);
@@ -258,10 +255,10 @@ void setup()
   if (ITimer.attachInterruptInterval(HW_TIMER_INTERVAL_MS * 1000, TimerHandler))
   {
     lastMillis = millis();
-    Serial.println("Starting  ITimer OK, millis() = " + String(lastMillis));
+    Serial.print(F("Starting  ITimer OK, millis() = ")); Serial.println(lastMillis);
   }
   else
-    Serial.println("Can't set ITimer correctly. Select another freq. or interval");
+    Serial.println(F("Can't set ITimer correctly. Select another freq. or interval"));
 
   // Just to demonstrate, don't use too many ISR Timers if not absolutely necessary
   ESP32_ISR_Timer.setInterval(2000L, doingSomething2s);
@@ -282,9 +279,9 @@ void setup()
   Blynk.connect();
 
   if (Blynk.connected())
-    Serial.println("Blynk connected");
+    Serial.println(F("Blynk connected"));
   else
-    Serial.println("Blynk not connected yet");
+    Serial.println(F("Blynk not connected yet"));
 }
 
 #define BLOCKING_TIME_MS      3000L
@@ -301,12 +298,12 @@ void loop()
     if (WiFi.status() != WL_CONNECTED)
     {
       unsigned long startWiFi = millis();
-      Serial.println("WiFi not connected. Reconnect");
+      Serial.println(F("WiFi not connected. Reconnect"));
 
       // Need to run again once per conn. lost
       if (needWiFiBegin)
       {
-        Serial.println("WiFi begin again");
+        Serial.println(F("WiFi begin again"));
         WiFi.begin(ssid, pass);
         needWiFiBegin = false;
       }
@@ -326,7 +323,7 @@ void loop()
     else
     {
       // Ready for next conn. lost
-      Serial.println("reset needWiFiBegin");
+      Serial.println(F("reset needWiFiBegin"));
       needWiFiBegin = true;
       Blynk.config(auth, blynk_server, BLYNK_HARDWARE_PORT);
       Blynk.connect();

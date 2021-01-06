@@ -40,7 +40,7 @@
 
 // These define's must be placed at the beginning before #include "NRF52TimerInterrupt.h"
 // Don't define NRF52_TIMER_INTERRUPT_DEBUG > 2. Only for special ISR debugging only. Can hang the system.
-#define NRF52_TIMER_INTERRUPT_DEBUG      1
+#define NRF52_TIMER_INTERRUPT_DEBUG      0
 
 #include "TimerInterrupt_Generic.h"
 
@@ -77,7 +77,6 @@ void TimerHandler0(void)
 {
   static bool toggle0 = false;
   static bool started = false;
-  static uint32_t curMillis = 0;
 
   if (!started)
   {
@@ -86,11 +85,14 @@ void TimerHandler0(void)
   }
  
 #if (NRF52_TIMER_INTERRUPT_DEBUG > 0)
+    static uint32_t curMillis = 0;
+      
     curMillis = millis();
     
     if (curMillis > TIMER0_INTERVAL_MS)
     {
-      Serial.println("ITimer0: millis() = " + String(curMillis) + ", delta = " + String(curMillis - preMillisTimer0));
+      Serial.print("ITimer0: millis() = "); Serial.print(curMillis);
+      Serial.print(", delta = "); Serial.println(curMillis - preMillisTimer0);
     }
     
     preMillisTimer0 = curMillis;
@@ -108,7 +110,6 @@ void TimerHandler1(void)
 {
   static bool toggle1 = false;
   static bool started = false;
-  static uint32_t curMillis = 0;
 
   if (!started)
   {
@@ -117,11 +118,14 @@ void TimerHandler1(void)
   }
   
 #if (NRF52_TIMER_INTERRUPT_DEBUG > 0)
+    static uint32_t curMillis = 0;
+    
     curMillis = millis();
 
     if (curMillis > TIMER1_INTERVAL_MS)
     {
-      Serial.println("ITimer1: millis() = " + String(curMillis) + ", delta = " + String(curMillis - preMillisTimer1));
+      Serial.print("ITimer1: millis() = "); Serial.print(curMillis);
+      Serial.print(", delta = "); Serial.println(curMillis - preMillisTimer1);
     }
     
     preMillisTimer1 = curMillis;
@@ -139,27 +143,27 @@ void setup()
   
   delay(100);
   
-  Serial.println("\nStarting TimerInterruptTest on " + String(BOARD_NAME));
+  Serial.print(F("\nStarting TimerInterruptTest on ")); Serial.println(BOARD_NAME);
   Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
-  Serial.println("CPU Frequency = " + String(F_CPU / 1000000) + " MHz");
+  Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
 
   // Interval in microsecs
   if (ITimer0.attachInterruptInterval(TIMER0_INTERVAL_MS * 1000, TimerHandler0))
   {
     preMillisTimer0 = millis();
-    Serial.println("Starting  ITimer1 OK, millis() = " + String(preMillisTimer0));
+    Serial.print(F("Starting  ITimer0 OK, millis() = ")); Serial.println(preMillisTimer0);
   }
   else
-    Serial.println("Can't set ITimer0. Select another freq. or timer");
+    Serial.println(F("Can't set ITimer0. Select another freq. or timer"));
 
   // Interval in microsecs
   if (ITimer1.attachInterruptInterval(TIMER1_INTERVAL_MS * 1000, TimerHandler1))
   {
     preMillisTimer1 = millis();
-    Serial.println("Starting  ITimer1 OK, millis() = " + String(preMillisTimer1));
+    Serial.print(F("Starting ITimer1 OK, millis() = ")); Serial.println(preMillisTimer1);
   }
   else
-    Serial.println("Can't set ITimer1. Select another freq. or timer");
+    Serial.println(F("Can't set ITimer1. Select another freq. or timer"));
 }
 
 void loop()
@@ -178,12 +182,12 @@ void loop()
     if (timer0Stopped)
     {
       preMillisTimer0 = millis();
-      Serial.println("Start ITimer0, millis() = " + String(preMillisTimer0));
+      Serial.print(F("Start ITimer0, millis() = ")); Serial.println(preMillisTimer0);
       ITimer0.restartTimer();
     }
     else
     {
-      Serial.println("Stop ITimer0, millis() = " + String(millis()));
+      Serial.print(F("Stop ITimer0, millis() = ")); Serial.println(millis());
       ITimer0.stopTimer();
     }
     timer0Stopped = !timer0Stopped;
@@ -196,12 +200,12 @@ void loop()
     if (timer1Stopped)
     {
       preMillisTimer1 = millis();
-      Serial.println("Start ITimer1, millis() = " + String(preMillisTimer1));
+      Serial.print(F("Start ITimer1, millis() = ")); Serial.println(preMillisTimer1);
       ITimer1.restartTimer();
     }
     else
     {
-      Serial.println("Stop ITimer1, millis() = " + String(millis()));
+      Serial.print(F("Stop ITimer1, millis() = ")); Serial.println(millis());
       ITimer1.stopTimer();
     }
     

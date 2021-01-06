@@ -92,9 +92,9 @@ char auth[]     = "****";
 char ssid[]     = "****";
 char pass[]     = "****";
 
-// These define's must be placed at the beginning before #include "ESP32TimerInterrupt.h"
-// Don't define TIMER_INTERRUPT_DEBUG > 2. Only for special ISR debugging only. Can hang the system.
-#define TIMER_INTERRUPT_DEBUG      1
+// These define's must be placed at the beginning before #include "TimerInterrupt_Generic.h"
+// Don't define TIMER_INTERRUPT_DEBUG > 0. Only for special ISR debugging only. Can hang the system.
+#define TIMER_INTERRUPT_DEBUG      0
 
 #include "TimerInterrupt_Generic.h"
 
@@ -352,11 +352,11 @@ void heartBeatPrint(void)
 
   if (Blynk.connected())
   {
-    Serial.print("B");
+    Serial.print(F("B"));
   }
   else
   {
-    Serial.print("F");
+    Serial.print(F("F"));
   }
 
   if (num == 40)
@@ -366,13 +366,13 @@ void heartBeatPrint(void)
   }
   else if (num++ % 10 == 0)
   {
-    Serial.print(" ");
+    Serial.print(F(" "));
   }
 }
 
 void checkButton()
 {
-  static int index;
+  static uint16_t index;
 
   heartBeatPrint();
 
@@ -388,7 +388,7 @@ void checkButton()
 // Need only one for 4 SWs
 void IRAM_ATTR HWCheckButton()
 {
-  static int index;
+  static uint16_t index;
 
   for (index = 0; index < NUMBER_OF_LAMPS; index++)
   {
@@ -403,7 +403,7 @@ void IRAM_ATTR HWCheckButton()
 void IRAM_ATTR ButtonCheck()
 {
   boolean SwitchState;
-  static int index;
+  static uint16_t index;
 
   for (index = 0; index < NUMBER_OF_LAMPS; index++)
   {
@@ -423,7 +423,7 @@ void IRAM_ATTR ButtonCheck()
 
 void IRAM_ATTR ToggleRelay()
 {
-  static int index;
+  static uint16_t index;
 
   for (index = 0; index < NUMBER_OF_LAMPS; index++)
   {
@@ -435,7 +435,7 @@ void IRAM_ATTR ToggleRelay()
       if (Lamps[index].LampState)
       {
 #if (TIMER_INTERRUPT_DEBUG > 0)
-        Serial.println("Toggle OFF Relay " + String(index));
+        Serial.print("Toggle OFF Relay "); Serial.println(index);
 #endif
 
         digitalWrite(Lamps[index].RelayPin, LOW);
@@ -444,7 +444,7 @@ void IRAM_ATTR ToggleRelay()
       else
       {
 #if (TIMER_INTERRUPT_DEBUG > 0)
-        Serial.println("Toggle ON Relay " + String(index));
+        Serial.print("Toggle ON Relay "); Serial.println(index);
 #endif
 
         digitalWrite(Lamps[index].RelayPin, HIGH);
@@ -459,11 +459,11 @@ void setup()
   Serial.begin(115200);
   while (!Serial);
   
-  Serial.println("\nStarting ISR_Timer_4_Switches on " + String(ARDUINO_BOARD));
+  Serial.print(F("\nStarting ISR_Timer_4_Switches on ")); Serial.println(ARDUINO_BOARD);
   Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
-  Serial.println("CPU Frequency = " + String(F_CPU / 1000000) + " MHz");
+  Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
 
-  for (int index = 0; index < NUMBER_OF_LAMPS; index++)
+  for (uint16_t index = 0; index < NUMBER_OF_LAMPS; index++)
   {
     pinMode(Lamps[index].RelayPin, OUTPUT);
     digitalWrite(Lamps[index].RelayPin, LOW);
@@ -478,9 +478,11 @@ void setup()
   // Interval in microsecs, so MS to multiply by 1000
   // Be sure to place this HW Timer well ahead blocking calls, because it needs to be initialized.
   if (ITimer1.attachInterruptInterval(TIMER_INTERVAL_MS * 1000, HWCheckButton))
-    Serial.println("Starting  ITimer OK, millis() = " + String(millis()));
+  {
+    Serial.print(F("Starting  ITimer OK, millis() = ")); Serial.println(millis());
+  }
   else
-    Serial.println("Can't set ITimer. Select another freq. or interval");
+    Serial.println(F("Can't set ITimer. Select another freq. or timer"));
 
   unsigned long startWiFi = millis();
 
@@ -497,9 +499,9 @@ void setup()
   Blynk.connect();
 
   if (Blynk.connected())
-    Serial.println("Blynk connected");
+    Serial.println(F("Blynk connected"));
   else
-    Serial.println("Blynk not connected yet");
+    Serial.println(F("Blynk not connected yet"));
 
   // Use only one to check all 4
   Timer.setInterval(buttonInterval, checkButton);

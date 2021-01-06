@@ -41,7 +41,7 @@
 
 // These define's must be placed at the beginning before #include "NRF52TimerInterrupt.h"
 // Don't define NRF52_TIMER_INTERRUPT_DEBUG > 2. Only for special ISR debugging only. Can hang the system.
-#define NRF52_TIMER_INTERRUPT_DEBUG      1
+#define NRF52_TIMER_INTERRUPT_DEBUG      0
 
 //#ifndef LED_BUILTIN
 //  #define LED_BUILTIN         3
@@ -104,9 +104,9 @@ void setup()
   Serial.begin(115200);
   while (!Serial);
 
-  Serial.println("\nTimerInterruptLEDDemo on " + String(BOARD_NAME));
+  Serial.print(F("\nTimerInterruptLEDDemo on ")); Serial.println(BOARD_NAME);
   Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
-  Serial.println("CPU Frequency = " + String(F_CPU / 1000000) + " MHz");
+  Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
   
   // Instantiate HardwareTimer object. Thanks to 'new' instanciation, HardwareTimer is not destructed when setup() function is finished.
   //HardwareTimer *MyTim = new HardwareTimer(Instance);
@@ -119,10 +119,10 @@ void setup()
   // Interval in microsecs
   if (ITimer.attachInterruptInterval(HW_TIMER_INTERVAL_MS * 1000, TimerHandler))
   {
-    Serial.println("Starting  ITimer OK, millis() = " + String(millis()));
+    Serial.print(F("Starting ITimer OK, millis() = ")); Serial.println(millis());
   }
   else
-    Serial.println("Can't set ITimer correctly. Select another freq. or interval");
+    Serial.println(F("Can't set ITimer. Select another freq. or timer"));
 
   // Just to demonstrate, don't use too many ISR Timers if not absolutely necessary
   // You can use up to 16 timer for each NRF52_ISR_Timer

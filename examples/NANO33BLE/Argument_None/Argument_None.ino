@@ -36,7 +36,7 @@
   #error This code is designed to run on nRF52-based Nano-33-BLE boards using mbed-RTOS platform! Please check your Tools->Board setting.
 #endif
 
-// These define's must be placed at the beginning before #include "NRF52TimerInterrupt.h"
+// These define's must be placed at the beginning before #include "TimerInterrupt_Generic.h"
 // For Nano33-BLE, don't use Serial.print() in ISR as system will definitely hang.
 #define TIMER_INTERRUPT_DEBUG      0
 
@@ -72,7 +72,9 @@ NRF52_MBED_Timer ITimer1(NRF_TIMER_3);
 
 void printResult(uint32_t currTime)
 {
-  Serial.printf("Time = %ld, Timer0Count = %lu, , Timer1Count = %lu\n", currTime, Timer0Count, Timer1Count);
+  Serial.print(F("Time = ")); Serial.print(currTime); 
+  Serial.print(F(", Timer0Count = ")); Serial.print(Timer0Count);
+  Serial.print(F(", Timer1Count = ")); Serial.println(Timer1Count);
 }
 
 void TimerHandler0(void)
@@ -109,24 +111,24 @@ void setup()
 
   delay(100);
 
-  Serial.printf("\nStarting Argument_None on %s\n", BOARD_NAME);
+  Serial.print(F("\nStarting Argument_None on ")); Serial.println(BOARD_NAME);
   Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
  
   // Interval in microsecs
   if (ITimer0.attachInterruptInterval(TIMER0_INTERVAL_MS * 1000, TimerHandler0))
   {
-    Serial.printf("Starting  ITimer0 OK, millis() = %ld\n", millis());
+    Serial.print(F("Starting ITimer0 OK, millis() = ")); Serial.println(millis());
   }
   else
-    Serial.println("Can't set ITimer0. Select another freq. or timer");
+    Serial.println(F("Can't set ITimer0. Select another freq. or timer"));
 
   // Interval in microsecs
   if (ITimer1.attachInterruptInterval(TIMER1_INTERVAL_MS * 1000, TimerHandler1))
   {
-    Serial.printf("Starting  ITimer1 OK, millis() = %ld\n", millis());
+    Serial.print(F("Starting  ITimer1 OK, millis() = ")); Serial.println(millis());
   }
   else
-    Serial.println("Can't set ITimer1. Select another freq. or timer");
+    Serial.println(F("Can't set ITimer1. Select another freq. or timer"));
 }
 
 #define CHECK_INTERVAL_MS     10000L

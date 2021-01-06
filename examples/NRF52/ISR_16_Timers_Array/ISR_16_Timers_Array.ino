@@ -57,7 +57,7 @@
 
 // These define's must be placed at the beginning before #include "TimerInterrupt_Generic.h"
 // Don't define TIMER_INTERRUPT_DEBUG > 0. Only for special ISR debugging only. Can hang the system.
-#define TIMER_INTERRUPT_DEBUG      1
+#define TIMER_INTERRUPT_DEBUG      0
 
 #include "TimerInterrupt_Generic.h"
 #include "ISR_Timer_Generic.h"
@@ -131,11 +131,8 @@ typedef void (*irqCallback)  (void);
 #if (TIMER_INTERRUPT_DEBUG > 0)
 void printStatus(uint16_t index, unsigned long deltaMillis, unsigned long currentMillis)
 {
-  Serial.print(TimerInterval[index]/1000);
-  Serial.print("s: Delta ms = ");
-  Serial.print(deltaMillis);
-  Serial.print(", ms = ");
-  Serial.println(currentMillis);
+  Serial.print(TimerInterval[index]/1000); Serial.print(F("s: Delta ms = ")); Serial.print(deltaMillis);
+  Serial.print(F(", ms = ")); Serial.println(currentMillis);
 
   // This Serial.flush() is important. Don't remove on nRF52 or it'll hang
   Serial.flush();
@@ -401,10 +398,8 @@ void simpleTimerDoingSomething2s()
 
   unsigned long currMillis = millis();
 
-  Serial.print("simpleTimer");
-  Serial.print(SIMPLE_TIMER_MS/1000);
-  Serial.print("s:Dms=");
-  Serial.println(currMillis - previousMillis);
+  Serial.print(F("simpleTimer")); Serial.print(SIMPLE_TIMER_MS/1000);
+  Serial.print(F("s:Dms=")); Serial.println(currMillis - previousMillis);
   Serial.flush();
 
   previousMillis =currMillis;
@@ -415,22 +410,22 @@ void setup()
   Serial.begin(115200);
   while (!Serial);
   
-  Serial.println("\nStarting ISR_16_Timers_Array on " + String(BOARD_NAME));
+  Serial.print(F("\nStarting ISR_16_Timers_Array on ")); Serial.println(BOARD_NAME);
   Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
-  Serial.println("CPU Frequency = " + String(F_CPU / 1000000) + " MHz");
+  Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
 
   // Interval in microsecs
   if (ITimer.attachInterruptInterval(HW_TIMER_INTERVAL_US, TimerHandler))
   {
     startMillis = millis();
-    Serial.println("Starting  ITimer OK, millis() = " + String(startMillis));
+    Serial.print(F("Starting ITimer OK, millis() = ")); Serial.println(startMillis);
   }
   else
-    Serial.println("Can't set ITimer correctly. Select another freq. or interval");
+    Serial.println(F("Can't set ITimer correctly. Select another freq. or interval"));
 
   // Just to demonstrate, don't use too many ISR Timers if not absolutely necessary
   // You can use up to 16 timer for each NRF52_ISR_Timer
-  for (int i = 0; i < NUMBER_ISR_TIMERS; i++)
+  for (uint16_t i = 0; i < NUMBER_ISR_TIMERS; i++)
   {
     NRF52_ISR_Timer.setInterval(TimerInterval[i], irqCallbackFunc[i]); 
   }

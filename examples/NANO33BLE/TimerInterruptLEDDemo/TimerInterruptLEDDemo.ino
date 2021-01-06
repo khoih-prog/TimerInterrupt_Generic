@@ -36,9 +36,9 @@
   #error This code is designed to run on nRF52-based Nano-33-BLE boards using mbed-RTOS platform! Please check your Tools->Board setting.
 #endif
 
-// These define's must be placed at the beginning before #include "NRF52_MBED_TimerInterrupt.h"
+// These define's must be placed at the beginning before #include "TimerInterrupt_Generic.h"
 // For Nano33-BLE, don't use Serial.print() in ISR as system will definitely hang.
-#define TIMER_INTERRUPT_DEBUG      1
+#define TIMER_INTERRUPT_DEBUG      0
 
 #include "TimerInterrupt_Generic.h"
 
@@ -99,7 +99,7 @@ void setup()
   Serial.begin(115200);
   while (!Serial);
 
-  Serial.printf("\nStarting TimerInterruptLEDDemo on %s\n", BOARD_NAME);
+  Serial.print(F("\nStarting TimerInterruptLEDDemo on ")); Serial.println(BOARD_NAME);
   Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
 
   // configure pin in output mode
@@ -110,10 +110,10 @@ void setup()
   // Interval in microsecs
   if (ITimer.attachInterruptInterval(HW_TIMER_INTERVAL_MS * 1000, TimerHandler))
   {
-    Serial.printf("Starting  ITimer OK, millis() = %ld\n", millis());
+    Serial.print(F("Starting ITimer OK, millis() = ")); Serial.println(millis());
   }
   else
-    Serial.println("Can't set ITimer correctly. Select another freq. or interval");
+    Serial.println(F("Can't set ITimer. Select another freq. or timer"));
 
   // Just to demonstrate, don't use too many ISR Timers if not absolutely necessary
   // You can use up to 16 timer for each NRF52_ISR_Timer

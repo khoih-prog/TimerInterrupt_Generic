@@ -41,8 +41,9 @@
   #error This code is designed to run on ESP8266 and ESP8266-based boards! Please check your Tools->Board setting.
 #endif
 
-//These define's must be placed at the beginning before #include "TimerInterrupt_Generic.h"
-#define TIMER_INTERRUPT_DEBUG      1
+// These define's must be placed at the beginning before #include "TimerInterrupt_Generic.h"
+// Don't define TIMER_INTERRUPT_DEBUG > 0. Only for special ISR debugging only. Can hang the system.
+#define TIMER_INTERRUPT_DEBUG      0
 
 #include "TimerInterrupt_Generic.h"
 
@@ -60,7 +61,8 @@ ESP8266Timer ITimer;
 
 void printResult(uint32_t currTime)
 {
-  Serial.printf("Time = %ld, TimerCount = %lu\n", currTime, TimerCount);
+  Serial.print(F("Time = ")); Serial.print(currTime); 
+  Serial.print(F(", TimerCount = ")); Serial.println(TimerCount);
 }
 
 void TimerHandler(void)
@@ -84,17 +86,17 @@ void setup()
 
   delay(100);
 
-  Serial.println("\nStarting Change_Interval on " + String(ARDUINO_BOARD));
+  Serial.print(F("\nStarting Change_Interval on ")); Serial.println(ARDUINO_BOARD);
   Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
-  Serial.println("CPU Frequency = " + String(F_CPU / 1000000) + " MHz");
+  Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
  
   // Interval in microsecs
   if (ITimer.attachInterruptInterval(TIMER_INTERVAL_MS * 1000, TimerHandler))
   {
-    Serial.printf("Starting  ITimer OK, millis() = %ld\n", millis());
+    Serial.print(F("Starting  ITimer OK, millis() = ")); Serial.println(millis());
   }
   else
-    Serial.println("Can't set ITimer. Select another freq. or timer");
+    Serial.println(F("Can't set ITimer. Select another freq. or timer"));
 }
 
 #define CHECK_INTERVAL_MS     10000L
@@ -121,7 +123,7 @@ void loop()
       
       ITimer.setInterval(TIMER_INTERVAL_MS * 1000 * (multFactor + 1), TimerHandler);
 
-      Serial.printf("Changing Interval, Timer = %lu\n", TIMER_INTERVAL_MS * (multFactor + 1));
+      Serial.print(F("Changing Interval, Timer = ")); Serial.println(TIMER_INTERVAL_MS * (multFactor + 1));
       
       lastChangeTime = currTime;
     }

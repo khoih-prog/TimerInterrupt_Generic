@@ -45,9 +45,9 @@
   #error This code is designed to run on ESP8266 and ESP8266-based boards! Please check your Tools->Board setting.
 #endif
 
-// These define's must be placed at the beginning before #include "ESP8266TimerInterrupt.h"
-// Don't define TIMER_INTERRUPT_DEBUG > 2. Only for special ISR debugging only. Can hang the system.
-#define TIMER_INTERRUPT_DEBUG      1
+// These define's must be placed at the beginning before #include "TimerInterrupt_Generic.h"
+// Don't define TIMER_INTERRUPT_DEBUG > 0. Only for special ISR debugging only. Can hang the system.
+#define TIMER_INTERRUPT_DEBUG      0
 
 #include "TimerInterrupt_Generic.h"
 
@@ -72,8 +72,12 @@ void ICACHE_RAM_ATTR TimerHandler()
   static unsigned int debounceCountSWPressed  = 0;
   static unsigned int debounceCountSWReleased = 0;
 
+#if (LOCAL_DEBUG > 0)
   static unsigned long SWPressedTime;
   static unsigned long SWReleasedTime;
+
+  unsigned long currentMillis = millis();
+#endif
 
   static bool started = false;
 
@@ -93,10 +97,10 @@ void ICACHE_RAM_ATTR TimerHandler()
       // Call and flag SWPressed
       if (!SWPressed)
       {
-        SWPressedTime = millis();
-
 #if (LOCAL_DEBUG > 0)
-        Serial.println("SW Press, from millis() = " + String(SWPressedTime - DEBOUNCING_INTERVAL_MS));
+        SWPressedTime = currentMillis;
+        
+        Serial.print("SW Press, from millis() = "); Serial.println(SWPressedTime - DEBOUNCING_INTERVAL_MS);
 #endif
 
         SWPressed = true;
@@ -111,8 +115,9 @@ void ICACHE_RAM_ATTR TimerHandler()
         if (!SWLongPressed)
         {
 #if (LOCAL_DEBUG > 0)
-          Serial.println("SW Long Pressed, total time ms = " + String(millis()) + " - " + String(SWPressedTime - DEBOUNCING_INTERVAL_MS)
-                         + " = " + String(millis() - SWPressedTime + DEBOUNCING_INTERVAL_MS) );
+          Serial.print("SW Long Pressed, total time ms = "); Serial.print(currentMillis);
+          Serial.print(" - "); Serial.print(SWPressedTime - DEBOUNCING_INTERVAL_MS);
+          Serial.print(" = "); Serial.println(currentMillis - SWPressedTime + DEBOUNCING_INTERVAL_MS);       
 #endif
 
           SWLongPressed = true;
@@ -128,10 +133,12 @@ void ICACHE_RAM_ATTR TimerHandler()
     // Start debouncing counting debounceCountSWReleased and clear debounceCountSWPressed
     if ( SWPressed && (++debounceCountSWReleased >= DEBOUNCING_INTERVAL_MS / TIMER_INTERVAL_MS))
     {
-      SWReleasedTime = millis();
-
       // Call and flag SWPressed
 #if (LOCAL_DEBUG > 0)
+      SWReleasedTime = currentMillis;
+
+      // Call and flag SWPressed
+      Serial.print("SW Released, from millis() = "); Serial.println(SWReleasedTime);
       Serial.println("SW Released, from millis() = " + String(SWReleasedTime));
 #endif
 
@@ -144,7 +151,7 @@ void ICACHE_RAM_ATTR TimerHandler()
 
       // Call and flag SWPressed
 #if (LOCAL_DEBUG > 0)
-      Serial.println("SW Pressed total time ms = " + String(SWReleasedTime - SWPressedTime));
+      Serial.print("SW Pressed total time ms = "); Serial.println(SWReleasedTime - SWPressedTime);
 #endif
 
       debounceCountSWPressed = 0;
@@ -159,15 +166,17 @@ void setup()
   
   delay(200);
 
-  Serial.println("\nStarting SwitchDebounce on " + String(ARDUINO_BOARD));
+  Serial.print(F("\nStarting SwitchDebounce on ")); Serial.println(ARDUINO_BOARD);
   Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
-  Serial.println("CPU Frequency = " + String(F_CPU / 1000000) + " MHz");
+  Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
 
   // Interval in microsecs
   if (ITimer.attachInterruptInterval(TIMER_INTERVAL_MS * 1000, TimerHandler))
-    Serial.println("Starting  ITimer OK, millis() = " + String(millis()));
+  {
+    Serial.print(F("Starting ITimer OK, millis() = ")); Serial.println(millis());
+  }
   else
-    Serial.println("Can't set ITimer. Select another freq., duration or timer");
+    Serial.println(F("Can't set ITimer. Select another freq. or timer"));
 }
 
 void loop()

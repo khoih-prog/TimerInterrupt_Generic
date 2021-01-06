@@ -78,9 +78,9 @@ char auth[]     = "****";
 char ssid[]     = "****";
 char pass[]     = "****";
 
-// These define's must be placed at the beginning before #include "ESP8266TimerInterrupt.h"
-// Don't define TIMER_INTERRUPT_DEBUG > 2. Only for special ISR debugging only. Can hang the system.
-#define TIMER_INTERRUPT_DEBUG      1
+// These define's must be placed at the beginning before #include "TimerInterrupt_Generic.h"
+// Don't define TIMER_INTERRUPT_DEBUG > 0. Only for special ISR debugging only. Can hang the system.
+#define TIMER_INTERRUPT_DEBUG      0
 
 #include "TimerInterrupt_Generic.h"
 #include "ISR_Timer_Generic.h"
@@ -123,10 +123,10 @@ void ICACHE_RAM_ATTR TimerHandler(void)
       pinMode(LED_BUILTIN, OUTPUT);
     }
   
-    #if (TIMER_INTERRUPT_DEBUG > 0)
-    Serial.println("Delta ms = " + String(millis() - lastMillis));
+#if (TIMER_INTERRUPT_DEBUG > 0)
+    Serial.print("Delta ms = "); Serial.println(millis() - lastMillis);
     lastMillis = millis();
-    #endif
+#endif
     
     //timer interrupt toggles pin LED_BUILTIN
     digitalWrite(LED_BUILTIN, toggle);
@@ -136,34 +136,46 @@ void ICACHE_RAM_ATTR TimerHandler(void)
 
 void ICACHE_RAM_ATTR doingSomething2s()
 {
+#if (TIMER_INTERRUPT_DEBUG > 0)  
   static unsigned long previousMillis = lastMillis;
-  
-  Serial.println("doingSomething2s: Delta ms = " + String(millis() - previousMillis));
+
+  Serial.print("doingSomething2s: Delta ms = "); Serial.println(millis() - previousMillis);
+
   previousMillis = millis();
+#endif
 }
 
 void ICACHE_RAM_ATTR doingSomething5s()
 {
+#if (TIMER_INTERRUPT_DEBUG > 0)  
   static unsigned long previousMillis = lastMillis;
-  
-  Serial.println("doingSomething5s: Delta ms = " + String(millis() - previousMillis));
+
+  Serial.print("doingSomething5s: Delta ms = "); Serial.println(millis() - previousMillis);
+
   previousMillis = millis();
+#endif
 }
 
 void ICACHE_RAM_ATTR doingSomething10s()
 {
+#if (TIMER_INTERRUPT_DEBUG > 0)  
   static unsigned long previousMillis = lastMillis;
-  
-  Serial.println("doingSomething10s: Delta ms = " + String(millis() - previousMillis));
+
+  Serial.print("doingSomething10s: Delta ms = "); Serial.println(millis() - previousMillis);
+
   previousMillis = millis();
+#endif
 }
 
 void ICACHE_RAM_ATTR doingSomething50s()
 {
+#if (TIMER_INTERRUPT_DEBUG > 0)  
   static unsigned long previousMillis = lastMillis;
-  
-  Serial.println("doingSomething50s: Delta ms = " + String(millis() - previousMillis));
+
+  Serial.print("doingSomething50s: Delta ms = "); Serial.println(millis() - previousMillis);
+
   previousMillis = millis();
+#endif
 }
 
 #define BLYNK_TIMER_MS        2000L
@@ -171,7 +183,10 @@ void ICACHE_RAM_ATTR doingSomething50s()
 void blynkDoingSomething2s()
 {
   static unsigned long previousMillis = lastMillis;
-  Serial.println("blynkDoingSomething2s: Delta programmed ms = " + String(BLYNK_TIMER_MS) + ", actual = " + String(millis() - previousMillis));
+  
+  Serial.print(F("blynkDoingSomething2s: Delta programmed ms = ")); Serial.print(BLYNK_TIMER_MS);
+  Serial.print(F(", actual = ")); Serial.println(millis() - previousMillis);
+  
   previousMillis = millis();
 }
 
@@ -182,18 +197,18 @@ void setup()
   
   delay(200);
 
-  Serial.println("\nStarting ISR_Timer_Complex on " + String(ARDUINO_BOARD));
+  Serial.print(F("\nStarting ISR_Timer_Complex on ")); Serial.println(ARDUINO_BOARD);
   Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
-  Serial.println("CPU Frequency = " + String(F_CPU / 1000000) + " MHz");
+  Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
   
   // Interval in microsecs
   if (ITimer.attachInterruptInterval(HW_TIMER_INTERVAL_MS * 1000, TimerHandler))
   {
     lastMillis = millis();
-    Serial.println("Starting  ITimer OK, millis() = " + String(lastMillis));
+    Serial.print(F("Starting  ITimer OK, millis() = ")); Serial.println(lastMillis);
   }
   else
-    Serial.println("Can't set ITimer correctly. Select another freq. or interval");
+    Serial.println(F("Can't set ITimer correctly. Select another freq. or interval"));
 
   // Just to demonstrate, don't use too many ISR Timers if not absolutely necessary
   ESP8266_ISR_Timer.setInterval(2000L, doingSomething2s);  
@@ -220,17 +235,15 @@ void setup()
   Blynk.connect();
 
   if (Blynk.connected())
-    Serial.println("Blynk connected");
+    Serial.println(F("Blynk connected"));
   else
-    Serial.println("Blynk not connected yet");  
+    Serial.println(F("Blynk not connected yet"));
 }
 
 #define BLOCKING_TIME_MS      3000L
 
 void loop()
-{
-  static unsigned long previousMillis = lastMillis;
-  
+{ 
   Blynk.run();
 
   // This unadvised blocking task is used to demonstrate the blocking effects onto the execution and accuracy to Software timer

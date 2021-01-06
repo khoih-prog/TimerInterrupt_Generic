@@ -43,9 +43,9 @@
   #error This code is designed to run on nRF52-based Nano-33-BLE boards using mbed-RTOS platform! Please check your Tools->Board setting.
 #endif
 
-// These define's must be placed at the beginning before #include "NRF52_MBED_TimerInterrupt.h"
+// These define's must be placed at the beginning before #include "TimerInterrupt_Generic.h"
 // For Nano33-BLE, don't use Serial.print() in ISR as system will definitely hang.
-#define TIMER_INTERRUPT_DEBUG      1
+#define TIMER_INTERRUPT_DEBUG      0
 
 #include "TimerInterrupt_Generic.h"
 
@@ -54,15 +54,15 @@
 #include <SimpleTimer.h>              // https://github.com/schinken/SimpleTimer
 
 #ifndef LED_BUILTIN
-#define LED_BUILTIN       D13
+  #define LED_BUILTIN       D13
 #endif
 
 #ifndef LED_BLUE
-#define LED_BLUE          D7
+  #define LED_BLUE          D7
 #endif
 
 #ifndef LED_RED
-#define LED_RED           D8
+  #define LED_RED           D8
 #endif
 
 #define HW_TIMER_INTERVAL_US      10000L
@@ -115,10 +115,10 @@ uint32_t TimerInterval[NUMBER_ISR_TIMERS] =
 
 void doingSomething(int index)
 {
-unsigned long currentMillis  = millis();
+  unsigned long currentMillis  = millis();
 
-deltaMillis[index]    = currentMillis - previousMillis[index];
-previousMillis[index] = currentMillis;
+  deltaMillis[index]    = currentMillis - previousMillis[index];
+  previousMillis[index] = currentMillis;
 }
 
 // In NRF52, avoid doing something fancy in ISR, for example Serial.print()
@@ -230,11 +230,15 @@ void simpleTimerDoingSomething2s()
 
   unsigned long currMillis = millis();
 
-  Serial.printf("SimpleTimer : %lus, ms = %lu, Dms : %lu\n", SIMPLE_TIMER_MS / 1000, currMillis, currMillis - previousMillis);
+  Serial.print(F("SimpleTimer : "));Serial.print(SIMPLE_TIMER_MS / 1000);
+  Serial.print(F(", ms : ")); Serial.print(currMillis);
+  Serial.print(F(", Dms : ")); Serial.println(currMillis - previousMillis);
 
-  for (int i = 0; i < NUMBER_ISR_TIMERS; i++)
+  for (uint16_t i = 0; i < NUMBER_ISR_TIMERS; i++)
   {
-    Serial.printf("Timer : %d, programmed : %lu, actual : %lu\n", i, TimerInterval[i], deltaMillis[i]);
+    Serial.print(F("Timer : ")); Serial.print(i);
+    Serial.print(F(", programmed : ")); Serial.print(TimerInterval[i]);
+    Serial.print(F(", actual : ")); Serial.println(deltaMillis[i]);
   }
 
   previousMillis = currMillis;
@@ -247,21 +251,21 @@ void setup()
   Serial.begin(115200);
   while (!Serial);
 
-  Serial.printf("\nStarting ISR_16_Timers_Array on %s\n", BOARD_NAME);
+  Serial.print(F("\nStarting ISR_16_Timers_Array on ")); Serial.println(BOARD_NAME);
   Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
 
   // Interval in microsecs
   if (ITimer.attachInterruptInterval(HW_TIMER_INTERVAL_US, TimerHandler))
   {
     startMillis = millis();
-    Serial.printf("Starting  ITimer OK, millis() = %ld\n", startMillis);
+    Serial.print(F("Starting ITimer OK, millis() = ")); Serial.println(startMillis);
   }
   else
-    Serial.println("Can't set ITimer correctly. Select another freq. or interval");
+    Serial.println(F("Can't set ITimer. Select another freq. or interval"));
 
   // Just to demonstrate, don't use too many ISR Timers if not absolutely necessary
   // You can use up to 16 timer for each ISR_Timer
-  for (int i = 0; i < NUMBER_ISR_TIMERS; i++)
+  for (uint16_t i = 0; i < NUMBER_ISR_TIMERS; i++)
   {
     previousMillis[i] = startMillis;
     NRF52_ISR_Timer.setInterval(TimerInterval[i], irqCallbackFunc[i]);

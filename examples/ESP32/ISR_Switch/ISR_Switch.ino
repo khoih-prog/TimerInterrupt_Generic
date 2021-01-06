@@ -49,12 +49,12 @@
   #error This code is designed to run on ESP32 platform, not Arduino nor ESP8266! Please check your Tools->Board setting.
 #endif
 
-// These define's must be placed at the beginning before #include "TimerInterrupt_Generic.h"
-// Don't define TIMER_INTERRUPT_DEBUG > 2. Only for special ISR debugging only. Can hang the system.
-#define TIMER_INTERRUPT_DEBUG      1
-
 #define BLYNK_PRINT Serial
 //#define BLYNK_DEBUG true
+
+// These define's must be placed at the beginning before #include "TimerInterrupt_Generic.h"
+// Don't define TIMER_INTERRUPT_DEBUG > 0. Only for special ISR debugging only. Can hang the system.
+#define TIMER_INTERRUPT_DEBUG      0
 
 #include <WiFi.h>
 
@@ -167,11 +167,11 @@ void heartBeatPrint(void)
 
   if (Blynk.connected())
   {
-    Serial.print("B");
+    Serial.print(F("B"));
   }
   else
   {
-    Serial.print("F");
+    Serial.print(F("F"));
   }
   
   if (num == 80)
@@ -181,7 +181,7 @@ void heartBeatPrint(void)
   }
   else if (num++ % 10 == 0)
   {
-    Serial.print(" ");
+    Serial.print(F(" "));
   }
 }
 
@@ -240,8 +240,8 @@ void setup()
   Serial.begin(115200);
   while (!Serial);
 
-  Serial.println("\nStarting ISR_Switch on " + String(ARDUINO_BOARD));
-  Serial.println("CPU Frequency = " + String(F_CPU / 1000000) + " MHz");
+  Serial.print(F("\nStarting ISR_Switch on ")); Serial.println(ARDUINO_BOARD);
+  Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
 
   LampState = false;
 
@@ -262,9 +262,9 @@ void setup()
   Blynk.connect();
 
   if (Blynk.connected())
-    Serial.println("Blynk connected");
+    Serial.println(F("Blynk connected"));
   else
-    Serial.println("Blynk not connected yet");
+    Serial.println(F("Blynk not connected yet"));
 
   Timer.setInterval(buttonInterval, checkButton);
 }
