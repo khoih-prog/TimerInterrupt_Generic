@@ -2050,7 +2050,7 @@ blynkDoingSomething2s: Delta programmed ms = 2000, actual = 3000
 
 ---
 
-### 2. ISR_Timer_Complex_Ethernet on Adafruit NRF52840_FEATHER EXPRESS using W5500 Ethernet
+### 2. ISR_Timer_Complex_Ethernet on Adafruit NRF52840_FEATHER EXPRESS
 
 The following is the sample terminal output when running example [ISR_Timer_Complex_Ethernet](examples/NRF52/ISR_Timer_Complex_Ethernet) on **Adafruit NRF52840_FEATHER EXPRESS using W5500 Ethernet* to demonstrate the accuracy of ISR Hardware Timer, **especially when system is very busy**.  The ISR timer is **programmed for 2s, is activated exactly after 2.000s !!!**
 
