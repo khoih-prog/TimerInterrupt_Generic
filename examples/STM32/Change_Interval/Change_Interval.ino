@@ -39,8 +39,11 @@
 #endif
 
 // These define's must be placed at the beginning before #include "TimerInterrupt_Generic.h"
+// _TIMERINTERRUPT_LOGLEVEL_ from 0 to 4
+// Don't define _TIMERINTERRUPT_LOGLEVEL_ > 0. Only for special ISR debugging only. Can hang the system.
 // Don't define TIMER_INTERRUPT_DEBUG > 2. Only for special ISR debugging only. Can hang the system.
-#define TIMER_INTERRUPT_DEBUG      1
+#define TIMER_INTERRUPT_DEBUG         0
+#define _TIMERINTERRUPT_LOGLEVEL_     0
 
 #include "TimerInterrupt_Generic.h"
 
@@ -74,10 +77,12 @@ STM32Timer ITimer1(TIM2);
 
 void printResult(uint32_t currTime)
 {
-  Serial.printf("Time = %ld, Timer0Count = %lu, , Timer1Count = %lu\n", currTime, Timer0Count, Timer1Count);
+  Serial.print(F("Time = ")); Serial.print(currTime); 
+  Serial.print(F(", Timer0Count = ")); Serial.print(Timer0Count);
+  Serial.print(F(", Timer1Count = ")); Serial.println(Timer1Count);
 }
 
-void TimerHandler0(void)
+void TimerHandler0()
 {
   static bool toggle0 = false;
 
@@ -89,7 +94,7 @@ void TimerHandler0(void)
   toggle0 = !toggle0;
 }
 
-void TimerHandler1(void)
+void TimerHandler1()
 {
   static bool toggle1 = false;
 
@@ -111,25 +116,25 @@ void setup()
 
   delay(100);
 
-  Serial.printf("\nStarting Change_Interval on %s\n", BOARD_NAME);
+  Serial.print(F("\nStarting Change_Interval on ")); Serial.println(BOARD_NAME);
   Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
-  Serial.println("CPU Frequency = " + String(F_CPU / 1000000) + " MHz");
+  Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
  
   // Interval in microsecs
   if (ITimer0.attachInterruptInterval(TIMER0_INTERVAL_MS * 1000, TimerHandler0))
   {
-    Serial.printf("Starting  ITimer0 OK, millis() = %ld\n", millis());
+    Serial.print(F("Starting  Timer0 OK, millis() = ")); Serial.println(millis());
   }
   else
-    Serial.println("Can't set ITimer0. Select another freq. or timer");
+    Serial.println(F("Can't set ITimer0. Select another freq. or timer"));
 
   // Interval in microsecs
   if (ITimer1.attachInterruptInterval(TIMER1_INTERVAL_MS * 1000, TimerHandler1))
   {
-    Serial.printf("Starting  ITimer1 OK, millis() = %ld\n", millis());
+    Serial.print(F("Starting ITimer1 OK, millis() = ")); Serial.println(millis());
   }
   else
-    Serial.println("Can't set ITimer1. Select another freq. or timer");
+    Serial.println(F("Can't set ITimer1. Select another freq. or timer"));
 }
 
 #define CHECK_INTERVAL_MS     10000L
@@ -157,8 +162,9 @@ void loop()
       ITimer0.setInterval(TIMER0_INTERVAL_MS * 1000 * (multFactor + 1), TimerHandler0);
       ITimer1.setInterval(TIMER1_INTERVAL_MS * 1000 * (multFactor + 1), TimerHandler1);
 
-      Serial.printf("Changing Interval, Timer0 = %lu,  Timer1 = %lu\n", TIMER0_INTERVAL_MS * (multFactor + 1), TIMER1_INTERVAL_MS * (multFactor + 1));
-      
+      Serial.print(F("Changing Interval, Timer0 = ")); Serial.print(TIMER0_INTERVAL_MS * (multFactor + 1));
+      Serial.print(F(",  Timer1 = ")); Serial.println(TIMER1_INTERVAL_MS * (multFactor + 1)); 
+    
       lastChangeTime = currTime;
     }
   }

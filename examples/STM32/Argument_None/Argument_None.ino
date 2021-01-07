@@ -39,8 +39,11 @@
 #endif
 
 // These define's must be placed at the beginning before #include "TimerInterrupt_Generic.h"
+// _TIMERINTERRUPT_LOGLEVEL_ from 0 to 4
+// Don't define _TIMERINTERRUPT_LOGLEVEL_ > 0. Only for special ISR debugging only. Can hang the system.
 // Don't define TIMER_INTERRUPT_DEBUG > 2. Only for special ISR debugging only. Can hang the system.
-#define TIMER_INTERRUPT_DEBUG      1
+#define TIMER_INTERRUPT_DEBUG         0
+#define _TIMERINTERRUPT_LOGLEVEL_     0
 
 #include "TimerInterrupt_Generic.h"
 
@@ -57,12 +60,10 @@
 #endif
 
 
-void  TimerHandler0(void)
+void  TimerHandler0()
 {
   static bool toggle0 = false;
   static bool started = false;
-  static uint32_t preMillis = 0;
-  static uint32_t curMillis = 0;
 
   if (!started)
   {
@@ -71,8 +72,14 @@ void  TimerHandler0(void)
   }
 
 #if (TIMER_INTERRUPT_DEBUG > 0)
+  static uint32_t preMillis = 0;
+  static uint32_t curMillis = 0;
+  
   curMillis = millis();
-  Serial.println("ITimer0: millis() = " + String(curMillis) + ", delta = " + String(curMillis - preMillis));
+  
+  Serial.print(F("ITimer0: millis() = ")); Serial.print(curMillis);
+  Serial.print(F(", delta = ")); Serial.println(curMillis - preMillis);
+  
   preMillis = curMillis;
 #endif
 
@@ -81,12 +88,10 @@ void  TimerHandler0(void)
   toggle0 = !toggle0;
 }
 
-void  TimerHandler1(void)
+void  TimerHandler1()
 {
   static bool toggle1 = false;
   static bool started = false;
-  static uint32_t preMillis = 0;
-  static uint32_t curMillis = 0;
 
   if (!started)
   {
@@ -95,8 +100,14 @@ void  TimerHandler1(void)
   }
 
 #if (TIMER_INTERRUPT_DEBUG > 0)
+  static uint32_t preMillis = 0;
+  static uint32_t curMillis = 0;
+  
   curMillis = millis();
-  Serial.println("ITimer1: millis() = " + String(curMillis) + ", delta = " + String(curMillis - preMillis));
+  
+  Serial.print(F("ITimer1: millis() = ")); Serial.print(curMillis);
+  Serial.print(F(", delta = ")); Serial.println(curMillis - preMillis);
+  
   preMillis = curMillis;
 #endif
 
@@ -105,12 +116,10 @@ void  TimerHandler1(void)
   toggle1 = !toggle1;
 }
 
-void  TimerHandler2(void)
+void  TimerHandler2()
 {
   static bool toggle2 = false;
   static bool started = false;
-  static uint32_t preMillis = 0;
-  static uint32_t curMillis = 0;
 
   if (!started)
   {
@@ -119,8 +128,14 @@ void  TimerHandler2(void)
   }
 
 #if (TIMER_INTERRUPT_DEBUG > 0)
+  static uint32_t preMillis = 0;
+  static uint32_t curMillis = 0;
+  
   curMillis = millis();
-  Serial.println("ITimer2: millis() = " + String(curMillis) + ", delta = " + String(curMillis - preMillis));
+  
+  Serial.print(F("ITimer2: millis() = ")); Serial.print(curMillis);
+  Serial.print(F(", delta = ")); Serial.println(curMillis - preMillis);
+  
   preMillis = curMillis;
 #endif
 
@@ -152,27 +167,33 @@ void setup()
 
   delay(100);
   
-  Serial.println("\nStarting Argument_None on " + String(BOARD_NAME));
+  Serial.print(F("\nStarting Argument_None on ")); Serial.println(BOARD_NAME);
   Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
-  Serial.println("CPU Frequency = " + String(F_CPU / 1000000) + " MHz");
+  Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
 
   // Interval in microsecs
   if (ITimer0.attachInterruptInterval(TIMER0_INTERVAL_MS * 1000, TimerHandler0))
-    Serial.println("Starting  ITimer0 OK, millis() = " + String(millis()));
+  {
+    Serial.print(F("Starting ITimer0 OK, millis() = ")); Serial.println(millis());
+  }
   else
-    Serial.println("Can't set ITimer0. Select another freq. or timer");
+    Serial.println(F("Can't set ITimer0. Select another freq. or timer"));
 
   // Interval in microsecs
   if (ITimer1.attachInterruptInterval(TIMER1_INTERVAL_MS * 1000, TimerHandler1))
-    Serial.println("Starting  ITimer1 OK, millis() = " + String(millis()));
+  {
+    Serial.print(F("Starting  ITimer1 OK, millis() = ")); Serial.println(millis());
+  }
   else
-    Serial.println("Can't set ITimer1. Select another freq. or timer");
+    Serial.println(F("Can't set ITimer1. Select another freq. or timer"));
 
   // Interval in microsecs
   if (ITimer2.attachInterruptInterval(TIMER2_INTERVAL_MS * 1000, TimerHandler2))
-    Serial.println("Starting  ITimer2 OK, millis() = " + String(millis()));
+  {
+    Serial.print(F("Starting  ITimer2 OK, millis() = ")); Serial.println(millis());
+  }
   else
-    Serial.println("Can't set ITimer2. Select another freq. or timer");
+    Serial.println(F("Can't set ITimer2. Select another freq. or timer"));
 }
 
 void loop()

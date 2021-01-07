@@ -46,8 +46,11 @@
 #endif
 
 // These define's must be placed at the beginning before #include "TimerInterrupt_Generic.h"
+// _TIMERINTERRUPT_LOGLEVEL_ from 0 to 4
+// Don't define _TIMERINTERRUPT_LOGLEVEL_ > 0. Only for special ISR debugging only. Can hang the system.
 // Don't define TIMER_INTERRUPT_DEBUG > 2. Only for special ISR debugging only. Can hang the system.
-#define TIMER_INTERRUPT_DEBUG      1
+#define TIMER_INTERRUPT_DEBUG         0
+#define _TIMERINTERRUPT_LOGLEVEL_     0
 
 #include "TimerInterrupt_Generic.h"
 
@@ -86,13 +89,17 @@ SAMDTimer ITimer(TIMER_TC3);
 volatile bool SWPressed     = false;
 volatile bool SWLongPressed = false;
 
-void TimerHandler(void)
+void TimerHandler()
 {
   static unsigned int debounceCountSWPressed  = 0;
   static unsigned int debounceCountSWReleased = 0;
 
+#if (TIMER_INTERRUPT_DEBUG > 1)
   static unsigned long SWPressedTime;
   static unsigned long SWReleasedTime;
+
+  unsigned long currentMillis = millis();
+#endif
 
   static bool started = false;
 
@@ -112,10 +119,10 @@ void TimerHandler(void)
       // Call and flag SWPressed
       if (!SWPressed)
       {
-        SWPressedTime = millis();
-
-#if (LOCAL_DEBUG > 0)
-        Serial.println("SW Press, from millis() = " + String(SWPressedTime - DEBOUNCING_INTERVAL_MS));
+#if (TIMER_INTERRUPT_DEBUG > 1)   
+        SWPressedTime = currentMillis;
+        
+        Serial.print("SW Press, from millis() = "); Serial.println(SWPressedTime - DEBOUNCING_INTERVAL_MS);
 #endif
 
         SWPressed = true;
@@ -129,10 +136,11 @@ void TimerHandler(void)
         // Call and flag SWLongPressed
         if (!SWLongPressed)
         {
-#if (LOCAL_DEBUG > 0)
-          Serial.println("SW Long Pressed, total time ms = " + String(millis()) + " - " + String(SWPressedTime - DEBOUNCING_INTERVAL_MS)
-                         + " = " + String(millis() - SWPressedTime + DEBOUNCING_INTERVAL_MS) );
-#endif
+#if (TIMER_INTERRUPT_DEBUG > 1)
+          Serial.print("SW Long Pressed, total time ms = "); Serial.print(currentMillis);
+          Serial.print(" - "); Serial.print(SWPressedTime - DEBOUNCING_INTERVAL_MS);
+          Serial.print(" = "); Serial.println(currentMillis - SWPressedTime + DEBOUNCING_INTERVAL_MS);                                           
+#endif          
 
           SWLongPressed = true;
           // Do something for SWLongPressed here in ISR
@@ -147,11 +155,11 @@ void TimerHandler(void)
     // Start debouncing counting debounceCountSWReleased and clear debounceCountSWPressed
     if ( SWPressed && (++debounceCountSWReleased >= DEBOUNCING_INTERVAL_MS / TIMER1_INTERVAL_MS))
     {
-      SWReleasedTime = millis();
+#if (TIMER_INTERRUPT_DEBUG > 1)      
+      SWReleasedTime = currentMillis;
 
       // Call and flag SWPressed
-#if (LOCAL_DEBUG > 0)
-      Serial.println("SW Released, from millis() = " + String(SWReleasedTime));
+      Serial.print("SW Released, from millis() = "); Serial.println(SWReleasedTime);
 #endif
 
       SWPressed     = false;
@@ -162,8 +170,8 @@ void TimerHandler(void)
       //Your_Response_To_Release();
 
       // Call and flag SWPressed
-#if (LOCAL_DEBUG > 0)
-      Serial.println("SW Pressed total time ms = " + String(SWReleasedTime - SWPressedTime));
+#if (TIMER_INTERRUPT_DEBUG > 1)
+      Serial.print("SW Pressed total time ms = "); Serial.println(SWReleasedTime - SWPressedTime);
 #endif
 
       debounceCountSWPressed = 0;
@@ -178,15 +186,17 @@ void setup()
 
   delay(100);
   
-  Serial.println("\nStarting SwitchDebounce on " + String(BOARD_NAME));
+  Serial.print(F("\nStarting SwitchDebounce on ")); Serial.println(BOARD_NAME);
   Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
-  Serial.println("CPU Frequency = " + String(F_CPU / 1000000) + " MHz");
+  Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
 
   // Interval in microsecs
   if (ITimer.attachInterruptInterval(TIMER1_INTERVAL_MS * 1000, TimerHandler))
-    Serial.println("Starting  ITimer OK, millis() = " + String(millis()));
+  {
+    Serial.print(F("Starting ITimer OK, millis() = ")); Serial.println(millis());
+  }
   else
-    Serial.println("Can't set ITimer. Select another freq., duration or timer");
+    Serial.println(F("Can't set ITimer. Select another freq. or timer"));
 }
 
 void loop()

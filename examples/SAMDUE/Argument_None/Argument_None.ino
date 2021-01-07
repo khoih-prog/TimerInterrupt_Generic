@@ -37,8 +37,11 @@
 #endif
 
 // These define's must be placed at the beginning before #include "TimerInterrupt_Generic.h"
-// Don't define TIMER_INTERRUPT_DEBUG > 0. Only for special ISR debugging only. Can hang the system.
-#define TIMER_INTERRUPT_DEBUG      1
+// _TIMERINTERRUPT_LOGLEVEL_ from 0 to 4
+// Don't define _TIMERINTERRUPT_LOGLEVEL_ > 0. Only for special ISR debugging only. Can hang the system.
+// Don't define TIMER_INTERRUPT_DEBUG > 2. Only for special ISR debugging only. Can hang the system.
+#define TIMER_INTERRUPT_DEBUG         0
+#define _TIMERINTERRUPT_LOGLEVEL_     0
 
 #include "TimerInterrupt_Generic.h"
 
@@ -64,12 +67,11 @@ volatile uint32_t preMillisTimer1 = 0;
 volatile uint32_t preMillisTimer2 = 0;
 volatile uint32_t preMillisTimer3 = 0;
  
-void TimerHandler0(void)
+void TimerHandler0()
 {
-  static bool toggle = false;
+  static bool toggle0 = false;
   static bool started = false;
-  static uint32_t curMillis = 0;
-
+  
   if (!started)
   {
     started = true;
@@ -77,26 +79,28 @@ void TimerHandler0(void)
   }
  
 #if (TIMER_INTERRUPT_DEBUG > 0)
+    static uint32_t curMillis = 0;
+    
     curMillis = millis();
     
     if (curMillis > TIMER0_INTERVAL_MS)
     {
-      Serial.println("ITimer0: millis() = " + String(curMillis) + ", delta = " + String(curMillis - preMillisTimer0));
+      Serial.print("ITimer0: millis() = "); Serial.print(curMillis);
+      Serial.print(", delta = "); Serial.println(curMillis - preMillisTimer0);
     }
     
     preMillisTimer0 = curMillis;
 #endif
 
   //timer interrupt toggles pin LED_BUILTIN
-  digitalWrite(LED_BUILTIN, toggle);
-  toggle = !toggle;
+  digitalWrite(LED_BUILTIN, toggle0);
+  toggle0 = !toggle0;
 }
 
-void TimerHandler1(void)
+void TimerHandler1()
 {
-  static bool toggle = false;
+  static bool toggle1 = false;
   static bool started = false;
-  static uint32_t curMillis = 0;
 
   if (!started)
   {
@@ -105,22 +109,25 @@ void TimerHandler1(void)
   }
   
 #if (TIMER_INTERRUPT_DEBUG > 0)
+    static uint32_t curMillis = 0;
+    
     curMillis = millis();
 
     if (curMillis > TIMER1_INTERVAL_MS)
     {
-      Serial.println("ITimer1: millis() = " + String(curMillis) + ", delta = " + String(curMillis - preMillisTimer1));
+      Serial.print("ITimer1: millis() = "); Serial.print(curMillis);
+      Serial.print(", delta = "); Serial.println(curMillis - preMillisTimer1);
     }
     
     preMillisTimer1 = curMillis;
 #endif
 
   //timer interrupt toggles outputPin
-  digitalWrite(LED_BLUE, toggle);
-  toggle = !toggle;
+  digitalWrite(LED_BLUE, toggle1);
+  toggle1 = !toggle1;
 }
 
-void TimerHandler2(void)
+void TimerHandler2()
 {
 #if (TIMER_INTERRUPT_DEBUG > 0)
     static uint32_t curMillis = 0;
@@ -129,14 +136,15 @@ void TimerHandler2(void)
 
     if (curMillis > TIMER2_INTERVAL_MS)
     {
-      Serial.println("ITimer2: millis() = " + String(curMillis) + ", delta = " + String(curMillis - preMillisTimer2));
+      Serial.print("ITimer2: millis() = "); Serial.print(curMillis);
+      Serial.print(", delta = "); Serial.println(curMillis - preMillisTimer2);
     }
     
     preMillisTimer2 = curMillis;
 #endif
 }
 
-void TimerHandler3(void)
+void TimerHandler3()
 {
 #if (TIMER_INTERRUPT_DEBUG > 0)
     static uint32_t curMillis = 0;
@@ -145,7 +153,8 @@ void TimerHandler3(void)
 
     if (curMillis > TIMER3_INTERVAL_MS)
     {
-      Serial.println("ITimer3: millis() = " + String(curMillis) + ", delta = " + String(curMillis - preMillisTimer3));
+      Serial.print("ITimer3: millis() = "); Serial.print(curMillis);
+      Serial.print(", delta = "); Serial.println(curMillis - preMillisTimer3);
     }
     
     preMillisTimer3 = curMillis;
@@ -160,10 +169,7 @@ uint16_t attachDueInterrupt(double microseconds, timerCallback callback, const c
 
   uint16_t timerNumber = dueTimerInterrupt.getTimerNumber();
   
-  Serial.print(TimerName);
-  Serial.print(" attached to Timer(");
-  Serial.print(timerNumber);
-  Serial.println(")");
+  Serial.print(TimerName); Serial.print(F(" attached to Timer(")); Serial.print(timerNumber); Serial.println(F(")"));
 
   return timerNumber;
 }
@@ -175,10 +181,10 @@ void setup()
 
   delay(100);
   
-  Serial.println("\nStarting Argument_None on " + String(BOARD_NAME));
+  Serial.print(F("\nStarting Argument_None on ")); Serial.println(BOARD_NAME);
   Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
-  Serial.println("CPU Frequency = " + String(F_CPU / 1000000) + " MHz");
-  Serial.println("Timer Frequency = " + String(SystemCoreClock / 1000000) + " MHz");
+  Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
+  Serial.print(F("Timer Frequency = ")); Serial.print(SystemCoreClock / 1000000); Serial.println(F(" MHz"));
   
   // Interval in microsecs
   uint32_t curMillis = millis();

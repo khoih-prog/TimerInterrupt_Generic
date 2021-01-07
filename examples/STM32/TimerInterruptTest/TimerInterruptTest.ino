@@ -37,9 +37,12 @@
   #error This code is designed to run on STM32F/L/H/G/WB/MP1 platform! Please check your Tools->Board setting.
 #endif
 
-// These define's must be placed at the beginning before #include "STM32TimerInterrupt.h"
+// These define's must be placed at the beginning before #include "TimerInterrupt_Generic.h"
+// _TIMERINTERRUPT_LOGLEVEL_ from 0 to 4
+// Don't define _TIMERINTERRUPT_LOGLEVEL_ > 0. Only for special ISR debugging only. Can hang the system.
 // Don't define TIMER_INTERRUPT_DEBUG > 2. Only for special ISR debugging only. Can hang the system.
-#define TIMER_INTERRUPT_DEBUG      1
+#define TIMER_INTERRUPT_DEBUG         0
+#define _TIMERINTERRUPT_LOGLEVEL_     0
 
 #include "TimerInterrupt_Generic.h"
 
@@ -57,7 +60,7 @@
 
 unsigned int SWPin = D7;
 
-void TimerHandler0(void)
+void TimerHandler0()
 {
   static bool toggle0 = false;
   static bool started = false;
@@ -69,7 +72,7 @@ void TimerHandler0(void)
   }
 
 #if (TIMER_INTERRUPT_DEBUG > 0)
-  Serial.println("ITimer0: millis() = " + String(millis()));
+  Serial.print("ITimer0 called, millis() = "); Serial.println(millis());
 #endif
 
   //timer interrupt toggles pin LED_BUILTIN
@@ -77,7 +80,7 @@ void TimerHandler0(void)
   toggle0 = !toggle0;
 }
 
-void TimerHandler1(void)
+void TimerHandler1()
 {
   static bool toggle1 = false;
   static bool started = false;
@@ -90,7 +93,7 @@ void TimerHandler1(void)
   }
 
 #if (TIMER_INTERRUPT_DEBUG > 0)
-  Serial.println("ITimer1: millis() = " + String(millis()));
+  Serial.print("ITimer1 called, millis() = "); Serial.println(millis());
 #endif
 
   //timer interrupt toggles outputPin
@@ -122,9 +125,9 @@ void setup()
   
   delay(100);
   
-  Serial.println("\nStarting TimerInterruptTest on " + String(BOARD_NAME));
+  Serial.print(F("\nStarting TimerInterruptTest on ")); Serial.println(BOARD_NAME);
   Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
-  Serial.println("CPU Frequency = " + String(F_CPU / 1000000) + " MHz");
+  Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
 
   // Using ESP32  => 80 / 160 / 240MHz CPU clock ,
   // For 64-bit timer counter
@@ -132,15 +135,19 @@ void setup()
 
   // Interval in microsecs
   if (ITimer0.attachInterruptInterval(TIMER0_INTERVAL_MS * 1000, TimerHandler0))
-    Serial.println("Starting  ITimer0 OK, millis() = " + String(millis()));
+  {
+    Serial.print(F("Starting ITimer0 OK, millis() = ")); Serial.println(millis());
+  }
   else
-    Serial.println("Can't set ITimer0. Select another freq. or timer");
+    Serial.println(F("Can't set ITimer0. Select another freq. or timer"));
 
   // Interval in microsecs
   if (ITimer1.attachInterruptInterval(TIMER1_INTERVAL_MS * 1000, TimerHandler1))
-    Serial.println("Starting  ITimer1 OK, millis() = " + String(millis()));
+  {
+    Serial.print(F("Starting  ITimer1 OK, millis() = ")); Serial.println(millis());
+  }
   else
-    Serial.println("Can't set ITimer1. Select another freq. or timer");
+    Serial.println(F("Can't set ITimer1. Select another freq. or timer"));
 
   Serial.flush();  
 }
@@ -159,12 +166,12 @@ void loop()
 
     if (timer0Stopped)
     {
-      Serial.println("Start ITimer0, millis() = " + String(millis()));
+      Serial.print(F("Start ITimer0, millis() = ")); Serial.println(millis());
       ITimer0.restartTimer();
     }
     else
     {
-      Serial.println("Stop ITimer0, millis() = " + String(millis()));
+      Serial.print(F("Stop ITimer0, millis() = ")); Serial.println(millis());
       ITimer0.stopTimer();
     }
     timer0Stopped = !timer0Stopped;
@@ -176,12 +183,12 @@ void loop()
 
     if (timer1Stopped)
     {
-      Serial.println("Start ITimer1, millis() = " + String(millis()));
+      Serial.print(F("Start ITimer1, millis() = ")); Serial.println(millis());
       ITimer1.restartTimer();
     }
     else
     {
-      Serial.println("Stop ITimer1, millis() = " + String(millis()));
+      Serial.print(F("Stop ITimer1, millis() = ")); Serial.println(millis());
       ITimer1.stopTimer();
     }
     

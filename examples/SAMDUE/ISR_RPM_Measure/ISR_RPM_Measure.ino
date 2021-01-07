@@ -46,8 +46,11 @@
 #endif
 
 // These define's must be placed at the beginning before #include "TimerInterrupt_Generic.h"
-// Don't define TIMER_INTERRUPT_DEBUG > 0. Only for special ISR debugging only. Can hang the system.
-#define TIMER_INTERRUPT_DEBUG      1
+// _TIMERINTERRUPT_LOGLEVEL_ from 0 to 4
+// Don't define _TIMERINTERRUPT_LOGLEVEL_ > 0. Only for special ISR debugging only. Can hang the system.
+// Don't define TIMER_INTERRUPT_DEBUG > 2. Only for special ISR debugging only. Can hang the system.
+#define TIMER_INTERRUPT_DEBUG         0
+#define _TIMERINTERRUPT_LOGLEVEL_     0
 
 #include "TimerInterrupt_Generic.h"
 
@@ -78,15 +81,13 @@ volatile int debounceCounter;
 
 volatile bool activeState = false;
 
-void detectRotation(void)
+void detectRotation()
 {
   activeState = true;
 }
 
 void TimerHandler1()
 {
-  static bool started = false;
-
   if ( activeState )
   {
     // Reset to prepare for next round of interrupt
@@ -100,7 +101,10 @@ void TimerHandler1()
 
       avgRPM = ( 2 * avgRPM + RPM) / 3,
 
-      Serial.println("RPM = " + String(avgRPM) + ", rotationTime ms = " + String(rotationTime * TIMER1_INTERVAL_MS) );
+#if (TIMER_INTERRUPT_DEBUG > 1)
+      Serial.print("RPM = "); Serial.print(avgRPM);
+      Serial.print(", rotationTime ms = "); Serial.println(rotationTime * TIMER1_INTERVAL_MS);
+#endif
 
       rotationTime = 0;
       debounceCounter = 0;
@@ -117,7 +121,11 @@ void TimerHandler1()
   {
     // If idle, set RPM to 0, don't increase rotationTime
     RPM = 0;
-    Serial.println("RPM = " + String(RPM) + ", rotationTime = " + String(rotationTime) );
+
+#if (TIMER_INTERRUPT_DEBUG > 1)   
+    Serial.print("RPM = "); Serial.print(RPM); Serial.print(", rotationTime = "); Serial.println(rotationTime);
+#endif
+    
     rotationTime = 0;
   }
   else
@@ -134,10 +142,7 @@ uint16_t attachDueInterrupt(double microseconds, timerCallback callback, const c
 
   uint16_t timerNumber = dueTimerInterrupt.getTimerNumber();
   
-  Serial.print(TimerName);
-  Serial.print(" attached to Timer(");
-  Serial.print(timerNumber);
-  Serial.println(")");
+  Serial.print(TimerName); Serial.print(F(" attached to Timer(")); Serial.print(timerNumber); Serial.println(F(")"));
 
   return timerNumber;
 }
@@ -149,10 +154,10 @@ void setup()
   Serial.begin(115200);
   while (!Serial);
   
-  Serial.println("\nStarting ISR_RPM_Measure on " + String(BOARD_NAME));
+  Serial.print(F("\nStarting ISR_RPM_Measure on ")); Serial.println(BOARD_NAME);
   Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
-  Serial.println("CPU Frequency = " + String(F_CPU / 1000000) + " MHz");
-  Serial.println("Timer Frequency = " + String(SystemCoreClock / 1000000) + " MHz");
+  Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
+  Serial.print(F("Timer Frequency = ")); Serial.print(SystemCoreClock / 1000000); Serial.println(F(" MHz"));
 
   // Interval in microsecs
   attachDueInterrupt(TIMER1_INTERVAL_MS * 1000, TimerHandler1, "ITimer1");

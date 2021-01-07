@@ -36,8 +36,11 @@
 #endif
 
 // These define's must be placed at the beginning before #include "TimerInterrupt_Generic.h"
+// _TIMERINTERRUPT_LOGLEVEL_ from 0 to 4
+// Don't define _TIMERINTERRUPT_LOGLEVEL_ > 0. Only for special ISR debugging only. Can hang the system.
 // For Nano33-BLE, don't use Serial.print() in ISR as system will definitely hang.
-#define TIMER_INTERRUPT_DEBUG      0
+#define TIMER_INTERRUPT_DEBUG         0
+#define _TIMERINTERRUPT_LOGLEVEL_     0
 
 #include "TimerInterrupt_Generic.h"
 
@@ -72,7 +75,7 @@ static bool toggle1 = false;
 // Init NRF52 timer NRF_TIMER3
 NRF52_MBED_Timer ITimer0(NRF_TIMER_3);
 
-void TimerHandler0(void)
+void TimerHandler0()
 {  
   preMillisTimer0 = millis();
 
@@ -84,7 +87,7 @@ void TimerHandler0(void)
 // Init NRF52 timer NRF_TIMER4
 NRF52_MBED_Timer ITimer1(NRF_TIMER_4);
 
-void TimerHandler1(void)
+void TimerHandler1()
 {
   preMillisTimer1 = millis();
 

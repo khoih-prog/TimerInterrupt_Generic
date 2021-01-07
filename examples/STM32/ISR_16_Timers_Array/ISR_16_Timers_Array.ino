@@ -54,9 +54,12 @@
   #error This code is designed to run on STM32F/L/H/G/WB/MP1 platform! Please check your Tools->Board setting.
 #endif
 
-// These define's must be placed at the beginning before #include "STM32TimerInterrupt.h"
+// These define's must be placed at the beginning before #include "TimerInterrupt_Generic.h"
+// _TIMERINTERRUPT_LOGLEVEL_ from 0 to 4
+// Don't define _TIMERINTERRUPT_LOGLEVEL_ > 0. Only for special ISR debugging only. Can hang the system.
 // Don't define TIMER_INTERRUPT_DEBUG > 2. Only for special ISR debugging only. Can hang the system.
-#define TIMER_INTERRUPT_DEBUG      1
+#define TIMER_INTERRUPT_DEBUG         0
+#define _TIMERINTERRUPT_LOGLEVEL_     0
 
 #include "TimerInterrupt_Generic.h"
 #include "ISR_Timer_Generic.h"
@@ -93,7 +96,7 @@ ISR_Timer STM32_ISR_Timer;
 
 #define LED_TOGGLE_INTERVAL_MS        2000L
 
-void TimerHandler(void)
+void TimerHandler()
 {
   static bool toggle  = false;
   static bool started = false;
@@ -127,16 +130,13 @@ uint32_t TimerInterval[NUMBER_ISR_TIMERS] =
   9000L, 10000L, 11000L, 12000L, 13000L, 14000L, 15000L, 16000L
 };
 
-typedef void (*irqCallback)  (void);
+typedef void (*irqCallback)  ();
 
 #if (TIMER_INTERRUPT_DEBUG > 0)
 void printStatus(uint16_t index, unsigned long deltaMillis, unsigned long currentMillis)
 {
-  Serial.print(TimerInterval[index]/1000);
-  Serial.print("s: Delta ms = ");
-  Serial.print(deltaMillis);
-  Serial.print(", ms = ");
-  Serial.println(currentMillis);
+  Serial.print(TimerInterval[index]/1000); Serial.print("s: Delta ms = "); Serial.print(deltaMillis);
+  Serial.print(", ms = "); Serial.println(currentMillis);
 }
 #endif
 
@@ -390,7 +390,10 @@ SimpleTimer simpleTimer;
 void simpleTimerDoingSomething2s()
 {
   static unsigned long previousMillis = startMillis;
-  Serial.println("simpleTimerDoingSomething2s: Delta programmed ms = " + String(SIMPLE_TIMER_MS) + ", actual = " + String(millis() - previousMillis));
+
+  Serial.print(F("simpleTimerDoingSomething2s: Delta programmed ms = ")); Serial.print(SIMPLE_TIMER_MS);
+  Serial.print(F(", actual = ")); Serial.println(millis() - previousMillis);
+  
   previousMillis = millis();
 }
 
@@ -399,22 +402,22 @@ void setup()
   Serial.begin(115200);
   while (!Serial);
   
-  Serial.println("\nStarting ISR_16_Timers_Array on " + String(BOARD_NAME));
+  Serial.print(F("\nStarting ISR_16_Timers_Array on ")); Serial.println(BOARD_NAME);
   Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
-  Serial.println("CPU Frequency = " + String(F_CPU / 1000000) + " MHz");
+  Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
 
   // Interval in microsecs
   if (ITimer.attachInterruptInterval(HW_TIMER_INTERVAL_US, TimerHandler))
   {
     startMillis = millis();
-    Serial.println("Starting  ITimer OK, millis() = " + String(startMillis));
+    Serial.print(F("Starting ITimer OK, millis() = ")); Serial.println(startMillis);
   }
   else
-    Serial.println("Can't set ITimer correctly. Select another freq. or interval");
+    Serial.println(F("Can't set ITimer correctly. Select another freq. or interval"));
 
   // Just to demonstrate, don't use too many ISR Timers if not absolutely necessary
   // You can use up to 16 timer for each STM32_ISR_Timer
-  for (int i = 0; i < NUMBER_ISR_TIMERS; i++)
+  for (uint16_t i = 0; i < NUMBER_ISR_TIMERS; i++)
   {
     STM32_ISR_Timer.setInterval(TimerInterval[i], irqCallbackFunc[i]); 
   }

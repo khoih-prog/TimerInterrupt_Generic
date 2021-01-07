@@ -39,9 +39,12 @@
   #error This code is designed to run on nRF52 platform! Please check your Tools->Board setting.
 #endif
 
-// These define's must be placed at the beginning before #include "NRF52TimerInterrupt.h"
-// Don't define NRF52_TIMER_INTERRUPT_DEBUG > 2. Only for special ISR debugging only. Can hang the system.
-#define NRF52_TIMER_INTERRUPT_DEBUG      0
+// These define's must be placed at the beginning before #include "TimerInterrupt_Generic.h"
+// _TIMERINTERRUPT_LOGLEVEL_ from 0 to 4
+// Don't define _TIMERINTERRUPT_LOGLEVEL_ > 0. Only for special ISR debugging only. Can hang the system.
+// Don't define TIMER_INTERRUPT_DEBUG > 2. Only for special ISR debugging only. Can hang the system.
+#define TIMER_INTERRUPT_DEBUG         0
+#define _TIMERINTERRUPT_LOGLEVEL_     0
 
 //#ifndef LED_BUILTIN
 //  #define LED_BUILTIN         3
@@ -74,7 +77,7 @@ ISR_Timer NRF52_ISR_Timer;
 #define TIMER_INTERVAL_2S             2000L
 #define TIMER_INTERVAL_5S             5000L
 
-void TimerHandler(void)
+void TimerHandler()
 {
   NRF52_ISR_Timer.run();
 }

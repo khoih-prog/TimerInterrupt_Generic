@@ -36,9 +36,12 @@
 #endif
 
 
-// These define's must be placed at the beginning before #include "STM32TimerInterrupt.h"
-// Don't define STM32_TEENSY_TIMER_INTERRUPT_DEBUG > 2. Only for special ISR debugging only. Can hang the system.
-#define TIMER_INTERRUPT_DEBUG      1
+// These define's must be placed at the beginning before #include "TimerInterrupt_Generic.h"
+// _TIMERINTERRUPT_LOGLEVEL_ from 0 to 4
+// Don't define _TIMERINTERRUPT_LOGLEVEL_ > 0. Only for special ISR debugging only. Can hang the system.
+// Don't define TIMER_INTERRUPT_DEBUG > 2. Only for special ISR debugging only. Can hang the system.
+#define TIMER_INTERRUPT_DEBUG         0
+#define _TIMERINTERRUPT_LOGLEVEL_     0
 
 #include "TimerInterrupt_Generic.h"
 
@@ -54,7 +57,7 @@
   #define LED_RED           3
 #endif
 
-void TimerHandler0(void)
+void TimerHandler0()
 {
   static bool toggle0 = false;
   static bool started = false;
@@ -66,7 +69,7 @@ void TimerHandler0(void)
   }
 
 #if (TIMER_INTERRUPT_DEBUG > 0)
-  Serial.println("ITimer0: millis() = " + String(millis()));
+  Serial.print("ITimer0: millis() = "); Serial.println(millis());
 #endif
 
   //timer interrupt toggles pin LED_BUILTIN
@@ -91,15 +94,17 @@ void setup()
   
   delay(100);
   
-  Serial.println("\nStarting TimerInterruptTest on " + String(BOARD_NAME));
+  Serial.print(F("\nStarting TimerInterruptTest on ")); Serial.println(BOARD_NAME);
   Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
-  Serial.println("CPU Frequency = " + String(F_CPU / 1000000) + " MHz");
+  Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
 
   // Interval in microsecs
   if (ITimer0.attachInterruptInterval(TIMER0_INTERVAL_MS * 1000, TimerHandler0))
-    Serial.println("Starting  ITimer0 OK, millis() = " + String(millis()));
+  {
+    Serial.print(F("Starting ITimer0 OK, millis() = ")); Serial.println(millis());
+  }
   else
-    Serial.println("Can't set ITimer0. Select another freq. or timer"); 
+    Serial.println(F("Can't set ITimer0. Select another freq. or timer"));
 }
 
 void loop()
@@ -116,12 +121,12 @@ void loop()
 
     if (timer0Stopped)
     {
-      Serial.println("Start ITimer0, millis() = " + String(currTime));
+      Serial.print(F("Start ITimer0, millis() = ")); Serial.println(currTime);
       ITimer0.restartTimer();
     }
     else
     {
-      Serial.println("Stop ITimer0, millis() = " + String(currTime));
+      Serial.print(F("Stop ITimer0, millis() = ")); Serial.println(currTime);
       ITimer0.stopTimer();
     }
     timer0Stopped = !timer0Stopped;

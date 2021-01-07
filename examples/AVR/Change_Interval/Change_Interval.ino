@@ -49,8 +49,10 @@
 #endif
 
 // These define's must be placed at the beginning before #include "TimerInterrupt_Generic.h"
-// Don't define TIMER_INTERRUPT_DEBUG > 0. Only for special ISR debugging only. Can hang the system.
-#define TIMER_INTERRUPT_DEBUG      0
+// _TIMERINTERRUPT_LOGLEVEL_ from 0 to 4
+// Don't define _TIMERINTERRUPT_LOGLEVEL_ > 0. Only for special ISR debugging only. Can hang the system.
+#define TIMER_INTERRUPT_DEBUG         0
+#define _TIMERINTERRUPT_LOGLEVEL_     0
 
 #define USE_TIMER_1     true
 #define USE_TIMER_2     true
@@ -82,7 +84,7 @@ void printResult(uint32_t currTime)
   Serial.print(F(", Timer2Count = ")); Serial.println(Timer2Count);
 }
 
-void TimerHandler1(void)
+void TimerHandler1()
 {
   static bool toggle1 = false;
 
@@ -94,7 +96,7 @@ void TimerHandler1(void)
   toggle1 = !toggle1;
 }
 
-void TimerHandler2(void)
+void TimerHandler2()
 {
   static bool toggle2 = false;
 

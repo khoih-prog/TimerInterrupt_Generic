@@ -79,8 +79,10 @@ char ssid[]     = "****";
 char pass[]     = "****";
 
 // These define's must be placed at the beginning before #include "TimerInterrupt_Generic.h"
-// Don't define TIMER_INTERRUPT_DEBUG > 0. Only for special ISR debugging only. Can hang the system.
-#define TIMER_INTERRUPT_DEBUG      0
+// _TIMERINTERRUPT_LOGLEVEL_ from 0 to 4
+// Don't define _TIMERINTERRUPT_LOGLEVEL_ > 0. Only for special ISR debugging only. Can hang the system.
+#define TIMER_INTERRUPT_DEBUG         0
+#define _TIMERINTERRUPT_LOGLEVEL_     0
 
 #include "TimerInterrupt_Generic.h"
 #include "ISR_Timer_Generic.h"
@@ -103,7 +105,7 @@ ISR_Timer ESP8266_ISR_Timer;
 
 BlynkTimer blynkTimer;
 
-void ICACHE_RAM_ATTR TimerHandler(void)
+void ICACHE_RAM_ATTR TimerHandler()
 {
   static bool toggle = false;
   static bool started = false;

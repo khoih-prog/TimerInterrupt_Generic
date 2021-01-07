@@ -37,8 +37,11 @@
 #endif
 
 // These define's must be placed at the beginning before #include "TimerInterrupt_Generic.h"
-// Don't define TIMER_INTERRUPT_DEBUG > 0. Only for special ISR debugging only. Can hang the system.
-#define TIMER_INTERRUPT_DEBUG      1
+// _TIMERINTERRUPT_LOGLEVEL_ from 0 to 4
+// Don't define _TIMERINTERRUPT_LOGLEVEL_ > 0. Only for special ISR debugging only. Can hang the system.
+// Don't define TIMER_INTERRUPT_DEBUG > 2. Only for special ISR debugging only. Can hang the system.
+#define TIMER_INTERRUPT_DEBUG         0
+#define _TIMERINTERRUPT_LOGLEVEL_     0
 
 #include "TimerInterrupt_Generic.h"
 
@@ -62,10 +65,13 @@ volatile uint32_t Timer1Count = 0;
 
 void printResult(uint32_t currTime)
 {
-  Serial.println("Time = " + String(currTime) + ", Timer0Count = " + String(Timer0Count) + ", Timer1Count = " + String(Timer1Count));
+  Serial.print(F("Time = ")); Serial.print(currTime); 
+  Serial.print(F(", Timer0Count = ")); Serial.print(Timer0Count);
+  Serial.print(F(", Timer1Count = ")); Serial.println(Timer1Count);
 }
 
-void TimerHandler0(void)
+
+void TimerHandler0()
 {
   static bool toggle0 = false;
 
@@ -77,7 +83,7 @@ void TimerHandler0(void)
   toggle0 = !toggle0;
 }
 
-void TimerHandler1(void)
+void TimerHandler1()
 {
   static bool toggle1 = false;
 
@@ -100,10 +106,7 @@ uint16_t attachDueInterrupt(double microseconds, timerCallback callback, const c
 
   uint16_t timerNumber = dueTimerInterrupt.getTimerNumber();
   
-  Serial.print(TimerName);
-  Serial.print(" attached to Timer(");
-  Serial.print(timerNumber);
-  Serial.println(")");
+  Serial.print(TimerName); Serial.print(F(" attached to Timer(")); Serial.print(timerNumber); Serial.println(F(")"));
 
   return timerNumber;
 }
@@ -116,10 +119,7 @@ uint16_t updateTimerInterval(uint16_t timerNumberInput, double microseconds, tim
 
   uint16_t timerNumber = dueTimerInterrupt.getTimerNumber();
   
-  Serial.print(TimerName);
-  Serial.print(" attached to Timer(");
-  Serial.print(timerNumber);
-  Serial.println(")");
+  Serial.print(TimerName); Serial.print(F(" attached to Timer(")); Serial.print(timerNumber); Serial.println(F(")"));
 
   return timerNumber;
 }
@@ -134,10 +134,10 @@ void setup()
 
   delay(100);
 
-  Serial.println("\nStarting Change_Interval on " + String(BOARD_NAME));
+  Serial.print(F("\nStarting Change_Interval on ")); Serial.println(BOARD_NAME);
   Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
-  Serial.println("CPU Frequency = " + String(F_CPU / 1000000) + " MHz");
-  Serial.println("Timer Frequency = " + String(SystemCoreClock / 1000000) + " MHz");
+  Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
+  Serial.print(F("Timer Frequency = ")); Serial.print(SystemCoreClock / 1000000); Serial.println(F(" MHz"));
 
   // Interval in microsecs
   timerNumber0 = attachDueInterrupt(TIMER0_INTERVAL_MS * 1000, TimerHandler0, "ITimer0");
@@ -168,9 +168,9 @@ void loop()
 
       updateTimerInterval(timerNumber0, TIMER0_INTERVAL_MS * 1000 * (multFactor + 1), TimerHandler0, "ITimer0");
       updateTimerInterval(timerNumber1, TIMER1_INTERVAL_MS * 1000 * (multFactor + 1), TimerHandler1, "ITimer1");
-      
-      Serial.println("Changing Interval, Timer0 = " + String(TIMER0_INTERVAL_MS * (multFactor + 1)) + 
-                                     ",  Timer1 = "  + String(TIMER1_INTERVAL_MS * (multFactor + 1)));
+
+      Serial.print(F("Changing Interval, Timer0 = ")); Serial.print(TIMER0_INTERVAL_MS * (multFactor + 1));
+      Serial.print(F(",  Timer1 = ")); Serial.println(TIMER1_INTERVAL_MS * (multFactor + 1));
       
       lastChangeTime = currTime;
     }

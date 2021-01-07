@@ -53,8 +53,11 @@
 #endif
 
 // These define's must be placed at the beginning before #include "TimerInterrupt_Generic.h"
-// Don't define TIMER_INTERRUPT_DEBUG > 0. Only for special ISR debugging only. Can hang the system.
-#define TIMER_INTERRUPT_DEBUG      1
+// _TIMERINTERRUPT_LOGLEVEL_ from 0 to 4
+// Don't define _TIMERINTERRUPT_LOGLEVEL_ > 0. Only for special ISR debugging only. Can hang the system.
+// Don't define TIMER_INTERRUPT_DEBUG > 2. Only for special ISR debugging only. Can hang the system.
+#define TIMER_INTERRUPT_DEBUG         0
+#define _TIMERINTERRUPT_LOGLEVEL_     0
 
 #include "TimerInterrupt_Generic.h"
 #include "ISR_Timer_Generic.h"
@@ -84,7 +87,7 @@ ISR_Timer SAMDUE_ISR_Timer;
 
 #define LED_TOGGLE_INTERVAL_MS        500L
 
-void TimerHandler(void)
+void TimerHandler()
 {
   static bool toggle  = false;
   static bool started = false;
@@ -118,16 +121,13 @@ uint32_t TimerInterval[NUMBER_ISR_TIMERS] =
   9000L, 10000L, 11000L, 12000L, 13000L, 14000L, 15000L, 16000L
 };
 
-typedef void (*irqCallback)  (void);
+typedef void (*irqCallback)  ();
 
 #if (TIMER_INTERRUPT_DEBUG > 0)
 void printStatus(uint16_t index, unsigned long deltaMillis, unsigned long currentMillis)
 {
-  Serial.print(TimerInterval[index] / 1000);
-  Serial.print("s: Delta ms = ");
-  Serial.print(deltaMillis);
-  Serial.print(", ms = ");
-  Serial.println(currentMillis);
+  Serial.print(TimerInterval[index] / 1000); Serial.print("s: Delta ms = "); Serial.print(deltaMillis);
+  Serial.print(", ms = "); Serial.println(currentMillis);
 }
 #endif
 
@@ -373,10 +373,8 @@ void simpleTimerDoingSomething2s()
   static unsigned long previousMillis = startMillis;
   unsigned long currMillis = millis();
 
-  Serial.print("simpleTimer2s: Dms=");
-  Serial.print(SIMPLE_TIMER_MS);
-  Serial.print(", actual=");
-  Serial.println(currMillis - previousMillis);
+  Serial.print(F("simpleTimer2s: Dms=")); Serial.print(SIMPLE_TIMER_MS);
+  Serial.print(F(", actual=")); Serial.println(currMillis - previousMillis);
 
   previousMillis = currMillis;
 }
@@ -389,10 +387,7 @@ uint16_t attachDueInterrupt(double microseconds, timerCallback callback, const c
 
   uint16_t timerNumber = dueTimerInterrupt.getTimerNumber();
 
-  Serial.print(TimerName);
-  Serial.print(" attached to Timer(");
-  Serial.print(timerNumber);
-  Serial.println(")");
+  Serial.print(TimerName); Serial.print(F(" attached to Timer(")); Serial.print(timerNumber); Serial.println(F(")"));
 
   return timerNumber;
 }
@@ -402,17 +397,17 @@ void setup()
   Serial.begin(115200);
   while (!Serial);
 
-  Serial.println("\nStarting ISR_16_Timers_Array on " + String(BOARD_NAME));
+  Serial.print(F("\nStarting ISR_16_Timers_Array on ")); Serial.println(BOARD_NAME);
   Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
-  Serial.println("CPU Frequency = " + String(F_CPU / 1000000) + " MHz");
-  Serial.println("Timer Frequency = " + String(SystemCoreClock / 1000000) + " MHz");
+  Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
+  Serial.print(F("Timer Frequency = ")); Serial.print(SystemCoreClock / 1000000); Serial.println(F(" MHz"));
 
   // Interval in microsecs
   attachDueInterrupt(HW_TIMER_INTERVAL_US, TimerHandler, "ITimer");
 
   // Just to demonstrate, don't use too many ISR Timers if not absolutely necessary
   // You can use up to 16 timer for each SAMDUE_ISR_Timer
-  for (int i = 0; i < NUMBER_ISR_TIMERS; i++)
+  for (uint16_t i = 0; i < NUMBER_ISR_TIMERS; i++)
   {
     SAMDUE_ISR_Timer.setInterval(TimerInterval[i], irqCallbackFunc[i]);
   }

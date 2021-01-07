@@ -47,8 +47,11 @@
 #endif
 
 // These define's must be placed at the beginning before #include "TimerInterrupt_Generic.h"
-// Don't define TIMER_INTERRUPT_DEBUG > 0. Only for special ISR debugging only. Can hang the system.
-#define TIMER_INTERRUPT_DEBUG      0
+// _TIMERINTERRUPT_LOGLEVEL_ from 0 to 4
+// Don't define _TIMERINTERRUPT_LOGLEVEL_ > 0. Only for special ISR debugging only. Can hang the system.
+// Don't define TIMER_INTERRUPT_DEBUG > 2. Only for special ISR debugging only. Can hang the system.
+#define TIMER_INTERRUPT_DEBUG         0
+#define _TIMERINTERRUPT_LOGLEVEL_     0
 
 #include "TimerInterrupt_Generic.h"
 #include "ISR_Timer_Generic.h"
@@ -84,7 +87,7 @@ ISR_Timer NRF52_ISR_Timer;
 
 #define LED_TOGGLE_INTERVAL_MS        2000L
 
-void TimerHandler(void)
+void TimerHandler()
 {
   static bool toggle  = false;
   static int timeRun  = 0;
@@ -106,7 +109,7 @@ void TimerHandler(void)
 
 #define NUMBER_ISR_TIMERS         16
 
-typedef void (*irqCallback)  (void);
+typedef void (*irqCallback)  ();
 
 /////////////////////////////////////////////////
 

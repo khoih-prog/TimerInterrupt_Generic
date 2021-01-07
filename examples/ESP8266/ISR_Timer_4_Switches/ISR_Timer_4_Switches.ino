@@ -94,8 +94,10 @@ char ssid[]     = "****";
 char pass[]     = "****";
 
 // These define's must be placed at the beginning before #include "TimerInterrupt_Generic.h"
-// Don't define TIMER_INTERRUPT_DEBUG > 0. Only for special ISR debugging only. Can hang the system.
-#define TIMER_INTERRUPT_DEBUG      0
+// _TIMERINTERRUPT_LOGLEVEL_ from 0 to 4
+// Don't define _TIMERINTERRUPT_LOGLEVEL_ > 0. Only for special ISR debugging only. Can hang the system.
+#define TIMER_INTERRUPT_DEBUG         0
+#define _TIMERINTERRUPT_LOGLEVEL_     0
 
 #include "TimerInterrupt_Generic.h"
 
@@ -158,7 +160,7 @@ void ICACHE_RAM_ATTR Rising3();
 // This is a struct array, used to simplify programming code and eliminate repetitive code
 // It also reduce code size by reduce number of functions, especially important in ISR code in ICACHE_RAM.
 
-typedef void (*isr_func)(void);
+typedef void (*isr_func)();
 
 typedef struct
 {
@@ -346,7 +348,7 @@ void ICACHE_RAM_ATTR Falling3()
   }
 }
 
-void heartBeatPrint(void)
+void heartBeatPrint()
 {
   static int num = 1;
 

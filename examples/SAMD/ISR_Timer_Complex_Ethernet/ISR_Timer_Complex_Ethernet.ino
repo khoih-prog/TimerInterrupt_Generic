@@ -103,7 +103,11 @@
 #endif
 
 // These define's must be placed at the beginning before #include "TimerInterrupt_Generic.h"
-#define TIMER_INTERRUPT_DEBUG      1
+// _TIMERINTERRUPT_LOGLEVEL_ from 0 to 4
+// Don't define _TIMERINTERRUPT_LOGLEVEL_ > 0. Only for special ISR debugging only. Can hang the system.
+// Don't define TIMER_INTERRUPT_DEBUG > 2. Only for special ISR debugging only. Can hang the system.
+#define TIMER_INTERRUPT_DEBUG         0
+#define _TIMERINTERRUPT_LOGLEVEL_     0
 
 #include "TimerInterrupt_Generic.h"
 #include "ISR_Timer_Generic.h"
@@ -143,7 +147,7 @@ BlynkTimer blynkTimer;
 #define TIMER_INTERVAL_11S            11000L
 #define TIMER_INTERVAL_101S           101000L
 
-void TimerHandler(void)
+void TimerHandler()
 {
   static bool toggle  = false;
   static bool started = false;
@@ -173,18 +177,18 @@ void TimerHandler(void)
 // Or you can get this run-time error / crash
 void doingSomething2s()
 {
+#if (TIMER_INTERRUPT_DEBUG > 0)  
   static unsigned long previousMillis = lastMillis;
   unsigned long deltaMillis = millis() - previousMillis;
 
-#if (TIMER_INTERRUPT_DEBUG > 0)
+
   if (previousMillis > TIMER_INTERVAL_2S)
   {
-    Serial.print("2s: Delta ms = ");
-    Serial.println(deltaMillis);
+    Serial.print("2s: Delta ms = "); Serial.println(deltaMillis);
   }
-#endif
 
   previousMillis = millis();
+#endif
 }
 
 // In SAMD, avoid doing something fancy in ISR, for example complex Serial.print with String() argument
@@ -192,18 +196,18 @@ void doingSomething2s()
 // Or you can get this run-time error / crash
 void doingSomething5s()
 {
+#if (TIMER_INTERRUPT_DEBUG > 0)  
   static unsigned long previousMillis = lastMillis;
   unsigned long deltaMillis = millis() - previousMillis;
 
-#if (TIMER_INTERRUPT_DEBUG > 0)
+
   if (previousMillis > TIMER_INTERVAL_5S)
   {
-    Serial.print("5s: Delta ms = ");
-    Serial.println(deltaMillis);
+    Serial.print("5s: Delta ms = "); Serial.println(deltaMillis);
   }
-#endif
 
   previousMillis = millis();
+#endif
 }
 
 // In SAMD, avoid doing something fancy in ISR, for example complex Serial.print with String() argument
@@ -211,18 +215,18 @@ void doingSomething5s()
 // Or you can get this run-time error / crash
 void doingSomething11s()
 {
+#if (TIMER_INTERRUPT_DEBUG > 0)  
   static unsigned long previousMillis = lastMillis;
   unsigned long deltaMillis = millis() - previousMillis;
 
-#if (TIMER_INTERRUPT_DEBUG > 0)
+
   if (previousMillis > TIMER_INTERVAL_11S)
   {
-    Serial.print("11s: Delta ms = ");
-    Serial.println(deltaMillis);
+    Serial.print("11s: Delta ms = "); Serial.println(deltaMillis);
   }
-#endif
 
   previousMillis = millis();
+#endif
 }
 
 // In SAMD, avoid doing something fancy in ISR, for example complex Serial.print with String() argument
@@ -230,18 +234,18 @@ void doingSomething11s()
 // Or you can get this run-time error / crash
 void doingSomething101s()
 {
+#if (TIMER_INTERRUPT_DEBUG > 0)  
   static unsigned long previousMillis = lastMillis;
   unsigned long deltaMillis = millis() - previousMillis;
 
-#if (TIMER_INTERRUPT_DEBUG > 0)
-  if (previousMillis > TIMER_INTERVAL_101S)
+
+  if (previousMillis > TIMER_INTERVAL101S)
   {
-    Serial.print("101s: Delta ms = ");
-    Serial.println(deltaMillis);
+    Serial.print("101s: Delta ms = "); Serial.println(deltaMillis);
   }
-#endif
 
   previousMillis = millis();
+#endif
 }
 
 #define BLYNK_TIMER_MS        2000L
@@ -253,7 +257,10 @@ void doingSomething101s()
 void blynkDoingSomething2s()
 {
   static unsigned long previousMillis = lastMillis;
-  Serial.println("blynkDoingSomething2s: Delta programmed ms = " + String(BLYNK_TIMER_MS) + ", actual = " + String(millis() - previousMillis));
+  
+  Serial.print(F("blynkDoingSomething2s: Delta programmed ms = ")); Serial.print(BLYNK_TIMER_MS);
+  Serial.print(F(", actual = ")); Serial.println(millis() - previousMillis);
+  
   previousMillis = millis();
 }
 
@@ -262,9 +269,9 @@ void setup()
   Serial.begin(115200);
   while (!Serial);
   
-  Serial.println("\nStarting ISR_Timer_Complex_Ethernet on " + String(BOARD_NAME));
+  Serial.print(F("\nStarting ISR_Timer_Complex_Ethernet on ")); Serial.println(BOARD_NAME);
   Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
-  Serial.println("CPU Frequency = " + String(F_CPU / 1000000) + " MHz");
+  Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
 
   // You need this timer for non-critical tasks. Avoid abusing ISR if not absolutely necessary.
   blynkTimer.setInterval(BLYNK_TIMER_MS, blynkDoingSomething2s);
@@ -273,10 +280,10 @@ void setup()
   if (ITimer.attachInterruptInterval(HW_TIMER_INTERVAL_MS * 1000, TimerHandler))
   {
     lastMillis = millis();
-    Serial.println("Starting  ITimer OK, millis() = " + String(lastMillis));
+    Serial.print(F("Starting ITimer OK, millis() = ")); Serial.println(lastMillis);
   }
   else
-    Serial.println("Can't set ITimer correctly. Select another freq. or interval");
+    Serial.println(F("Can't set ITimer. Select another freq. or interval"));
 
   // Just to demonstrate, don't use too many ISR Timers if not absolutely necessary
   // You can use up to 16 timer for each SAMD_ISR_Timer
@@ -300,8 +307,7 @@ void setup()
 
   if (Blynk.connected())
   {
-    Serial.print(F("IP = "));
-    Serial.println(Ethernet.localIP());
+    Serial.print(F("IP = ")); Serial.println(Ethernet.localIP());
   }
 }
 

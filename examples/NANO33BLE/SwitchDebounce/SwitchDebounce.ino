@@ -42,8 +42,11 @@
 #endif
 
 // These define's must be placed at the beginning before #include "TimerInterrupt_Generic.h"
+// _TIMERINTERRUPT_LOGLEVEL_ from 0 to 4
+// Don't define _TIMERINTERRUPT_LOGLEVEL_ > 0. Only for special ISR debugging only. Can hang the system.
 // For Nano33-BLE, don't use Serial.print() in ISR as system will definitely hang.
-#define TIMER_INTERRUPT_DEBUG      0
+#define TIMER_INTERRUPT_DEBUG         0
+#define _TIMERINTERRUPT_LOGLEVEL_     0
 
 #include "TimerInterrupt_Generic.h"
 
@@ -75,7 +78,7 @@ unsigned int debounceCountSWReleased = 0;
 bool toggle0 = false;
 bool toggle1 = false;
   
-void TimerHandler(void)
+void TimerHandler()
 {
   if ( (!digitalRead(SWPin)) )
   {

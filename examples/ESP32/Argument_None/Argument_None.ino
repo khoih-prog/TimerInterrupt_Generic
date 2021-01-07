@@ -42,8 +42,10 @@
 #endif
 
 // These define's must be placed at the beginning before #include "TimerInterrupt_Generic.h"
-// Don't define TIMER_INTERRUPT_DEBUG > 0. Only for special ISR debugging only. Can hang the system.
-#define TIMER_INTERRUPT_DEBUG      0
+// _TIMERINTERRUPT_LOGLEVEL_ from 0 to 4
+// Don't define _TIMERINTERRUPT_LOGLEVEL_ > 0. Only for special ISR debugging only. Can hang the system.
+#define TIMER_INTERRUPT_DEBUG         0
+#define _TIMERINTERRUPT_LOGLEVEL_     0
 
 #include "TimerInterrupt_Generic.h"
 
@@ -53,7 +55,7 @@
 
 #define PIN_D23             23        // Pin D23 mapped to pin GPIO23/VSPI_MOSI of ESP32
 
-void IRAM_ATTR TimerHandler0(void)
+void IRAM_ATTR TimerHandler0()
 {
   static bool toggle0 = false;
   static bool started = false;
@@ -73,7 +75,7 @@ void IRAM_ATTR TimerHandler0(void)
   toggle0 = !toggle0;
 }
 
-void IRAM_ATTR TimerHandler1(void)
+void IRAM_ATTR TimerHandler1()
 {
   static bool toggle1 = false;
   static bool started = false;
