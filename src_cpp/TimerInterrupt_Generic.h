@@ -19,7 +19,7 @@
    Built by Khoi Hoang https://github.com/khoih-prog/TimerInterrupt_Generic
    Licensed under MIT license
 
-   Version: 1.3.1
+   Version: 1.3.2
 
    Version Modified By   Date      Comments
    ------- -----------  ---------- -----------
@@ -27,11 +27,19 @@
    1.2.0   K Hoang      12/11/2020 Add STM32_TimerInterrupt Library
    1.3.0   K Hoang      01/12/2020 Add Mbed Mano-33-BLE Library. Add support to AVR UNO, Nano, Arduino Mini, Ethernet, BT. etc.
    1.3.1   K.Hoang      09/12/2020 Add complex examples and board Version String. Fix SAMD bug.
+   1.3.2   K.Hoang      06/01/2021 Fix warnings. Optimize examples to reduce memory usage
 ********************************************************************************************************************************/
 
 #pragma once
 
-#define TIMER_INTERRUPT_GENERIC_VERSION       "TimerInterrupt_Generic v1.3.1"
+#ifndef TIMERINTERRUPT_GENERIC_H
+#define TIMERINTERRUPT_GENERIC_H
+
+#if !defined(TIMER_INTERRUPT_GENERIC_VERSION)
+  #define TIMER_INTERRUPT_GENERIC_VERSION       "TimerInterrupt_Generic v1.3.2"
+#endif
+
+#include "TimerInterrupt_Generic_Debug.h"
 
 #if defined(__AVR_ATmega8__) || defined(__AVR_ATmega128__) || defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__) || defined(__AVR_ATmega1284__) || defined(__AVR_ATmega1284P__) || defined(__AVR_ATmega644__) || defined(__AVR_ATmega644A__) || defined(__AVR_ATmega644P__) || defined(__AVR_ATmega644PA__) || defined(ARDUINO_AVR_UNO) || defined(ARDUINO_AVR_NANO) || defined(ARDUINO_AVR_MINI) || defined(ARDUINO_AVR_ETHERNET) || defined(ARDUINO_AVR_FIO) || defined(ARDUINO_AVR_BT) || defined(ARDUINO_AVR_LILYPAD) || defined(ARDUINO_AVR_PRO) || defined(ARDUINO_AVR_NG) || defined(ARDUINO_AVR_UNO_WIFI_DEV_ED)
 
@@ -94,3 +102,5 @@
   #error Unsupported Board! Please check your Tools->Board setting.
   
 #endif
+
+#endif    // TIMERINTERRUPT_GENERIC_H

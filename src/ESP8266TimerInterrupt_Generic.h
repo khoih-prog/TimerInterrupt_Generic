@@ -24,7 +24,7 @@
    Built by Khoi Hoang https://github.com/khoih-prog/TimerInterrupt_Generic
    Licensed under MIT license
 
-   Version: 1.3.1
+   Version: 1.3.2
 
    Version Modified By   Date      Comments
    ------- -----------  ---------- -----------
@@ -32,15 +32,19 @@
    1.2.0   K Hoang      12/11/2020 Add STM32_TimerInterrupt Library
    1.3.0   K Hoang      01/12/2020 Add Mbed Mano-33-BLE Library. Add support to AVR UNO, Nano, Arduino Mini, Ethernet, BT. etc.
    1.3.1   K.Hoang      09/12/2020 Add complex examples and board Version String. Fix SAMD bug.
+   1.3.2   K.Hoang      06/01/2021 Fix warnings. Optimize examples to reduce memory usage
 *****************************************************************************************************************************/
 
 #pragma once
+
+#ifndef ESP8266TIMERINTERRUPT_H
+#define ESP8266TIMERINTERRUPT_H
 
 #if !defined(ESP8266)
   #error This code is designed to run on ESP8266 and ESP8266-based boards! Please check your Tools->Board setting.
 #endif
 
-#define ESP8266_TIMER_INTERRUPT_VERSION       "ESP8266TimerInterrupt v1.1.1"
+#define ESP8266_TIMER_INTERRUPT_VERSION       "ESP8266TimerInterrupt v1.2.0"
 
 #ifndef TIMER_INTERRUPT_DEBUG
 #define TIMER_INTERRUPT_DEBUG      0
@@ -122,9 +126,8 @@ class ESP8266TimerInterrupt
       }
 
       // count up
-#if (TIMER_INTERRUPT_DEBUG > 0)
-      Serial.println("ESP8266TimerInterrupt: _fre = " + String(_frequency) + ", _count = " + String(_timerCount));
-#endif
+      TISR_LOGWARN3(F("ESP32TimerInterrupt: _fre ="), _frequency, F(", _count ="), _timerCount);
+
 
       // Clock to timer (prescaler) is always 80MHz, even F_CPU is 160 MHz
 
@@ -192,4 +195,7 @@ class ESP8266TimerInterrupt
       enableTimer();
     }
 }; // class ESP8266TimerInterrupt
+
+
+#endif    // ESP8266TIMERINTERRUPT_H
 

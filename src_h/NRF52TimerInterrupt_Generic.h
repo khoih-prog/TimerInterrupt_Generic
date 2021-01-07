@@ -19,7 +19,7 @@
    Built by Khoi Hoang https://github.com/khoih-prog/TimerInterrupt_Generic
    Licensed under MIT license
 
-   Version: 1.3.1
+   Version: 1.3.2
 
    Version Modified By   Date      Comments
    ------- -----------  ---------- -----------
@@ -27,6 +27,7 @@
    1.2.0   K Hoang      12/11/2020 Add STM32_TimerInterrupt Library
    1.3.0   K Hoang      01/12/2020 Add Mbed Mano-33-BLE Library. Add support to AVR UNO, Nano, Arduino Mini, Ethernet, BT. etc.
    1.3.1   K.Hoang      09/12/2020 Add complex examples and board Version String. Fix SAMD bug.
+   1.3.2   K.Hoang      06/01/2021 Fix warnings. Optimize examples to reduce memory usage
 *****************************************************************************************************************************/
 /*
   nRF52 has 5 Hardware TIMERs: NRF_TIMER0-NRF_TIMER4
@@ -67,6 +68,9 @@
   
 */
 #pragma once
+
+#ifndef NRF52TIMERINTERRUPT_H
+#define NRF52TIMERINTERRUPT_H
 
 #if !(defined(NRF52840_FEATHER) || defined(NRF52832_FEATHER) || defined(NRF52_SERIES) || defined(ARDUINO_NRF52_ADAFRUIT) || \
       defined(NRF52840_FEATHER_SENSE) || defined(NRF52840_ITSYBITSY) || defined(NRF52840_CIRCUITPLAY) || \
@@ -220,13 +224,15 @@ class NRF52TimerInterrupt
       } 
       else 
       {
-          Serial.println("NRF52TimerInterrupt: ERROR: NULL callback function pointer.");
+          TISR_LOGERROR(F("NRF52TimerInterrupt: ERROR: NULL callback function pointer."));
+          
           return false;
       }
       
       if ( (frequency <= 0) || (frequency > _frequency / 10.0f) )
       {
-        Serial.println("NRF52TimerInterrupt: ERROR: Negative or Too high frequency. Must be <= " + String(_frequency/10.0f));
+        TISR_LOGERROR1(F("NRF52TimerInterrupt: ERROR: Negative or Too high frequency. Must be <="), _frequency/10.0f);
+        
         return false;
       }
       
@@ -234,10 +240,8 @@ class NRF52TimerInterrupt
       // Will use later if very low frequency is needed.
       _timerCount = (uint32_t) _frequency / frequency;
 
-#if (TIMER_INTERRUPT_DEBUG > 0)
-      Serial.println("NRF52TimerInterrupt: F_CPU (MHz) = " + String(F_CPU/1000000) + ", Timer = " + NRF52TimerName[_timer] );
-      Serial.println("NRF52TimerInterrupt: _fre = " + String(_frequency) + ", _count = " + String((uint32_t) (_timerCount)));          
-#endif
+      TISR_LOGWARN3(F("NRF52TimerInterrupt: F_CPU (MHz) ="), F_CPU/1000000, F(", Timer = "), NRF52TimerName[_timer]);
+      TISR_LOGWARN3(F("Frequency ="), _frequency, F(", _count ="), (uint32_t) (_timerCount));
 
       // Start if not already running (and reset?)
       nrf_timer_task_trigger(nrf_timer, NRF_TIMER_TASK_START);
@@ -391,3 +395,7 @@ extern "C" void TIMER4_IRQHandler(void)
     nRF52Timers[4]->enableTimer();
   }
 }
+
+#endif    // NRF52TIMERINTERRUPT_H
+
+

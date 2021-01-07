@@ -19,7 +19,7 @@
    Built by Khoi Hoang https://github.com/khoih-prog/TimerInterrupt_Generic
    Licensed under MIT license
 
-   Version: 1.3.1
+   Version: 1.3.2
 
    Version Modified By   Date      Comments
    ------- -----------  ---------- -----------
@@ -27,9 +27,13 @@
    1.2.0   K Hoang      12/11/2020 Add STM32_TimerInterrupt Library
    1.3.0   K Hoang      01/12/2020 Add Mbed Mano-33-BLE Library. Add support to AVR UNO, Nano, Arduino Mini, Ethernet, BT. etc.
    1.3.1   K.Hoang      09/12/2020 Add complex examples and board Version String. Fix SAMD bug.
+   1.3.2   K.Hoang      06/01/2021 Fix warnings. Optimize examples to reduce memory usage
 *****************************************************************************************************************************/
 
 #pragma once
+
+#ifndef SAMDUETIMERINTERRUPT_H
+#define SAMDUETIMERINTERRUPT_H
 
 #if !( defined(ARDUINO_SAM_DUE) || defined(__SAM3X8E__) )
   #error This code is designed to run on SAM DUE board / platform! Please check your Tools->Board setting.
@@ -38,7 +42,7 @@
 #include "Arduino.h"
 #include <inttypes.h>
 
-#define SAMDUE_TIMER_INTERRUPT_VERSION      "SAMDUETimerInterrupt v1.1.1"
+#define SAMDUE_TIMER_INTERRUPT_VERSION      "SAMDUETimerInterrupt v1.2.0"
 
 #ifndef TIMER_INTERRUPT_DEBUG
   #define TIMER_INTERRUPT_DEBUG       0
@@ -153,18 +157,10 @@ class DueTimerInterrupt
       for (int i = 0; i < NUM_TIMERS; i++)
       {
         if (!_callbacks[i])
-        {
-#if (TIMER_INTERRUPT_DEBUG > 0)   
-          // Get data from TimersInfo[NUM_TIMERS]
-          Serial.print("Using Timer(");
-          Serial.print(i);
-          Serial.print(") = ");
-          Serial.print(TimersInfo[i].tc);
-          Serial.print(", channel = ");
-          Serial.print(TimersInfo[i].channel);
-          Serial.print(", IRQ = ");
-          Serial.println(TimersInfo[i].irq);
-#endif        
+        {   
+          TISR_LOGWARN3(F("Using Timer("), i, F(") ="), TimersInfo[i].tc);
+          TISR_LOGWARN3(F("Channel ="), TimersInfo[i].channel, F(", IRQ ="), TimersInfo[i].irq);
+
           return DueTimerInterrupt(i);         
         }
       }
@@ -608,3 +604,5 @@ void TC8_Handler()
   DueTimerInterrupt::_callbacks[8]();
 }
 #endif
+
+#endif    // SAMDUETIMERINTERRUPT_H

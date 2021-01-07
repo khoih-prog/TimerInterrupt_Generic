@@ -19,7 +19,7 @@
    Built by Khoi Hoang https://github.com/khoih-prog/TimerInterrupt_Generic
    Licensed under MIT license
 
-   Version: 1.3.1
+   Version: 1.3.2
 
    Version Modified By   Date      Comments
    ------- -----------  ---------- -----------
@@ -27,6 +27,7 @@
    1.2.0   K Hoang      12/11/2020 Add STM32_TimerInterrupt Library
    1.3.0   K Hoang      01/12/2020 Add Mbed Mano-33-BLE Library. Add support to AVR UNO, Nano, Arduino Mini, Ethernet, BT. etc.
    1.3.1   K.Hoang      09/12/2020 Add complex examples and board Version String. Fix SAMD bug.
+   1.3.2   K.Hoang      06/01/2021 Fix warnings. Optimize examples to reduce memory usage
 *****************************************************************************************************************************/
 /*
   SAMD21
@@ -44,6 +45,9 @@
 
 */
 #pragma once
+
+#ifndef SAMDTIMERINTERRUPT_H
+#define SAMDTIMERINTERRUPT_H
 
 #if !( defined(ARDUINO_SAMD_ZERO) || defined(ARDUINO_SAMD_MKR1000) || defined(ARDUINO_SAMD_MKRWIFI1010) \
     || defined(ARDUINO_SAMD_NANO_33_IOT) || defined(ARDUINO_SAMD_MKRFox1200) || defined(ARDUINO_SAMD_MKRWAN1300) || defined(ARDUINO_SAMD_MKRWAN1310) \
@@ -68,7 +72,7 @@
 
 #include "Arduino.h"
 
-#define SAMD_TIMER_INTERRUPT_VERSION       "SAMDTimerInterrupt v1.1.1"
+#define SAMD_TIMER_INTERRUPT_VERSION       "SAMDTimerInterrupt v1.2.0"
 
 #ifndef TIMER_INTERRUPT_DEBUG
   #define TIMER_INTERRUPT_DEBUG       0
@@ -153,10 +157,8 @@ class SAMDTimerInterrupt
       
       if (_timerNumber == TIMER_TC3)
       {    
-#if (TIMER_INTERRUPT_DEBUG > 0)
-        Serial.println("F_CPU (MHz) = " + String(F_CPU/1000000) + ", TIMER_HZ = " + String(TIMER_HZ/1000000));
-        Serial.println("TC_Timer::startTimer _Timer = 0x" + String((uint32_t) _SAMDTimer, HEX) + ", TC3 = 0x" + String((uint32_t) TC3, HEX));     
-#endif  
+        TISR_LOGWARN3(F("SAMDTimerInterrupt: F_CPU (MHz) ="), F_CPU/1000000, F(", TIMER_HZ ="), TIMER_HZ/1000000);
+        TISR_LOGWARN3(F("TC_Timer::startTimer _Timer = 0x"), String((uint32_t) _SAMDTimer, HEX), F(", TC3 = 0x"), String((uint32_t) TC3, HEX));
 
         // Enable the TC bus clock, use clock generator 0
         GCLK->PCHCTRL[TC3_GCLK_ID].reg = GCLK_PCHCTRL_GEN_GCLK1_Val | (1 << GCLK_PCHCTRL_CHEN_Pos);
@@ -453,10 +455,8 @@ class SAMDTimerInterrupt
         
         while ( GCLK->STATUS.bit.SYNCBUSY == 1 );
        
-#if (TIMER_INTERRUPT_DEBUG > 0)
-        Serial.println("F_CPU (MHz) = " + String(F_CPU/1000000) + ", TIMER_HZ = " + String(TIMER_HZ/1000000));
-        Serial.println("TC_Timer::startTimer _Timer = 0x" + String((uint32_t) _SAMDTimer, HEX) + ", TC3 = 0x" + String((uint32_t) TC3, HEX));     
-#endif  
+        TISR_LOGWARN3(F("SAMDTimerInterrupt: F_CPU (MHz) ="), F_CPU/1000000, F(", TIMER_HZ ="), TIMER_HZ/1000000);
+        TISR_LOGWARN3(F("TC_Timer::startTimer _Timer = 0x"), String((uint32_t) _SAMDTimer, HEX), F(", TC3 = 0x"), String((uint32_t) TC3, HEX));
 
         SAMD_TC3->CTRLA.reg &= ~TC_CTRLA_ENABLE;
 
@@ -491,10 +491,8 @@ class SAMDTimerInterrupt
 	    
 	      while ( GCLK->STATUS.bit.SYNCBUSY == 1 );
 
-#if (TIMER_INTERRUPT_DEBUG > 0)
-        Serial.println("F_CPU (MHz) = " + String(F_CPU/1000000) + ", TIMER_HZ = " + String(TIMER_HZ/1000000));
-        Serial.println("TC_Timer::startTimer _Timer = 0x" + String((uint32_t) _SAMDTimer, HEX) + ", TCC0 = 0x" + String((uint32_t) TCC0, HEX));     
-#endif 
+        TISR_LOGWARN3(F("SAMDTimerInterrupt: F_CPU (MHz) ="), F_CPU/1000000, F(", TIMER_HZ ="), TIMER_HZ/1000000);
+        TISR_LOGWARN3(F("TC_Timer::startTimer _Timer = 0x"), String((uint32_t) _SAMDTimer, HEX), F(", TCC0 = 0x"), String((uint32_t) TCC0, HEX));
         
         SAMD_TCC->CTRLA.reg &= ~TCC_CTRLA_ENABLE;   // Disable TC
         
@@ -755,3 +753,5 @@ class SAMDTimerInterrupt
 }; // class SAMDTimerInterrupt
 
 #endif
+
+#endif    // SAMDTIMERINTERRUPT_H

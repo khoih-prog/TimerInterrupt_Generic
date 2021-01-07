@@ -19,7 +19,7 @@
    Built by Khoi Hoang https://github.com/khoih-prog/TimerInterrupt_Generic
    Licensed under MIT license
 
-   Version: 1.3.1
+   Version: 1.3.2
 
    Version Modified By   Date      Comments
    ------- -----------  ---------- -----------
@@ -27,9 +27,13 @@
    1.2.0   K Hoang      12/11/2020 Add STM32_TimerInterrupt Library
    1.3.0   K Hoang      01/12/2020 Add Mbed Mano-33-BLE Library. Add support to AVR UNO, Nano, Arduino Mini, Ethernet, BT. etc.
    1.3.1   K.Hoang      09/12/2020 Add complex examples and board Version String. Fix SAMD bug.
+   1.3.2   K.Hoang      06/01/2021 Fix warnings. Optimize examples to reduce memory usage
 *****************************************************************************************************************************/
 
 #pragma once
+
+#ifndef ISR_TIMER_IMPL_GENERIC_H
+#define ISR_TIMER_IMPL_GENERIC_H
 
 //#include "ISR_Timer_Generic.h"
 #include <string.h>
@@ -43,7 +47,7 @@ void ISR_Timer::init()
 {
   unsigned long current_millis = millis();   //elapsed();
 
-  for (int i = 0; i < MAX_NUMBER_TIMERS; i++) 
+  for (uint8_t i = 0; i < MAX_NUMBER_TIMERS; i++) 
   {
     memset((void*) &timer[i], 0, sizeof (timer_t));
     timer[i].prev_millis = current_millis;
@@ -54,7 +58,7 @@ void ISR_Timer::init()
 
 void ISR_Timer::run() 
 {
-  int i;
+  uint8_t i;
   unsigned long current_millis;
 
   // get current time
@@ -132,11 +136,11 @@ int ISR_Timer::findFirstFreeSlot()
   }
 
   // return the first slot with no callback (i.e. free)
-  for (int i = 0; i < MAX_NUMBER_TIMERS; i++) 
+  for (uint8_t i = 0; i < MAX_NUMBER_TIMERS; i++) 
   {
     if (timer[i].callback == NULL) 
     {
-      return i;
+      return (int) i;
     }
   }
 
@@ -301,7 +305,7 @@ void ISR_Timer::enableAll()
 {
   // Enable all timers with a callback assigned (used)
 
-  for (int i = 0; i < MAX_NUMBER_TIMERS; i++) 
+  for (uint8_t i = 0; i < MAX_NUMBER_TIMERS; i++) 
   {
     if (timer[i].callback != NULL && timer[i].numRuns == TIMER_RUN_FOREVER) 
     {
@@ -314,7 +318,7 @@ void ISR_Timer::disableAll()
 {
   // Disable all timers with a callback assigned (used)
 
-  for (int i = 0; i < MAX_NUMBER_TIMERS; i++) 
+  for (uint8_t i = 0; i < MAX_NUMBER_TIMERS; i++) 
   {
     if (timer[i].callback != NULL && timer[i].numRuns == TIMER_RUN_FOREVER) 
     {
@@ -338,3 +342,5 @@ unsigned ISR_Timer::getNumTimers()
 {
   return numTimers;
 }
+
+#endif    // ISR_TIMER_IMPL_GENERIC_H

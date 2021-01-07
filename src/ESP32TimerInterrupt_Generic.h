@@ -25,7 +25,7 @@
    Built by Khoi Hoang https://github.com/khoih-prog/TimerInterrupt_Generic
    Licensed under MIT license
 
-   Version: 1.3.1
+   Version: 1.3.2
 
    Version Modified By   Date      Comments
    ------- -----------  ---------- -----------
@@ -33,15 +33,19 @@
    1.2.0   K Hoang      12/11/2020 Add STM32_TimerInterrupt Library
    1.3.0   K Hoang      01/12/2020 Add Mbed Mano-33-BLE Library. Add support to AVR UNO, Nano, Arduino Mini, Ethernet, BT. etc.
    1.3.1   K.Hoang      09/12/2020 Add complex examples and board Version String. Fix SAMD bug.
+   1.3.2   K.Hoang      06/01/2021 Fix warnings. Optimize examples to reduce memory usage
 *****************************************************************************************************************************/
 
 #pragma once
+
+#ifndef ESP32TIMERINTERRUPT_H
+#define ESP32TIMERINTERRUPT_H
 
 #ifndef ESP32
   #error This code is designed to run on ESP32 platform, not Arduino nor ESP8266! Please check your Tools->Board setting.
 #endif
 
-#define ESP32_TIMER_INTERRUPT_VERSION       "ESP32TimerInterrupt v1.1.1"
+#define ESP32_TIMER_INTERRUPT_VERSION       "ESP32TimerInterrupt v1.2.0"
 
 #ifndef TIMER_INTERRUPT_DEBUG
   #define TIMER_INTERRUPT_DEBUG      0
@@ -145,10 +149,8 @@ class ESP32TimerInterrupt
       _timerCount = (uint64_t) _frequency / frequency;
       // count up
 
-#if (TIMER_INTERRUPT_DEBUG > 0)
-      Serial.println("ESP32TimerInterrupt: _timerNo = " + String(_timerNo) + ", _fre = " + String(_frequency)
-                     + ", _count = " + String((uint32_t) (_timerCount >> 32) ) + " - " + String((uint32_t) (_timerCount)));
-#endif
+      TISR_LOGWARN3(F("ESP32TimerInterrupt: _timerNo ="), _timerNo, F(", _fre ="), _frequency);
+      TISR_LOGWARN3(F("_count ="), (uint32_t) (_timerCount >> 32) , F("-"), (uint32_t) (_timerCount));
 
       // Clock to timer (prescaler) is F_CPU / 3 = 240MHz / 3 = 80MHz
       _timer = timerBegin(_timerNo, F_CPU / (_frequency * 3), true);
@@ -222,3 +224,5 @@ class ESP32TimerInterrupt
     };
 
 }; // class ESP32TimerInterrupt
+
+#endif    // ESP32TIMERINTERRUPT_H

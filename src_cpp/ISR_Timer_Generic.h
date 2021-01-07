@@ -19,7 +19,7 @@
    Built by Khoi Hoang https://github.com/khoih-prog/TimerInterrupt_Generic
    Licensed under MIT license
 
-   Version: 1.3.1
+   Version: 1.3.2
 
    Version Modified By   Date      Comments
    ------- -----------  ---------- -----------
@@ -27,9 +27,17 @@
    1.2.0   K Hoang      12/11/2020 Add STM32_TimerInterrupt Library
    1.3.0   K Hoang      01/12/2020 Add Mbed Mano-33-BLE Library. Add support to AVR UNO, Nano, Arduino Mini, Ethernet, BT. etc.
    1.3.1   K.Hoang      09/12/2020 Add complex examples and board Version String. Fix SAMD bug.
+   1.3.2   K.Hoang      06/01/2021 Fix warnings. Optimize examples to reduce memory usage
 *****************************************************************************************************************************/
 
 #pragma once
+
+#ifndef ISR_TIMER_GENERIC_H
+#define ISR_TIMER_GENERIC_H
+
+#if !defined(TIMER_INTERRUPT_GENERIC_VERSION)
+  #define TIMER_INTERRUPT_GENERIC_VERSION       "TimerInterrupt_Generic v1.3.2"
+#endif
 
 #include <stddef.h>
 
@@ -163,4 +171,6 @@ class ISR_Timer
     // actual number of timers in use (-1 means uninitialized)
     volatile int numTimers;
 };
+
+#endif    // ISR_TIMER_GENERIC_H
 

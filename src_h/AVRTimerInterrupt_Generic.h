@@ -26,7 +26,7 @@
    Built by Khoi Hoang https://github.com/khoih-prog/TimerInterrupt_Generic
    Licensed under MIT license
 
-   Version: 1.3.1
+   Version: 1.3.2
 
    Version Modified By   Date      Comments
    ------- -----------  ---------- -----------
@@ -34,16 +34,22 @@
    1.2.0   K Hoang      12/11/2020 Add STM32_TimerInterrupt Library
    1.3.0   K Hoang      01/12/2020 Add Mbed Mano-33-BLE Library. Add support to AVR UNO, Nano, Arduino Mini, Ethernet, BT. etc.
    1.3.1   K.Hoang      09/12/2020 Add complex examples and board Version String. Fix SAMD bug.
+   1.3.2   K.Hoang      06/01/2021 Fix warnings. Optimize examples to reduce memory usage
 *****************************************************************************************************************************/
 
 
 #pragma once
 
+#ifndef TimerInterrupt_h
+#define TimerInterrupt_h
+
 #ifndef TIMER_INTERRUPT_DEBUG
   #define TIMER_INTERRUPT_DEBUG      0
 #endif
 
-#define TIMER_INTERRUPT_VERSION       "TimerInterrupt v1.1.1"
+#ifndef TIMER_INTERRUPT_VERSION
+  #define TIMER_INTERRUPT_VERSION       "TimerInterrupt v1.1.2"
+#endif
 
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>
@@ -265,9 +271,7 @@ class TimerInterrupt
         // No scaling now
         bitWrite(TCCR1B, CS10, 1);
 
-        #if (TIMER_INTERRUPT_DEBUG > 0)
-        Serial.println("T1");
-        #endif
+        TISR_LOGWARN(F("T1"));
         
         break;
       #endif
@@ -283,9 +287,7 @@ class TimerInterrupt
         // No scaling now
         bitWrite(TCCR2B, CS20, 1);
 
-        #if (TIMER_INTERRUPT_DEBUG > 0)
-        Serial.println("T2");
-        #endif
+        TISR_LOGWARN(F("T2"));
         
         break;
       #endif
@@ -298,9 +300,7 @@ class TimerInterrupt
         bitWrite(TCCR3B, WGM32, 1);
         bitWrite(TCCR3B, CS30, 1);
 
-        #if (TIMER_INTERRUPT_DEBUG > 0)
-        Serial.println("T3");
-        #endif
+        TISR_LOGWARN(F("T3"));
         
         break;
       #endif  
@@ -319,9 +319,7 @@ class TimerInterrupt
         #endif
         bitWrite(TCCR4B, CS40, 1);
 
-        #if (TIMER_INTERRUPT_DEBUG > 0)
-        Serial.println("T4");
-        #endif
+        TISR_LOGWARN(F("T4"));
         
         break;
       #endif
@@ -334,9 +332,7 @@ class TimerInterrupt
         bitWrite(TCCR5B, WGM52, 1);
         bitWrite(TCCR5B, CS50, 1);
 
-        #if (TIMER_INTERRUPT_DEBUG > 0)
-        Serial.println("T5");
-        #endif
+        TISR_LOGWARN(F("T5"));
         
         break;
       #endif
@@ -377,9 +373,8 @@ class TimerInterrupt
       {   
         _toggle_count = frequency * duration / 1000;
 
-        #if (TIMER_INTERRUPT_DEBUG > 0)
-            Serial.println("setFrequency => _toggle_count = " + String(_toggle_count) + ", frequency = " + String(frequency) + ", duration = " + String(duration));
-            #endif
+        TISR_LOGWARN1(F("setFrequency => _toggle_count ="), _toggle_count);
+        TISR_LOGWARN3(F("Frequency ="), frequency, F(", duration ="), duration);
              
         if (_toggle_count < 1)
         {
@@ -411,11 +406,9 @@ class TimerInterrupt
         {
           OCRValue = F_CPU / (frequency * prescalerDiv[prescalerIndex]) - 1;
     
-          #if (TIMER_INTERRUPT_DEBUG > 0)
-          Serial.println("Freq * 1000 = " + String(frequency * 1000));
-          Serial.println("F_CPU = " + String(F_CPU) + ", preScalerDiv = " + String(prescalerDiv[prescalerIndex]));
-          Serial.println("OCR = " + String(OCRValue) + ", preScalerIndex = " + String(prescalerIndex));
-          #endif
+          TISR_LOGWARN1(F("Freq * 1000 ="), frequency * 1000);
+          TISR_LOGWARN3(F("F_CPU ="), F_CPU, F(", preScalerDiv ="), prescalerDiv[prescalerIndex]);
+          TISR_LOGWARN3(F("OCR ="), OCRValue, F(", preScalerIndex ="), prescalerIndex);
 
           // We use very large _OCRValue now, and every time timer ISR activates, we deduct min(MAX_COUNT_16BIT, _OCRValueRemaining) from _OCRValueRemaining
           // So that we can create very long timer, even if the counter is only 16-bit.
@@ -426,10 +419,10 @@ class TimerInterrupt
             _OCRValueRemaining  = OCRValue;
             _prescalerIndex = prescalerIndex;
     
-            #if (TIMER_INTERRUPT_DEBUG > 0)
-            Serial.println("OK in loop => _OCR = " + String(_OCRValue) + ", _preScalerIndex = " + String(_prescalerIndex) + ", preScalerDiv = " + String(prescalerDiv[_prescalerIndex]));
-            #endif
-            
+            TISR_LOGWARN1(F("OK in loop => _OCR ="), _OCRValue);
+            TISR_LOGWARN3(F("_preScalerIndex ="), _prescalerIndex, F(", preScalerDiv ="), prescalerDiv[_prescalerIndex]);
+          
+          
             isSuccess = true;
            
             break;
@@ -443,9 +436,8 @@ class TimerInterrupt
           _OCRValueRemaining  = OCRValue;
           _prescalerIndex = PRESCALER_1024;
     
-          #if (TIMER_INTERRUPT_DEBUG > 0)
-          Serial.println("OK out loop => _OCR = " + String(_OCRValue) + ", _preScalerIndex = " + String(_prescalerIndex) + ", preScalerDiv = " + String(prescalerDiv[_prescalerIndex]));
-          #endif
+          TISR_LOGWARN1(F("OK out loop => _OCR ="), _OCRValue);
+          TISR_LOGWARN3(F("_preScalerIndex ="), _prescalerIndex, F(", preScalerDiv ="), prescalerDiv[_prescalerIndex]);
         }            
       }
       else
@@ -465,10 +457,8 @@ class TimerInterrupt
         {
           OCRValue = F_CPU / (frequency * prescalerDivT2[prescalerIndex]) - 1;
     
-          #if (TIMER_INTERRUPT_DEBUG > 0)
-          Serial.println("F_CPU = " + String(F_CPU) + ", preScalerDiv = " + String(prescalerDivT2[prescalerIndex]));
-          Serial.println("OCR2 = " + String(OCRValue) + ", preScalerIndex = " + String(prescalerIndex));
-          #endif
+          TISR_LOGWARN3(F("F_CPU ="), F_CPU, F(", preScalerDiv ="), prescalerDivT2[prescalerIndex]);
+          TISR_LOGWARN3(F("OCR2 ="), OCRValue, F(", preScalerIndex ="), prescalerIndex);
 
           // We use very large _OCRValue now, and every time timer ISR activates, we deduct min(MAX_COUNT_8BIT, _OCRValue) from _OCRValue
           // to create very long timer, even if the counter is only 16-bit.
@@ -480,9 +470,8 @@ class TimerInterrupt
             // same as prescalarbits
             _prescalerIndex = prescalerIndex;
     
-            #if (TIMER_INTERRUPT_DEBUG > 0)
-            Serial.println("OK in loop => _OCR = " + String(_OCRValue) + ", _preScalerIndex = " + String(_prescalerIndex) + ", preScalerDiv = " + String(prescalerDivT2[_prescalerIndex]));
-            #endif
+            TISR_LOGWARN1(F("OK in loop => _OCR ="), _OCRValue);
+            TISR_LOGWARN3(F("_preScalerIndex ="), _prescalerIndex, F(", preScalerDiv ="), prescalerDivT2[_prescalerIndex]);
             
             isSuccess = true;
             
@@ -498,9 +487,8 @@ class TimerInterrupt
           // same as prescalarbits
           _prescalerIndex = T2_PRESCALER_1024;
     
-          #if (TIMER_INTERRUPT_DEBUG > 0)
-          Serial.println("OK out loop => _OCR = " + String(_OCRValue) + ", _preScalerIndex = " + String(_prescalerIndex) + ", preScalerDiv = " + String(prescalerDivT2[_prescalerIndex]));
-          #endif
+          TISR_LOGWARN1(F("OK out loop => _OCR ="), _OCRValue);
+          TISR_LOGWARN3(F("_preScalerIndex ="), _prescalerIndex, F(", preScalerDiv ="), prescalerDivT2[_prescalerIndex]);
         } 
       }
 
@@ -518,9 +506,8 @@ class TimerInterrupt
       if (_timer == 2)
       {
         TCCR2B = (TCCR2B & andMask) | _prescalerIndex;   //prescalarbits;
-        #if (TIMER_INTERRUPT_DEBUG > 0)
-        Serial.println("TCCR2B = " + String(TCCR2B));
-        #endif
+        
+        TISR_LOGWARN1(F("TCCR2B ="), TCCR2B);
       }
       #endif
 
@@ -529,10 +516,8 @@ class TimerInterrupt
       else if (_timer == 1)
       {
         TCCR1B = (TCCR1B & andMask) | _prescalerIndex;   //prescalarbits;
-        #if (TIMER_INTERRUPT_DEBUG > 0)
-        Serial.println("TCCR1B = " + String(TCCR1B));
-        #endif
         
+        TISR_LOGWARN1(F("TCCR1B ="), TCCR1B);
       }
       #endif
       
@@ -634,10 +619,8 @@ class TimerInterrupt
       #if defined(TIMSK1) && defined(OCIE1A)
       case 1:
         bitWrite(TIMSK1, OCIE1A, 0);
-
-        #if (TIMER_INTERRUPT_DEBUG > 0)
-        Serial.println("Disable T1");
-        #endif     
+   
+        TISR_LOGWARN(F("Disable T1"));
          
         break;
       #endif
@@ -647,9 +630,7 @@ class TimerInterrupt
           bitWrite(TIMSK2, OCIE2A, 0); // disable interrupt
         #endif
         
-        #if (TIMER_INTERRUPT_DEBUG > 0)
-        Serial.println("Disable T2");
-        #endif
+        TISR_LOGWARN(F("Disable T2"));
               
         break;
 
@@ -657,9 +638,7 @@ class TimerInterrupt
       case 3:
         bitWrite(TIMSK3, OCIE3A, 0);
         
-        #if (TIMER_INTERRUPT_DEBUG > 0)
-        Serial.println("Disable T3");
-        #endif
+        TISR_LOGWARN(F("Disable T3"));
               
         break;
   #endif
@@ -668,9 +647,7 @@ class TimerInterrupt
       case 4:
         bitWrite(TIMSK4, OCIE4A, 0);
 
-        #if (TIMER_INTERRUPT_DEBUG > 0)
-        Serial.println("Disable T4");
-        #endif
+        TISR_LOGWARN(F("Disable T4"));
               
         break;
   #endif
@@ -679,9 +656,7 @@ class TimerInterrupt
       case 5:
         bitWrite(TIMSK5, OCIE5A, 0);
 
-        #if (TIMER_INTERRUPT_DEBUG > 0)
-        Serial.println("Disable T5");
-        #endif
+        TISR_LOGWARN(F("Disable T5"));
               
         break;
   #endif
@@ -716,9 +691,7 @@ class TimerInterrupt
       case 1:
         bitWrite(TIMSK1, OCIE1A, 1);
 
-        #if (TIMER_INTERRUPT_DEBUG > 0)
-        Serial.println("Enable T1");
-        #endif     
+        TISR_LOGWARN(F("Enable T1"));
          
         break;
   #endif
@@ -728,9 +701,7 @@ class TimerInterrupt
           bitWrite(TIMSK2, OCIE2A, 1); // enable interrupt
         #endif
 
-        #if (TIMER_INTERRUPT_DEBUG > 0)
-        Serial.println("Enable T2");
-        #endif
+        TISR_LOGWARN(F("Enable T2"));
               
         break;
 
@@ -738,9 +709,7 @@ class TimerInterrupt
       case 3:
         bitWrite(TIMSK3, OCIE3A, 1);
         
-        #if (TIMER_INTERRUPT_DEBUG > 0)
-        Serial.println("Enable T3");
-        #endif
+        TISR_LOGWARN(F("Enable T3"));
               
         break;
   #endif
@@ -749,9 +718,7 @@ class TimerInterrupt
       case 4:
         bitWrite(TIMSK4, OCIE4A, 1);
 
-        #if (TIMER_INTERRUPT_DEBUG > 0)
-        Serial.println("Enable T4");
-        #endif
+        TISR_LOGWARN(F("Enable T4"));
               
         break;
   #endif
@@ -760,9 +727,7 @@ class TimerInterrupt
       case 5:
         bitWrite(TIMSK5, OCIE5A, 1);
 
-        #if (TIMER_INTERRUPT_DEBUG > 0)
-        Serial.println("Enable T5");
-        #endif
+        TISR_LOGWARN(F("Enable T5"));
               
         break;
   #endif
@@ -802,9 +767,8 @@ class TimerInterrupt
     if (_timer == 2)
     {
       TCCR2B = (TCCR2B & andMask);
-      #if (TIMER_INTERRUPT_DEBUG > 0)
-      Serial.println("TCCR2B = " + String(TCCR2B));
-      #endif
+
+      TISR_LOGWARN1(F("TCCR2B ="), TCCR2B);
     }
     #endif
     
@@ -813,9 +777,8 @@ class TimerInterrupt
     else if (_timer == 1)
     {
       TCCR1B = (TCCR1B & andMask);
-      #if (TIMER_INTERRUPT_DEBUG > 0)
-      Serial.println("TCCR1B = " + String(TCCR1B));
-      #endif    
+      
+      TISR_LOGWARN1(F("TCCR1B ="), TCCR1B);
     }
     #endif
     
@@ -849,9 +812,8 @@ class TimerInterrupt
     if (_timer == 2)
     {
       TCCR2B = (TCCR2B & andMask) | _prescalerIndex;   //prescalarbits;
-      #if (TIMER_INTERRUPT_DEBUG > 0)
-      Serial.println("TCCR2B = " + String(TCCR2B));
-      #endif
+
+      TISR_LOGWARN1(F("TCCR2B ="), TCCR2B);
     }
     #endif
 
@@ -860,9 +822,8 @@ class TimerInterrupt
     else if (_timer == 1)
     {
       TCCR1B = (TCCR1B & andMask) | _prescalerIndex;   //prescalarbits;
-      #if (TIMER_INTERRUPT_DEBUG > 0)
-      Serial.println("TCCR1B = " + String(TCCR1B));
-      #endif   
+      
+      TISR_LOGWARN1(F("TCCR1B ="), TCCR1B); 
     }
     #endif
     
@@ -989,9 +950,7 @@ class TimerInterrupt
     {
       long countLocal = ITimer1.getCount();
       
-      #if (TIMER_INTERRUPT_DEBUG > 2)
-      Serial.println("T1 count = " + String(countLocal) + ", _OCRValueRemaining = " + String(ITimer1.get_OCRValueRemaining()) );
-      #endif
+      TISR_LOGDEBUG3(F("T1 count ="), countLocal, F(", _OCRValueRemaining ="), ITimer1.get_OCRValueRemaining());
       
       if (ITimer1.getTimer() == 1)
       {
@@ -999,9 +958,8 @@ class TimerInterrupt
         {
           if (ITimer1.checkTimerDone())
           {
-            #if (TIMER_INTERRUPT_DEBUG > 1)
-            Serial.println("T1 callback, _OCRValueRemaining = " + String(ITimer1.get_OCRValueRemaining()) + ", millis = " + String(millis()) );
-            #endif    
+            TISR_LOGDEBUG3(F("T1 callback, _OCRValueRemaining ="), ITimer1.get_OCRValueRemaining(), F(", millis ="), millis());
+            
             ITimer1.callback();
             
             // To reload _OCRValueRemaining as well as _OCR register to MAX_COUNT_16BIT if _OCRValueRemaining > MAX_COUNT_16BIT
@@ -1014,23 +972,18 @@ class TimerInterrupt
           {
             //Deduct _OCRValue by min(MAX_COUNT_16BIT, _OCRValue)
             // If _OCRValue == 0, flag _timerDone for next cycle
-            #if (TIMER_INTERRUPT_DEBUG > 2)
-            Serial.println("T1 before _OCRValueRemaining = " + String(ITimer1.get_OCRValueRemaining()) );
-            #endif        
+            TISR_LOGDEBUG1(F("T1 before _OCRValueRemaining ="), ITimer1.get_OCRValueRemaining());     
 
             // If last one (_OCRValueRemaining < MAX_COUNT_16BIT) => load _OCR register _OCRValueRemaining
             ITimer1.adjust_OCRValue();
             
-            #if (TIMER_INTERRUPT_DEBUG > 2)
-            Serial.println("T1 after _OCRValueRemaining = " + String(ITimer1.get_OCRValueRemaining()) );
-            #endif        
+            TISR_LOGDEBUG1(F("T1 after _OCRValueRemaining ="), ITimer1.get_OCRValueRemaining());
           }         
         }
         else
         {
-          #if (TIMER_INTERRUPT_DEBUG > 0)
-          Serial.println("T1 done");
-          #endif
+          TISR_LOGWARN(F("T1 done"));
+          
           ITimer1.detachInterrupt();
         }
       }
@@ -1048,9 +1001,7 @@ class TimerInterrupt
     {
       long countLocal = ITimer2.getCount();
 
-      #if (TIMER_INTERRUPT_DEBUG > 2)
-      Serial.println("T2 count = " + String(countLocal) + ", _OCRValueRemaining = " + String(ITimer2.get_OCRValueRemaining()) );
-      #endif
+      TISR_LOGDEBUG3(F("T2 count ="), countLocal, F(", _OCRValueRemaining ="), ITimer2.get_OCRValueRemaining());
       
       if (ITimer2.getTimer() == 2)
       {
@@ -1058,9 +1009,8 @@ class TimerInterrupt
         {
           if (ITimer2.checkTimerDone())
           {
-            #if (TIMER_INTERRUPT_DEBUG > 1)
-            Serial.println("T2 callback, _OCRValueRemaining = " + String(ITimer2.get_OCRValueRemaining()) + ", millis = " + String(millis()) );
-            #endif            
+            TISR_LOGDEBUG3(F("T2 callback, _OCRValueRemaining ="), ITimer2.get_OCRValueRemaining(), F(", millis ="), millis());
+             
             ITimer2.callback();
             // To reload _OCRValue
             ITimer2.reload_OCRValue();
@@ -1071,24 +1021,19 @@ class TimerInterrupt
           }
           else
           {
-            #if (TIMER_INTERRUPT_DEBUG > 2)
-            Serial.println("T2 before _OCRValueRemaining = " + String(ITimer2.get_OCRValueRemaining()) );
-            #endif        
+            TISR_LOGDEBUG1(F("T2 before _OCRValueRemaining ="), ITimer2.get_OCRValueRemaining());
             
             //Deduct _OCRValue by min(MAX_COUNT_8BIT, _OCRValue)
             // If _OCRValue == 0, flag _timerDone for next cycle
             ITimer2.adjust_OCRValue();
-            
-            #if (TIMER_INTERRUPT_DEBUG > 2)
-            Serial.println("T2 after _OCRValueRemaining = " + String(ITimer2.get_OCRValueRemaining()) );
-            #endif        
+               
+            TISR_LOGDEBUG1(F("T2 after _OCRValueRemaining ="), ITimer2.get_OCRValueRemaining());  
           }          
         }    
         else
         {
-          #if (TIMER_INTERRUPT_DEBUG > 0)
-          Serial.println("T2 done");
-          #endif
+          TISR_LOGWARN(F("T2 done"));
+          
           ITimer2.detachInterrupt();
         }
       }
@@ -1109,19 +1054,16 @@ class TimerInterrupt
       {
         long countLocal = ITimer3.getCount();
         
-        #if (TIMER_INTERRUPT_DEBUG > 2)
-        Serial.println("T3 count = " + String(countLocal) + ", _OCRValueRemaining = " + String(ITimer3.get_OCRValueRemaining()) );
-        #endif
+        TISR_LOGDEBUG3(F("T3 count ="), countLocal, F(", _OCRValueRemaining ="), ITimer3.get_OCRValueRemaining());
         
         if (ITimer3.getTimer() == 3)
         {
           if (countLocal != 0)
           {
             if (ITimer3.checkTimerDone())
-            {
-              #if (TIMER_INTERRUPT_DEBUG > 1)
-              Serial.println("T3 callback, _OCRValueRemaining = " + String(ITimer3.get_OCRValueRemaining()) + ", millis = " + String(millis()) );
-              #endif    
+            { 
+              TISR_LOGDEBUG3(F("T3 callback, _OCRValueRemaining ="), ITimer3.get_OCRValueRemaining(), F(", millis ="), millis());
+              
               ITimer3.callback();
               
               // To reload _OCRValueRemaining as well as _OCR register to MAX_COUNT_16BIT
@@ -1133,24 +1075,19 @@ class TimerInterrupt
             else
             {
               //Deduct _OCRValue by min(MAX_COUNT_16BIT, _OCRValue)
-              // If _OCRValue == 0, flag _timerDone for next cycle
-              #if (TIMER_INTERRUPT_DEBUG > 2)
-              Serial.println("T3 before _OCRValueRemaining = " + String(ITimer3.get_OCRValueRemaining()) );
-              #endif        
+              // If _OCRValue == 0, flag _timerDone for next cycle    
+              TISR_LOGDEBUG1(F("T3 before _OCRValueRemaining ="), ITimer3.get_OCRValueRemaining());
       
               // If last one (_OCRValueRemaining < MAX_COUNT_16BIT) => load _OCR register _OCRValueRemaining
               ITimer3.adjust_OCRValue();
-              
-              #if (TIMER_INTERRUPT_DEBUG > 2)
-              Serial.println("T3 after _OCRValueRemaining = " + String(ITimer3.get_OCRValueRemaining()) );
-              #endif        
+                  
+              TISR_LOGDEBUG1(F("T3 after _OCRValueRemaining ="), ITimer3.get_OCRValueRemaining());
             }
           }
           else
           {
-            #if (TIMER_INTERRUPT_DEBUG > 0)
-            Serial.println("T3 done");
-            #endif
+            TISR_LOGWARN(F("T3 done"));
+            
             ITimer3.detachInterrupt();
           }
         }
@@ -1169,19 +1106,16 @@ class TimerInterrupt
       {
         long countLocal = ITimer4.getCount();
         
-        #if (TIMER_INTERRUPT_DEBUG > 2)
-        Serial.println("T4 count = " + String(countLocal) + ", _OCRValueRemaining = " + String(ITimer4.get_OCRValueRemaining()) );
-        #endif
+        TISR_LOGDEBUG3(F("T4 count ="), countLocal, F(", _OCRValueRemaining ="), ITimer4.get_OCRValueRemaining());
         
         if (ITimer4.getTimer() == 4)
         {
           if (countLocal != 0)
           {
             if (ITimer4.checkTimerDone())
-            {
-              #if (TIMER_INTERRUPT_DEBUG > 1)
-              Serial.println("T4 callback, _OCRValueRemaining = " + String(ITimer4.get_OCRValueRemaining()) + ", millis = " + String(millis()) );
-              #endif    
+            {  
+              TISR_LOGDEBUG3(F("T4 callback, _OCRValueRemaining ="), ITimer4.get_OCRValueRemaining(), F(", millis ="), millis());
+              
               ITimer4.callback();
               
               // To reload _OCRValueRemaining as well as _OCR register to MAX_COUNT_16BIT
@@ -1194,23 +1128,18 @@ class TimerInterrupt
             {
               //Deduct _OCRValue by min(MAX_COUNT_16BIT, _OCRValue)
               // If _OCRValue == 0, flag _timerDone for next cycle
-              #if (TIMER_INTERRUPT_DEBUG > 2)
-              Serial.println("T4 before _OCRValueRemaining = " + String(ITimer4.get_OCRValueRemaining()) );
-              #endif        
+              TISR_LOGDEBUG1(F("T4 before _OCRValueRemaining ="), ITimer4.get_OCRValueRemaining()); 
       
               // If last one (_OCRValueRemaining < MAX_COUNT_16BIT) => load _OCR register _OCRValueRemaining
               ITimer4.adjust_OCRValue();
-              
-              #if (TIMER_INTERRUPT_DEBUG > 2)
-              Serial.println("T4 after _OCRValueRemaining = " + String(ITimer4.get_OCRValueRemaining()) );
-              #endif        
+                    
+              TISR_LOGDEBUG1(F("T4 after _OCRValueRemaining ="), ITimer4.get_OCRValueRemaining());
             }
           }
           else
           {
-            #if (TIMER_INTERRUPT_DEBUG > 0)
-            Serial.println("T4 done");
-            #endif
+            TISR_LOGWARN(F("T4 done"));
+            
             ITimer4.detachInterrupt();
           }
         }
@@ -1230,9 +1159,7 @@ class TimerInterrupt
       {
         long countLocal = ITimer5.getCount();
         
-        #if (TIMER_INTERRUPT_DEBUG > 2)
-        Serial.println("T5 count = " + String(countLocal) + ", _OCRValueRemaining = " + String(ITimer5.get_OCRValueRemaining()) );
-        #endif
+        TISR_LOGDEBUG3(F("T5 count ="), countLocal, F(", _OCRValueRemaining ="), ITimer5.get_OCRValueRemaining());
         
         if (ITimer5.getTimer() == 5)
         {
@@ -1240,9 +1167,8 @@ class TimerInterrupt
           {
             if (ITimer5.checkTimerDone())
             {
-              #if (TIMER_INTERRUPT_DEBUG > 1)
-              Serial.println("T5 callback, _OCRValueRemaining = " + String(ITimer5.get_OCRValueRemaining()) + ", millis = " + String(millis()) );
-              #endif    
+              TISR_LOGDEBUG3(F("T5 callback, _OCRValueRemaining ="), ITimer5.get_OCRValueRemaining(), F(", millis ="), millis());
+              
               ITimer5.callback();
               
               // To reload _OCRValueRemaining as well as _OCR register to MAX_COUNT_16BIT
@@ -1254,24 +1180,19 @@ class TimerInterrupt
             else
             {
               //Deduct _OCRValue by min(MAX_COUNT_16BIT, _OCRValue)
-              // If _OCRValue == 0, flag _timerDone for next cycle
-              #if (TIMER_INTERRUPT_DEBUG > 2)
-              Serial.println("T5 before _OCRValueRemaining = " + String(ITimer5.get_OCRValueRemaining()) );
-              #endif        
+              // If _OCRValue == 0, flag _timerDone for next cycle      
+              TISR_LOGDEBUG1(F("T5 before _OCRValueRemaining ="), ITimer5.get_OCRValueRemaining());
       
               // If last one (_OCRValueRemaining < MAX_COUNT_16BIT) => load _OCR register _OCRValueRemaining
               ITimer5.adjust_OCRValue();
               
-              #if (TIMER_INTERRUPT_DEBUG > 2)
-              Serial.println("T5 after _OCRValueRemaining = " + String(ITimer5.get_OCRValueRemaining()) );
-              #endif        
+              TISR_LOGDEBUG1(F("T5 after _OCRValueRemaining ="), ITimer5.get_OCRValueRemaining());    
             }
           }
           else
           {
-            #if (TIMER_INTERRUPT_DEBUG > 0)
-            Serial.println("T5 done");
-            #endif
+            TISR_LOGWARN(F("T5 done"));
+            
             ITimer5.detachInterrupt();
           }
         }
@@ -1280,4 +1201,6 @@ class TimerInterrupt
     #endif  //#ifndef TIMER5_INSTANTIATED
   #endif    //#if USE_TIMER_5
 #endif      //#if defined(__AVR_ATmega8__) || defined(__AVR_ATmega128__)
+
+#endif      //#ifndef TimerInterrupt_h
 

@@ -19,7 +19,7 @@
    Built by Khoi Hoang https://github.com/khoih-prog/TimerInterrupt_Generic
    Licensed under MIT license
 
-   Version: 1.3.1
+   Version: 1.3.2
 
    Version Modified By   Date      Comments
    ------- -----------  ---------- -----------
@@ -27,9 +27,13 @@
    1.2.0   K Hoang      12/11/2020 Add STM32_TimerInterrupt Library
    1.3.0   K Hoang      01/12/2020 Add Mbed Mano-33-BLE Library. Add support to AVR UNO, Nano, Arduino Mini, Ethernet, BT. etc.
    1.3.1   K.Hoang      09/12/2020 Add complex examples and board Version String. Fix SAMD bug.
+   1.3.2   K.Hoang      06/01/2021 Fix warnings. Optimize examples to reduce memory usage
 *****************************************************************************************************************************/
 
 #pragma once
+
+#ifndef STM32TIMERINTERRUPT_H
+#define STM32TIMERINTERRUPT_H
 
 #if !( defined(STM32F0) || defined(STM32F1) || defined(STM32F2) || defined(STM32F3)  ||defined(STM32F4) || defined(STM32F7) || \
        defined(STM32L0) || defined(STM32L1) || defined(STM32L4) || defined(STM32H7)  ||defined(STM32G0) || defined(STM32G4) || \
@@ -37,7 +41,7 @@
   #error This code is designed to run on STM32F/L/H/G/WB/MP1 platform! Please check your Tools->Board setting.
 #endif
 
-#define STM32_TIMER_INTERRUPT_VERSION       "STM32_TimerInterrupt v1.1.1"
+#define STM32_TIMER_INTERRUPT_VERSION       "STM32_TimerInterrupt v1.2.0"
 
 #ifndef TIMER_INTERRUPT_DEBUG
   #define TIMER_INTERRUPT_DEBUG       0
@@ -86,10 +90,8 @@ class STM32TimerInterrupt
       _frequency  = 1000000;
       _timerCount = (uint32_t) _frequency / frequency;
 
-#if (TIMER_INTERRUPT_DEBUG > 0)
-      Serial.println("STM32TimerInterrupt: Timer Input Freq (Hz) = " + String(_hwTimer->getTimerClkFreq()) + ", _fre = " + String(_frequency)
-                     + ", _count = " + String((uint32_t) (_timerCount)));          
-#endif
+      TISR_LOGWARN1(F("STM32TimerInterrupt: Timer Input Freq (Hz) ="), _hwTimer->getTimerClkFreq());
+      TISR_LOGWARN3(F("Frequency ="), _frequency, F(", _count ="), (uint32_t) (_timerCount));
 
       _hwTimer->setCount(0, MICROSEC_FORMAT);
       _hwTimer->setOverflow(_timerCount, MICROSEC_FORMAT);
@@ -158,3 +160,5 @@ class STM32TimerInterrupt
       _hwTimer->resume();
     }
 }; // class STM32TimerInterrupt
+
+#endif      // STM32TIMERINTERRUPT_H
