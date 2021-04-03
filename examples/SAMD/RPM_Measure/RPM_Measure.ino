@@ -122,7 +122,7 @@ void TimerHandler()
 
 #if (TIMER_INTERRUPT_DEBUG > 1)
       Serial.print("RPM = "); Serial.print(avgRPM);
-      Serial.print(", rotationTime ms = "); Serial.println(rotationTime * TIMER1_INTERVAL_MS);
+      Serial.print(", rotationTime ms = "); Serial.println(rotationTime * TIMER0_INTERVAL_MS);
 #endif
 
     rotationTime = 0;

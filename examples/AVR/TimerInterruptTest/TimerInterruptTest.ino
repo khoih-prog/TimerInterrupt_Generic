@@ -26,16 +26,6 @@
    Licensed under MIT license
 *****************************************************************************************************************************/
 
-#if defined(__AVR_ATmega8__) || defined(__AVR_ATmega128__) || defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__) || \
-    defined(__AVR_ATmega1284__) || defined(__AVR_ATmega1284P__) || defined(__AVR_ATmega644__) || defined(__AVR_ATmega644A__) || \
-    defined(__AVR_ATmega644P__) || defined(__AVR_ATmega644PA__) || defined(ARDUINO_AVR_UNO) || defined(ARDUINO_AVR_NANO) || \
-    defined(ARDUINO_AVR_MINI) || defined(ARDUINO_AVR_ETHERNET) || defined(ARDUINO_AVR_FIO) || defined(ARDUINO_AVR_BT) || \
-    defined(ARDUINO_AVR_LILYPAD) || defined(ARDUINO_AVR_PRO) || defined(ARDUINO_AVR_NG) || defined(ARDUINO_AVR_UNO_WIFI_DEV_ED)
-
-#else
-  #error This is designed only for Arduino AVR board! Please check your Tools->Board setting.
-#endif
-
 // These define's must be placed at the beginning before #include "TimerInterrupt_Generic.h"
 // _TIMERINTERRUPT_LOGLEVEL_ from 0 to 4
 // Don't define _TIMERINTERRUPT_LOGLEVEL_ > 0. Only for special ISR debugging only. Can hang the system.
@@ -48,8 +38,11 @@
 #define USE_TIMER_4     false
 #define USE_TIMER_5     false
 
-
 #include "TimerInterrupt_Generic.h"
+
+#if !(TIMER_INTERRUPT_USING_AVR)
+  #error This is designed only for Arduino AVR board! Please check your Tools->Board setting.
+#endif
 
 void TimerHandler1(unsigned int outputPin = LED_BUILTIN)
 {
@@ -71,6 +64,8 @@ void TimerHandler1(unsigned int outputPin = LED_BUILTIN)
   toggle1 = !toggle1;
 }
 
+#if USE_TIMER_2
+
 void TimerHandler2(unsigned int outputPin = LED_BUILTIN)
 {
   static bool toggle2 = false;
@@ -91,6 +86,8 @@ void TimerHandler2(unsigned int outputPin = LED_BUILTIN)
   toggle2 = !toggle2;
 }
 
+#endif
+
 unsigned int outputPin1 = LED_BUILTIN;
 unsigned int outputPin2 = A0;
 
@@ -107,7 +104,8 @@ void setup()
   Serial.begin(115200);
   while (!Serial);
 
-  Serial.println(F("\nStarting TimerInterruptTest on Arduino AVR board"));
+  Serial.print(F("\nStarting TimerInterruptTest on "));
+  Serial.println(BOARD_TYPE);
   Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
   Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
 
@@ -126,6 +124,8 @@ void setup()
   else
     Serial.println(F("Can't set ITimer1. Select another freq. or timer"));
 
+#if USE_TIMER_2
+
   ITimer2.init();
 
   if (ITimer2.attachInterruptInterval(TIMER2_INTERVAL_MS, TimerHandler2, outputPin2, TIMER2_DURATION_MS))
@@ -134,6 +134,8 @@ void setup()
   }
   else
     Serial.println(F("Can't set ITimer2. Select another freq. or timer"));
+    
+#endif    
 }
 
 void loop()
@@ -141,13 +143,17 @@ void loop()
 
 #if 0
   static unsigned long lastTimer1 = 0;
+
+#if USE_TIMER_2  
   static unsigned long lastTimer2 = 0;
+#endif
 
   static bool timerPaused         = false;
   static bool timerResumed        = false;
 
   if (millis() - lastTimer1 > TIMER1_DURATION_MS * 3)
   {
+#if USE_TIMER_2    
     if (millis() - lastTimer2 > TIMER2_DURATION_MS * 3)
     {
       lastTimer2 = millis();
@@ -156,6 +162,7 @@ void loop()
       
       ITimer2.reattachInterrupt(TIMER2_DURATION_MS);
     }
+#endif
 
     lastTimer1 = millis();
     // try reinit timer

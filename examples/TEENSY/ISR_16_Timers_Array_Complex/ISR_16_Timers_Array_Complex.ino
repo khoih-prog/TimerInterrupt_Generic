@@ -54,7 +54,7 @@
 
 #include "ISR_Timer_Generic.h"
 
-#include <SimpleTimer.h>              // https://github.com/schinken/SimpleTimer
+#include <SimpleTimer.h>              // https://github.com/jfturcot/SimpleTimer
 
 #ifndef LED_BUILTIN
   #define LED_BUILTIN       13
@@ -319,7 +319,7 @@ void setup()
   Serial.begin(115200);
   while (!Serial);
 
-   Serial.print(F("\nStarting ISR_16_Timers_Array_Complex on ")); Serial.println(BOARD_NAME);
+  Serial.print(F("\nStarting ISR_16_Timers_Array_Complex on ")); Serial.println(BOARD_NAME);
   Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
   Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
 

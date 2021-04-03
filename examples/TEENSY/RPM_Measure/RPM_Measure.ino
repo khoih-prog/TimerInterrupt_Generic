@@ -57,7 +57,7 @@
 // _TIMERINTERRUPT_LOGLEVEL_ from 0 to 4
 // Don't define _TIMERINTERRUPT_LOGLEVEL_ > 0. Only for special ISR debugging only. Can hang the system.
 // Don't define TIMER_INTERRUPT_DEBUG > 2. Only for special ISR debugging only. Can hang the system.
-#define TIMER_INTERRUPT_DEBUG         0
+#define TIMER_INTERRUPT_DEBUG         2
 #define _TIMERINTERRUPT_LOGLEVEL_     0
 
 #include "TimerInterrupt_Generic.h"
@@ -94,14 +94,6 @@ volatile int debounceCounter;
 
 void TimerHandler()
 {
-  static bool started = false;
-
-  if (!started)
-  {
-    started = true;
-    pinMode(SWPin, INPUT_PULLUP);
-  }
-
   if ( !digitalRead(SWPin) && (debounceCounter >= (DEBOUNCING_INTERVAL_MS * 1000 ) / TIMER_INTERVAL_US ) )
   {
     //min time between pulses has passed
@@ -111,7 +103,7 @@ void TimerHandler()
 
 #if (TIMER_INTERRUPT_DEBUG > 1)
       Serial.print("RPM = "); Serial.print(avgRPM);
-      Serial.print(", rotationTime ms = "); Serial.println(rotationTime * TIMER_INTERVAL_MS);
+      Serial.print(", rotationTime ms = "); Serial.println( (rotationTime * TIMER_INTERVAL_US) / 1000);
 #endif
 
     rotationTime = 0;
@@ -141,6 +133,8 @@ void TimerHandler()
 
 void setup()
 {
+  pinMode(SWPin, INPUT_PULLUP);
+  
   Serial.begin(115200);
   while (!Serial);
 

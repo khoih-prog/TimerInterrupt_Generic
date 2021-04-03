@@ -44,16 +44,6 @@
     To run MEGA+WiFi combined, turn ON SW 1+2 (MCU <-> ESP) and SW 3+4 (USB <-> MCU)
  *****************************************************************************************************************************/
 
-#if defined(__AVR_ATmega8__) || defined(__AVR_ATmega128__) || defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__) || \
-    defined(__AVR_ATmega1284__) || defined(__AVR_ATmega1284P__) || defined(__AVR_ATmega644__) || defined(__AVR_ATmega644A__) || \
-    defined(__AVR_ATmega644P__) || defined(__AVR_ATmega644PA__) || defined(ARDUINO_AVR_UNO) || defined(ARDUINO_AVR_NANO) || \
-    defined(ARDUINO_AVR_MINI) || defined(ARDUINO_AVR_ETHERNET) || defined(ARDUINO_AVR_FIO) || defined(ARDUINO_AVR_BT) || \
-    defined(ARDUINO_AVR_LILYPAD) || defined(ARDUINO_AVR_PRO) || defined(ARDUINO_AVR_NG) || defined(ARDUINO_AVR_UNO_WIFI_DEV_ED)
-
-#else
-  #error This is designed only for Arduino AVR board! Please check your Tools->Board setting.
-#endif
-
 #define BLYNK_PRINT Serial
 //#define BLYNK_DEBUG true
 
@@ -71,6 +61,10 @@
 
 #include "TimerInterrupt_Generic.h"
 #include "ISR_Timer_Generic.h"
+
+#if !(TIMER_INTERRUPT_USING_AVR)
+  #error This is designed only for Arduino AVR board! Please check your Tools->Board setting.
+#endif
 
 #include <ESP8266_Lib.h>
 #include <BlynkSimpleShieldEsp8266.h>
@@ -93,10 +87,22 @@ char pass[]     = "****";
 
 //Mega2560
 // Hardware Serial on Mega, Leonardo, Micro...
-#define EspSerial Serial3   //Serial1
-
-// Your MEGA <-> ESP8266 baud rate:
-#define ESP8266_BAUD 115200
+#if ( ARDUINO_AVR_MEGA2560 || ARDUINO_AVR_MEGA || ARDUINO_AVR_ADK )
+  #define EspSerial Serial3   //Serial1
+  // Your HardwareSerial <-> ESP8266 baud rate:
+  #define ESP8266_BAUD      115200
+#elif ( defined(__AVR_ATmega328__) || defined(__AVR_ATmega168__) || defined(__AVR_ATmega328__) || defined(__AVR_ATmega328P__) )
+  #include <SoftwareSerial.h>
+  SoftwareSerial swSerial(2, 3);    // (RX, TX);
+  #define EspSerial swSerial
+  // Your HardwareSerial <-> ESP8266 baud rate:
+  #define ESP8266_BAUD      9600
+  #warning Using Software Serial for ESP with speed 9600 bauds
+#else
+  #define EspSerial Serial1
+  // Your HardwareSerial <-> ESP8266 baud rate:
+  #define ESP8266_BAUD      115200
+#endif
 
 ESP8266 wifi(&EspSerial);
 
@@ -208,7 +214,8 @@ void setup()
   Serial.begin(115200);
   while (!Serial);
 
-  Serial.println(F("\nStarting ISR_Timer_Complex on Arduino AVR board"));
+  Serial.print(F("\nStarting ISR_Timer_Complex on "));
+  Serial.println(BOARD_TYPE);
   Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
   Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
 

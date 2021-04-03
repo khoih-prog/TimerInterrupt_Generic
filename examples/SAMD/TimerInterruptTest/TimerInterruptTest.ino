@@ -87,7 +87,7 @@ void TimerHandler0()
     pinMode(LED_BUILTIN, OUTPUT);
   }
  
-#if (NRF52_TIMER_INTERRUPT_DEBUG > 0)
+#if (TIMER_INTERRUPT_DEBUG > 0)
     static uint32_t curMillis = 0;
       
     curMillis = millis();
@@ -122,7 +122,7 @@ void TimerHandler1()
     pinMode(LED_BLUE, OUTPUT);
   }
   
-#if (NRF52_TIMER_INTERRUPT_DEBUG > 0)
+#if (TIMER_INTERRUPT_DEBUG > 0)
     static uint32_t curMillis = 0;
     
     curMillis = millis();

@@ -38,15 +38,6 @@
    or the entire sequence of your code which accesses the data.
 */
 
-#if defined(__AVR_ATmega8__) || defined(__AVR_ATmega128__) || defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__) || \
-    defined(__AVR_ATmega1284__) || defined(__AVR_ATmega1284P__) || defined(__AVR_ATmega644__) || defined(__AVR_ATmega644A__) || \
-    defined(__AVR_ATmega644P__) || defined(__AVR_ATmega644PA__) || defined(ARDUINO_AVR_UNO) || defined(ARDUINO_AVR_NANO) || \
-    defined(ARDUINO_AVR_MINI) || defined(ARDUINO_AVR_ETHERNET) || defined(ARDUINO_AVR_FIO) || defined(ARDUINO_AVR_BT) || \
-    defined(ARDUINO_AVR_LILYPAD) || defined(ARDUINO_AVR_PRO) || defined(ARDUINO_AVR_NG) || defined(ARDUINO_AVR_UNO_WIFI_DEV_ED)
-
-#else
-  #error This is designed only for Arduino AVR board! Please check your Tools->Board setting.
-#endif
 
 // These define's must be placed at the beginning before #include "TimerInterrupt_Generic.h"
 // _TIMERINTERRUPT_LOGLEVEL_ from 0 to 4
@@ -62,6 +53,10 @@
 
 #include "TimerInterrupt_Generic.h"
 
+#if !(TIMER_INTERRUPT_USING_AVR)
+  #error This is designed only for Arduino AVR board! Please check your Tools->Board setting.
+#endif
+
 //#ifndef LED_BUILTIN
 //  #define LED_BUILTIN         13
 //#endif
@@ -69,7 +64,6 @@
 #ifndef LED_BLUE
   #define LED_BLUE              7
 #endif
-
 
 #define TIMER1_INTERVAL_MS        100UL
 #define TIMER2_INTERVAL_MS        200UL
@@ -96,6 +90,8 @@ void TimerHandler1()
   toggle1 = !toggle1;
 }
 
+#if USE_TIMER_2
+
 void TimerHandler2()
 {
   static bool toggle2 = false;
@@ -108,6 +104,8 @@ void TimerHandler2()
   toggle2 = !toggle2;
 }
 
+#endif
+
 void setup()
 {
   pinMode(LED_BUILTIN, OUTPUT);
@@ -116,7 +114,8 @@ void setup()
   Serial.begin(115200);
   while (!Serial);
 
-  Serial.println(F("\nStarting Change_Interval on Arduino AVR board"));
+  Serial.print(F("\nStarting Change_Interval on "));
+  Serial.println(BOARD_TYPE);
   Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
   Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
 
@@ -135,6 +134,8 @@ void setup()
   else
     Serial.println(F("Can't set ITimer1. Select another freq. or timer"));
 
+#if USE_TIMER_2
+
   // Select Timer 1-2 for UNO, 0-5 for MEGA
   // Timer 2 is 8-bit timer, only for higher frequency
   ITimer2.init();
@@ -145,6 +146,7 @@ void setup()
   }
   else
     Serial.println(F("Can't set ITimer2. Select another freq. or timer"));
+#endif    
 }
 
 #define CHECK_INTERVAL_MS     10000L
@@ -173,10 +175,14 @@ void loop()
       // bool setInterval(unsigned long interval, timer_callback callback, unsigned long duration)
       
       ITimer1.setInterval(TIMER1_INTERVAL_MS * (multFactor + 1), TimerHandler1);
+
+      Serial.print(F("Changing Interval, Timer1 = ")); Serial.println(TIMER1_INTERVAL_MS * (multFactor + 1)); 
+
+#if USE_TIMER_2
       ITimer2.setInterval(TIMER2_INTERVAL_MS * (multFactor + 1), TimerHandler2);
 
-      Serial.print(F("Changing Interval, Timer1 = ")); Serial.print(TIMER1_INTERVAL_MS * (multFactor + 1));
-      Serial.print(F(",  Timer2 = ")); Serial.println(TIMER2_INTERVAL_MS * (multFactor + 1)); 
+      Serial.print(F("Changing Interval, Timer2 = ")); Serial.println(TIMER2_INTERVAL_MS * (multFactor + 1));                        
+#endif
       
       lastChangeTime = currTime;
     }

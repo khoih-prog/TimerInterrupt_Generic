@@ -26,16 +26,6 @@
    Licensed under MIT license
 *****************************************************************************************************************************/
 
-#if defined(__AVR_ATmega8__) || defined(__AVR_ATmega128__) || defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__) || \
-    defined(__AVR_ATmega1284__) || defined(__AVR_ATmega1284P__) || defined(__AVR_ATmega644__) || defined(__AVR_ATmega644A__) || \
-    defined(__AVR_ATmega644P__) || defined(__AVR_ATmega644PA__) || defined(ARDUINO_AVR_UNO) || defined(ARDUINO_AVR_NANO) || \
-    defined(ARDUINO_AVR_MINI) || defined(ARDUINO_AVR_ETHERNET) || defined(ARDUINO_AVR_FIO) || defined(ARDUINO_AVR_BT) || \
-    defined(ARDUINO_AVR_LILYPAD) || defined(ARDUINO_AVR_PRO) || defined(ARDUINO_AVR_NG) || defined(ARDUINO_AVR_UNO_WIFI_DEV_ED)
-
-#else
-  #error This is designed only for Arduino AVR board! Please check your Tools->Board setting.
-#endif
-
 // These define's must be placed at the beginning before #include "TimerInterrupt_Generic.h"
 // _TIMERINTERRUPT_LOGLEVEL_ from 0 to 4
 // Don't define _TIMERINTERRUPT_LOGLEVEL_ > 0. Only for special ISR debugging only. Can hang the system.
@@ -48,8 +38,18 @@
 #define USE_TIMER_4     false
 #define USE_TIMER_5     false
 
-
 #include "TimerInterrupt_Generic.h"
+
+#if !(TIMER_INTERRUPT_USING_AVR)
+  #error This is designed only for Arduino AVR board! Please check your Tools->Board setting.
+#endif
+
+#define TIMER1_INTERVAL_MS    1000
+#define TIMER1_FREQUENCY      (float) (1000.0f / TIMER1_INTERVAL_MS)
+#define TIMER1_DURATION_MS    (10 * TIMER1_INTERVAL_MS)
+
+unsigned int outputPin1 = LED_BUILTIN;
+unsigned int outputPin2 = A0;
 
 void TimerHandler1(unsigned int outputPin = LED_BUILTIN)
 {
@@ -71,6 +71,12 @@ void TimerHandler1(unsigned int outputPin = LED_BUILTIN)
   toggle1 = !toggle1;
 }
 
+#if USE_TIMER_2
+
+#define TIMER2_INTERVAL_MS    1300
+#define TIMER2_FREQUENCY      (float) (1000.0f / TIMER2_INTERVAL_MS)
+#define TIMER2_DURATION_MS    (20 * TIMER2_INTERVAL_MS)
+
 void TimerHandler2(unsigned int outputPin = LED_BUILTIN)
 {
   static bool toggle2 = false;
@@ -91,23 +97,17 @@ void TimerHandler2(unsigned int outputPin = LED_BUILTIN)
   toggle2 = !toggle2;
 }
 
-unsigned int outputPin1 = LED_BUILTIN;
-unsigned int outputPin2 = A0;
+#endif
 
-#define TIMER1_INTERVAL_MS    1000
-#define TIMER1_FREQUENCY      (float) (1000.0f / TIMER1_INTERVAL_MS)
-#define TIMER1_DURATION_MS    (10 * TIMER1_INTERVAL_MS)
 
-#define TIMER2_INTERVAL_MS    1300
-#define TIMER2_FREQUENCY      (float) (1000.0f / TIMER2_INTERVAL_MS)
-#define TIMER2_DURATION_MS    (20 * TIMER2_INTERVAL_MS)
 
 void setup()
 {
   Serial.begin(115200);
   while (!Serial);
 
-  Serial.println(F("\nStarting TimerDuration on Arduino AVR board"));
+  Serial.print(F("\nStarting TimerDuration on "));
+  Serial.println(BOARD_TYPE);
   Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
   Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
 
@@ -127,6 +127,8 @@ void setup()
   else
     Serial.println(F("Can't set ITimer1. Select another freq. or timer"));
 
+#if USE_TIMER_2
+
   ITimer2.init();
 
   //if (ITimer2.attachInterrupt(TIMER2_FREQUENCY, TimerHandler2, outputPin2, TIMER2_DURATION_MS))
@@ -136,6 +138,7 @@ void setup()
   }
   else
     Serial.println(F("Can't set ITimer2. Select another freq. or timer"));
+#endif    
 }
 
 void loop()

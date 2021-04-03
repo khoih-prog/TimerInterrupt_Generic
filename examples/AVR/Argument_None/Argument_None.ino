@@ -26,16 +26,6 @@
    Licensed under MIT license
 *****************************************************************************************************************************/
 
-#if defined(__AVR_ATmega8__) || defined(__AVR_ATmega128__) || defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__) || \
-    defined(__AVR_ATmega1284__) || defined(__AVR_ATmega1284P__) || defined(__AVR_ATmega644__) || defined(__AVR_ATmega644A__) || \
-    defined(__AVR_ATmega644P__) || defined(__AVR_ATmega644PA__) || defined(ARDUINO_AVR_UNO) || defined(ARDUINO_AVR_NANO) || \
-    defined(ARDUINO_AVR_MINI) || defined(ARDUINO_AVR_ETHERNET) || defined(ARDUINO_AVR_FIO) || defined(ARDUINO_AVR_BT) || \
-    defined(ARDUINO_AVR_LILYPAD) || defined(ARDUINO_AVR_PRO) || defined(ARDUINO_AVR_NG) || defined(ARDUINO_AVR_UNO_WIFI_DEV_ED)
-
-#else
-  #error This is designed only for Arduino AVR board! Please check your Tools->Board setting.
-#endif
-
 // These define's must be placed at the beginning before #include "TimerInterrupt_Generic.h"
 // _TIMERINTERRUPT_LOGLEVEL_ from 0 to 4
 // Don't define _TIMERINTERRUPT_LOGLEVEL_ > 0. Only for special ISR debugging only. Can hang the system.
@@ -49,6 +39,11 @@
 #define USE_TIMER_5     false
 
 #include "TimerInterrupt_Generic.h"
+
+#if !(TIMER_INTERRUPT_USING_AVR)
+  #error This is designed only for Arduino AVR board! Please check your Tools->Board setting.
+#endif
+#define TIMER1_INTERVAL_MS    1000
 
 void TimerHandler1()
 {
@@ -66,6 +61,10 @@ void TimerHandler1()
   toggle1 = !toggle1;
 }
 
+#if USE_TIMER_2
+
+#define TIMER2_INTERVAL_MS    2000
+
 void TimerHandler2()
 {
   static bool toggle2 = false;
@@ -82,16 +81,15 @@ void TimerHandler2()
   toggle2 = !toggle2;
 }
 
-#define TIMER1_INTERVAL_MS    1000
-
-#define TIMER2_INTERVAL_MS    2000
+#endif
 
 void setup()
 {
   Serial.begin(115200);
   while (!Serial);
 
-  Serial.println(F("\nStarting Argument_None on Arduino AVR board"));
+  Serial.print(F("\nStarting Argument_None on "));
+  Serial.println(BOARD_TYPE);
   Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
   Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
 
@@ -110,6 +108,8 @@ void setup()
   else
     Serial.println(F("Can't set ITimer1. Select another freq. or timer"));
 
+#if USE_TIMER_2
+
   // Select Timer 1-2 for UNO, 0-5 for MEGA
   // Timer 2 is 8-bit timer, only for higher frequency
   ITimer2.init();
@@ -120,6 +120,7 @@ void setup()
   }
   else
     Serial.println(F("Can't set ITimer2. Select another freq. or timer"));
+#endif    
 }
 
 void loop()

@@ -45,8 +45,8 @@
 // _TIMERINTERRUPT_LOGLEVEL_ from 0 to 4
 // Don't define _TIMERINTERRUPT_LOGLEVEL_ > 0. Only for special ISR debugging only. Can hang the system.
 // Don't define TIMER_INTERRUPT_DEBUG > 2. Only for special ISR debugging only. Can hang the system.
-#define TIMER_INTERRUPT_DEBUG         0
-#define _TIMERINTERRUPT_LOGLEVEL_     0
+#define TIMER_INTERRUPT_DEBUG         2
+#define _TIMERINTERRUPT_LOGLEVEL_     4
 
 #include "TimerInterrupt_Generic.h"
 
@@ -68,8 +68,6 @@ unsigned int SWPin = 7;
 #define DEBOUNCING_INTERVAL_MS    100L
 #define LONG_PRESS_INTERVAL_MS    5000L
 
-#define LOCAL_DEBUG               1
-
 // You can select Teensy Hardware Timer  from TEENSY_TIMER_1 or TEENSY_TIMER_3
 
 // Init Teensy timer TEENSY_TIMER_1
@@ -89,14 +87,6 @@ void TimerHandler()
 
   unsigned long currentMillis = millis();
 #endif
-
-  static bool started = false;
-
-  if (!started)
-  {
-    started = true;
-    pinMode(SWPin, INPUT_PULLUP);
-  }
 
   if ( (!digitalRead(SWPin)) )
   {
@@ -170,6 +160,8 @@ void TimerHandler()
 
 void setup()
 {
+  pinMode(SWPin, INPUT_PULLUP);
+  
   Serial.begin(115200);
   while (!Serial);
 

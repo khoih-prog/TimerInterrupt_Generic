@@ -47,8 +47,6 @@
 #define TIMER_INTERRUPT_DEBUG         0
 #define _TIMERINTERRUPT_LOGLEVEL_     0
 
-#include "TimerInterrupt_Generic.h"
-
 //#ifndef LED_BUILTIN
 //  #define LED_BUILTIN       13
 //#endif

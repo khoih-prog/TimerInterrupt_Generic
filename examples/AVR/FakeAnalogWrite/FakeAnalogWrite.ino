@@ -45,22 +45,14 @@
    written
 */
 
-#if !(defined(__AVR_ATmega8__) || defined(__AVR_ATmega128__) || defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__) || \
-    defined(__AVR_ATmega1284__) || defined(__AVR_ATmega1284P__) || defined(__AVR_ATmega644__) || defined(__AVR_ATmega644A__) || \
-    defined(__AVR_ATmega644P__) || defined(__AVR_ATmega644PA__) || defined(ARDUINO_AVR_UNO) || defined(ARDUINO_AVR_NANO) || \
-    defined(ARDUINO_AVR_MINI) || defined(ARDUINO_AVR_ETHERNET) || defined(ARDUINO_AVR_FIO) || defined(ARDUINO_AVR_BT) || \
-    defined(ARDUINO_AVR_LILYPAD) || defined(ARDUINO_AVR_PRO) || defined(ARDUINO_AVR_NG) || defined(ARDUINO_AVR_UNO_WIFI_DEV_ED))
-#error This is designed only for Arduino AVR board! Please check your Tools->Board setting.
-#endif
-
 // These define's must be placed at the beginning before #include "TimerInterrupt_Generic.h"
 // _TIMERINTERRUPT_LOGLEVEL_ from 0 to 4
 // Don't define _TIMERINTERRUPT_LOGLEVEL_ > 0. Only for special ISR debugging only. Can hang the system.
 #define TIMER_INTERRUPT_DEBUG         0
 #define _TIMERINTERRUPT_LOGLEVEL_     0
 
-#define USE_TIMER_1     false
-#define USE_TIMER_2     true
+#define USE_TIMER_1     true
+#define USE_TIMER_2     false
 #define USE_TIMER_3     false
 #define USE_TIMER_4     false
 #define USE_TIMER_5     false
@@ -68,6 +60,10 @@
 #define LOCAL_DEBUG         1
 
 #include "TimerInterrupt_Generic.h"
+
+#if !(TIMER_INTERRUPT_USING_AVR)
+  #error This is designed only for Arduino AVR board! Please check your Tools->Board setting.
+#endif
 
 #ifndef LED_BUILTIN
 #define LED_BUILTIN       13
@@ -85,8 +81,8 @@ float mappingTable[MAPPING_TABLE_SIZE] =
   230.395, 236.136, 241.206, 245.680, 249.781, 253.509
 };
 
-#define TIMER2_FREQUENCY_HZ     10000UL
-#define TIMER2_INTERVAL_US      (1000000UL / TIMER2_FREQUENCY_HZ)
+#define TIMER1_FREQUENCY_HZ     10000UL
+#define TIMER1_INTERVAL_US      (1000000UL / TIMER1_FREQUENCY_HZ)
 
 volatile uint32_t startMillis = 0;
 
@@ -110,7 +106,7 @@ void TimerHandler()
   }
 
   // Toggle LED every LED_TOGGLE_INTERVAL_MS = 500ms = 0.5s
-  if (++timeRun == ((LED_TOGGLE_INTERVAL_MS * TIMER2_FREQUENCY_HZ) / 1000) )
+  if (++timeRun == ((LED_TOGGLE_INTERVAL_MS * TIMER1_FREQUENCY_HZ) / 1000) )
   {
     timeRun = 0;
 
@@ -199,19 +195,20 @@ void setup()
   Serial.begin(115200);
   while (!Serial);
 
-  Serial.println(F("\nStarting FakeAnalogWrite on Arduino AVR board"));
+  Serial.print(F("\nStarting FakeAnalogWrite on "));
+  Serial.println(BOARD_TYPE);
   Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
   Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
 
-  ITimer2.init();
+  ITimer1.init();
 
-  //if (ITimer2.attachInterruptInterval(TIMER2_INTERVAL_MS, TimerHandler))
-  if (ITimer2.attachInterrupt(TIMER2_FREQUENCY_HZ, TimerHandler))
+  //if (ITimer1.attachInterruptInterval(TIMER1_INTERVAL_MS, TimerHandler))
+  if (ITimer1.attachInterrupt(TIMER1_FREQUENCY_HZ, TimerHandler))
   {
-    Serial.print(F("Starting  ITimer2 OK, millis() = ")); Serial.println(millis());
+    Serial.print(F("Starting  ITimer1 OK, millis() = ")); Serial.println(millis());
   }
   else
-    Serial.println(F("Can't set ITimer2. Select another freq. or timer"));
+    Serial.println(F("Can't set ITimer1. Select another freq. or timer"));
 
   // Just to demonstrate, don't use too many ISR Timers if not absolutely necessary
   // You can use up to 16 timer for each ISR_Timer

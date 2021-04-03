@@ -54,7 +54,7 @@
 
 #include "ISR_Timer_Generic.h"
 
-#include <SimpleTimer.h>              // https://github.com/schinken/SimpleTimer
+#include <SimpleTimer.h>              // https://github.com/jfturcot/SimpleTimer
 
 #ifndef LED_BUILTIN
   #define LED_BUILTIN       13
@@ -339,7 +339,7 @@ void setup()
 
   // Just to demonstrate, don't use too many ISR Timers if not absolutely necessary
   // You can use up to 16 timer for each SAMDUE_ISR_Timer
-  for (int i = 0; i < NUMBER_ISR_TIMERS; i++)
+  for (uint8_t i = 0; i < NUMBER_ISR_TIMERS; i++)
   {
 #if USE_COMPLEX_STRUCT
     curISRTimerData[i].previousMillis = startMillis;

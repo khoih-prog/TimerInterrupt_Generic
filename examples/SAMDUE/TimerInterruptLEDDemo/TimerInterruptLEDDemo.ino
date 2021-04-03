@@ -73,7 +73,7 @@ void TimerHandler()
   SAMDUE_ISR_Timer.run();
 }
 
-// In SAMD, avoid doing something fancy in ISR, for example complex Serial.print with String() argument
+// In SAM-DUE, avoid doing something fancy in ISR, for example complex Serial.print with String() argument
 // The pure simple Serial.prints here are just for demonstration and testing. Must be eliminate in working environment
 // Or you can get this run-time error / crash
 void doingSomething1()

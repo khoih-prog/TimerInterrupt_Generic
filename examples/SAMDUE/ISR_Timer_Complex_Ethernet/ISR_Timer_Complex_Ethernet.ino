@@ -223,7 +223,7 @@ void doingSomething101s()
   unsigned long deltaMillis = millis() - previousMillis;
 
 
-  if (previousMillis > TIMER_INTERVAL101S)
+  if (previousMillis > TIMER_INTERVAL_101S)
   {
     Serial.print("101s: Delta ms = "); Serial.println(deltaMillis);
   }

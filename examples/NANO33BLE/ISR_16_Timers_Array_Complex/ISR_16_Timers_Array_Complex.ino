@@ -54,7 +54,7 @@
 
 #include "ISR_Timer_Generic.h"
 
-#include <SimpleTimer.h>              // https://github.com/schinken/SimpleTimer
+#include <SimpleTimer.h>              // https://github.com/jfturcot/SimpleTimer
 
 #ifndef LED_BUILTIN
 #define LED_BUILTIN       D13

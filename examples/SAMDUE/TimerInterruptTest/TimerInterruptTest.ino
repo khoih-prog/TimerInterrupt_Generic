@@ -177,12 +177,15 @@ void loop()
     if (timer0Stopped)
     {
       preMillisTimer0 = millis();
-      Serial.println("Start ITimer0, millis() = " + String(preMillisTimer0));
+      
+      Serial.print(F("Start ITimer0, millis() = ")); Serial.println(preMillisTimer0);
+      
       DueTimerPtr[Timer0_Index].restartTimer();
     }
     else
     {
-      Serial.println("Stop ITimer0, millis() = " + String(millis()));
+      Serial.print(F("Stop ITimer0, millis() = ")); Serial.println(millis());
+      
       DueTimerPtr[Timer0_Index].stopTimer();
     }
     timer0Stopped = !timer0Stopped;
@@ -198,12 +201,15 @@ void loop()
     if (timer1Stopped)
     {
       preMillisTimer1 = millis();
-      Serial.println("Start ITimer1, millis() = " + String(preMillisTimer1));
+      
+      Serial.print(F("Start ITimer1, millis() = ")); Serial.println(preMillisTimer1);
+      
       DueTimerPtr[Timer1_Index].restartTimer();
     }
     else
     {
-      Serial.println("Stop ITimer1, millis() = " + String(millis()));
+      Serial.print(F("Stop ITimer1, millis() = ")); Serial.println(millis());
+
       DueTimerPtr[Timer1_Index].stopTimer();
     }
     

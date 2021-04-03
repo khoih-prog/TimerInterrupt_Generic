@@ -58,7 +58,14 @@
 #endif
 
 volatile uint32_t preMillisTimer0 = 0;
-volatile uint32_t preMillisTimer1 = 0;
+
+// For Teensy 4.0/4.1, F_BUS_ACTUAL = 150 MHz => max period is only 55922 us (~17.9 Hz)
+#define TIMER0_INTERVAL_MS        50L
+
+// You can select Teensy Hardware Timer  from TEENSY_TIMER_1 or TEENSY_TIMER_3
+
+// Init Teensy timer TEENSY_TIMER_1
+TeensyTimer ITimer0(TEENSY_TIMER_1);
 
 void  TimerHandler0()
 {
@@ -89,14 +96,6 @@ void  TimerHandler0()
   digitalWrite(LED_BUILTIN, toggle0);
   toggle0 = !toggle0;
 }
-
-// For Teensy 4.0/4.1, F_BUS_ACTUAL = 150 MHz => max period is only 55922 us (~17.9 Hz)
-#define TIMER0_INTERVAL_MS        50L
-
-// You can select Teensy Hardware Timer  from TEENSY_TIMER_1 or TEENSY_TIMER_3
-
-// Init Teensy timer TEENSY_TIMER_1
-TeensyTimer ITimer0(TEENSY_TIMER_1);
 
 void setup()
 {
