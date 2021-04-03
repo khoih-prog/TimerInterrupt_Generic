@@ -19,7 +19,7 @@
    Based on BlynkTimer.h
    Author: Volodymyr Shymanskyy
 
-   Version: 1.3.2
+   Version: 1.4.0
 
    Version Modified By   Date      Comments
    ------- -----------  ---------- -----------
@@ -28,6 +28,7 @@
    1.3.0   K Hoang      01/12/2020 Add Mbed Mano-33-BLE Library. Add support to AVR UNO, Nano, Arduino Mini, Ethernet, BT. etc.
    1.3.1   K.Hoang      09/12/2020 Add complex examples and board Version String. Fix SAMD bug.
    1.3.2   K.Hoang      06/01/2021 Fix warnings. Optimize examples to reduce memory usage
+   1.4.0   K.Hoang      02/04/2021 Add support to Arduino, Adafruit, Sparkfun AVR 32u4, 328P, 128128RFA1 and Sparkfun SAMD
 *****************************************************************************************************************************/
 /*
   nRF52 has 5 Hardware TIMERs: NRF_TIMER0-NRF_TIMER4
@@ -82,7 +83,7 @@
 // It's better to replace with the new one later. But be careful not to chain break anything
 #include "hal/nrf_timer.h"
 
-#define NRF52_MBED_TIMER_INTERRUPT_VERSION       "NRF52_MBED_TimerInterrupt v1.1.1"
+#define NRF52_MBED_TIMER_INTERRUPT_VERSION       "NRF52_MBED_TimerInterrupt v1.2.0"
 
 #ifndef TIMER_INTERRUPT_DEBUG
   #define TIMER_INTERRUPT_DEBUG       0

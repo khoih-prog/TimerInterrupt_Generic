@@ -26,7 +26,7 @@
    Built by Khoi Hoang https://github.com/khoih-prog/TimerInterrupt_Generic
    Licensed under MIT license
 
-   Version: 1.3.2
+   Version: 1.4.0
 
    Version Modified By   Date      Comments
    ------- -----------  ---------- -----------
@@ -35,6 +35,7 @@
    1.3.0   K Hoang      01/12/2020 Add Mbed Mano-33-BLE Library. Add support to AVR UNO, Nano, Arduino Mini, Ethernet, BT. etc.
    1.3.1   K.Hoang      09/12/2020 Add complex examples and board Version String. Fix SAMD bug.
    1.3.2   K.Hoang      06/01/2021 Fix warnings. Optimize examples to reduce memory usage
+   1.4.0   K.Hoang      02/04/2021 Add support to Arduino, Adafruit, Sparkfun AVR 32u4, 328P, 128128RFA1 and Sparkfun SAMD
 *****************************************************************************************************************************/
 
 
@@ -48,7 +49,7 @@
 #endif
 
 #ifndef TIMER_INTERRUPT_VERSION
-  #define TIMER_INTERRUPT_VERSION       "TimerInterrupt v1.2.0"
+  #define TIMER_INTERRUPT_VERSION       "TimerInterrupt v1.4.1"
 #endif
 
 #include <avr/interrupt.h>
@@ -513,7 +514,11 @@ class TimerInterrupt
 
       // 16 bit timers from here
       #if defined(TCCR1B)
+      #if ( TIMER_INTERRUPT_USING_ATMEGA_32U4 )
+      if (_timer == 1)
+      #else
       else if (_timer == 1)
+      #endif
       {
         TCCR1B = (TCCR1B & andMask) | _prescalerIndex;   //prescalarbits;
         
@@ -774,7 +779,11 @@ class TimerInterrupt
     
     // 16 bit timers from here
     #if defined(TCCR1B)
+    #if ( TIMER_INTERRUPT_USING_ATMEGA_32U4 )
+    if (_timer == 1)
+    #else
     else if (_timer == 1)
+    #endif
     {
       TCCR1B = (TCCR1B & andMask);
       
@@ -819,7 +828,11 @@ class TimerInterrupt
 
     // 16 bit timers from here
     #if defined(TCCR1B)
+    #if ( TIMER_INTERRUPT_USING_ATMEGA_32U4 )
+    if (_timer == 1)
+    #else
     else if (_timer == 1)
+    #endif
     {
       TCCR1B = (TCCR1B & andMask) | _prescalerIndex;   //prescalarbits;
       
@@ -936,6 +949,47 @@ class TimerInterrupt
   };
 
 }; // class TimerInterrupt
+
+//////////////////////////////////////////////
+
+// To be sure not used Timers are disabled
+#if !defined(USE_TIMER_1)
+  #define USE_TIMER_1     false
+#endif
+
+#if !defined(USE_TIMER_2)
+  #define USE_TIMER_2     false
+#elif ( USE_TIMER_2 && TIMER_INTERRUPT_USING_ATMEGA_32U4 )
+  #undef USE_TIMER_2
+  #define USE_TIMER_2     false
+  #warning Timer2 is disabled for ATMEGA_32U4
+#endif
+
+#if !defined(USE_TIMER_3)
+  #define USE_TIMER_3     false
+#elif ( USE_TIMER_3 && TIMER_INTERRUPT_USING_ATMEGA_32U4 )
+  #undef USE_TIMER_3
+  #define USE_TIMER_3     false
+  #warning Timer3 is disabled for ATMEGA_32U4
+#endif
+
+#if !defined(USE_TIMER_4)
+  #define USE_TIMER_4     false
+#elif ( USE_TIMER_4 && TIMER_INTERRUPT_USING_ATMEGA_32U4 )
+  #undef USE_TIMER_4
+  #define USE_TIMER_4     false
+  #warning Timer4 is disabled for ATMEGA_32U4
+#endif
+
+#if !defined(USE_TIMER_5)
+  #define USE_TIMER_5     false
+#elif ( USE_TIMER_5 && TIMER_INTERRUPT_USING_ATMEGA_32U4 )
+  #undef USE_TIMER_5
+  #define USE_TIMER_5     false
+  #warning Timer5 is disabled for ATMEGA_32U4
+#endif
+
+//////////////////////////////////////////////
 
 #if USE_TIMER_1 
   #ifndef TIMER1_INSTANTIATED
