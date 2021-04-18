@@ -3642,18 +3642,18 @@ Submit issues to: [TimerInterrupt_Generic issues](https://github.com/khoih-prog/
 
 1. Basic hardware timers for 
 
--[x] AVR
--[x] megaAVR
--[x] ESP8266
--[x] ESP32
--[x] SAMD
--[x] SAM DUE
--[x] nRF52
--[x] Teensy
--[x] Mbed-OS Nano-33-BLE
--[x] STM32F/L/H/G/WB/MP1
--[] Portenta H7
--[] Raspberry Pi pico
+- [x] AVR
+- [x] megaAVR
+- [x] ESP8266
+- [x] ESP32
+- [x] SAMD
+- [x] SAM DUE
+- [x] nRF52
+- [x] Teensy
+- [x] Mbed-OS Nano-33-BLE
+- [x] STM32F/L/H/G/WB/MP1
+- [ ] Portenta H7
+- [ ] Raspberry Pi pico
 
 
 2. More hardware-initiated software-enabled timers
