@@ -19,7 +19,7 @@
    Built by Khoi Hoang https://github.com/khoih-prog/TimerInterrupt_Generic
    Licensed under MIT license
 
-   Version: 1.4.0
+   Version: 1.5.0
 
    Version Modified By   Date      Comments
    ------- -----------  ---------- -----------
@@ -29,6 +29,7 @@
    1.3.1   K.Hoang      09/12/2020 Add complex examples and board Version String. Fix SAMD bug.
    1.3.2   K.Hoang      06/01/2021 Fix warnings. Optimize examples to reduce memory usage
    1.4.0   K.Hoang      02/04/2021 Add support to Arduino, Adafruit, Sparkfun AVR 32u4, 328P, 128128RFA1 and Sparkfun SAMD
+   1.5.0   K.Hoang      17/04/2021 Add support to Arduino megaAVR ATmega4809-based boards (Nano Every, UNO WiFi Rev2, etc.)
 ********************************************************************************************************************************/
 
 #pragma once
@@ -37,7 +38,7 @@
 #define TIMERINTERRUPT_GENERIC_H
 
 #if !defined(TIMER_INTERRUPT_GENERIC_VERSION)
-  #define TIMER_INTERRUPT_GENERIC_VERSION       "TimerInterrupt_Generic v1.4.0"
+  #define TIMER_INTERRUPT_GENERIC_VERSION       "TimerInterrupt_Generic v1.5.0"
 #endif
 
 #include "TimerInterrupt_Generic_Debug.h"
@@ -159,7 +160,11 @@
        defined(STM32WB) || defined(STM32MP1) )
        
   #define TIMER_INTERRUPT_USING_STM32      true
-   
+
+#elif ( defined(__AVR_ATmega4809__) || defined(ARDUINO_AVR_UNO_WIFI_REV2) || defined(ARDUINO_AVR_NANO_EVERY) )
+       
+  #define TIMER_INTERRUPT_USING_MEGA_AVR   true
+     
 #else
 
   #error Unsupported Board! Please check your Tools->Board setting.
@@ -185,7 +190,9 @@
 #elif TIMER_INTERRUPT_USING_TEENSY
   #include "TeensyTimerInterrupt_Generic.h" 
 #elif TIMER_INTERRUPT_USING_STM32
-  #include "STM32TimerInterrupt_Generic.h" 
+  #include "STM32TimerInterrupt_Generic.h"
+#elif TIMER_INTERRUPT_USING_MEGA_AVR
+  #include "megaAVR_TimerInterrupt_Generic.h"   
 #endif
 
 ////////////////////////////////////////////////////

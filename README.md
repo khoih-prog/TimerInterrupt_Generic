@@ -18,6 +18,7 @@
   * [Currently Supported Boards](#currently-supported-boards)
   * [Important Notes about ISR](#important-notes-about-isr)
 * [Changelog](#changelog)
+  * [Releases v1.5.0](#releases-v150)
   * [Major Releases v1.4.0](#major-releases-v140)
   * [Releases v1.3.2](#releases-v132)
   * [Releases v1.3.1](#releases-v131)
@@ -61,11 +62,14 @@
   * [1. For ESP32](#1-for-esp32)
   * [2. Notes for ESP8266](#2-notes-for-esp8266)
   * [3. For Arduino AVR](#3-for-arduino-avr)
-    * [1. Timer0](#1-timer0)
-    * [2. Timer1](#2-timer1)
-    * [3. Timer2](#3-timer2)
-    * [4. Timer3, Timer4, Timer5](#4-timer3-timer4-timer5)
+    * [3.1. Timer0](#31-timer0)
+    * [3.2. Timer1](#32-timer1)
+    * [3.3. Timer2](#33-timer2)
+    * [3.4. Timer3, Timer4, Timer5](#34-timer3-timer4-timer5)
   * [4. For STM32F/L/H/G/WB/MP1](#4-for-stm32flhgwbmp1)
+  * [5. For Arduino megaAVR](#3-for-arduino-megaavr)
+    * [5.1. Documents](#51-documents)
+    * [5.2. Timer TCB0-TCB3](#52-timer-tcb0-tcb3)
 * [New from v1.1.0](#new-from-v110)
 * [Usage for ESP32](#usage-for-esp32)
 * [Usage for NRF52](#usage-for-nrf52)
@@ -111,27 +115,39 @@
     * [2.1 Init Hardware Timer and ISR-based Timer](#21-init-hardware-timer-and-isr-based-timer-5)
     * [2.2 Set Hardware Timer Interval and attach Timer Interrupt Handler functions](#22-set-hardware-timer-interval-and-attach-timer-interrupt-handler-functions-5)
 * [Usage for Arduino AVR](#usage-for-arduino-avr)
+* [Usage for Arduino megaAVR](#usage-for-arduino-megaavr)
+  * [1. Using only Hardware Timer directly](#1-using-only-hardware-timer-directly-6)
+    * [1.1 Init Hardware Timer](#11-init-hardware-timer-6)
+    * [1.2 Set Hardware Timer Interval and attach Timer Interrupt Handler function](#12-set-hardware-timer-interval-and-attach-timer-interrupt-handler-function-6)
+  * [2. Using 16 ISR_based Timers from 1 Hardware Timers](#2-using-16-isr_based-timers-from-1-hardware-timers-6)
+    * [2.1 Init Hardware Timer and ISR-based Timer](#21-init-hardware-timer-and-isr-based-timer-6)
+    * [2.2 Set Hardware Timer Interval and attach Timer Interrupt Handler functions](#22-set-hardware-timer-interval-and-attach-timer-interrupt-handler-functions-6)
 * [Examples](#examples)
-  * [1. ESP32](#1-esp32) 
-  * [2. ESP8266](#2-esp8266)
-  * [3. NRF52](#3-nrf52)
-  * [4. SAMD21/SAMD51](#4-samd21samd51)
-  * [5. SAM DUE](#5-sam-due)
-  * [6. STM32F/L/H/G/WB/MP1](#6-stm32flhgwbmp1)
-  * [7. Teensy](#7-teensy)
-  * [8. Arduino AVR](#8-arduino-avr)
-  * [9. Nano-33-BLE. New](#9-nano-33-ble-new)
+  * [ 1. ESP32](#1-esp32) 
+  * [ 2. ESP8266](#2-esp8266)
+  * [ 3. NRF52](#3-nrf52)
+  * [ 4. SAMD21/SAMD51](#4-samd21samd51)
+  * [ 5. SAM DUE](#5-sam-due)
+  * [ 6. STM32F/L/H/G/WB/MP1](#6-stm32flhgwbmp1)
+  * [ 7. Teensy](#7-teensy)
+  * [ 8. Arduino AVR](#8-arduino-avr)
+  * [ 9. Nano-33-BLE. New](#9-nano-33-ble-new)
+  * [10. Arduino megaAVR. New](#10-arduino-megaavr-new)
 * [Example ISR_16_Timers_Array_Complex for Teensy boards](#example-isr_16_timers_array_complex-for-teensy-boards)
 * [Debug Terminal Output Samples](#debug-terminal-output-samples)
-  * [1. ISR_Timer_Complex_Ethernet on Arduino SAM DUE](#1-isr_timer_complex_ethernet-on-arduino-sam-due)
-  * [2. ISR_Timer_Complex_Ethernet on Adafruit NRF52840_FEATHER EXPRESS](#2-isr_timer_complex_ethernet-on-adafruit-nrf52840_feather-express)
-  * [3. ISR_16_Timers_Array on Arduino SAMD21 SAMD_NANO_33_IOT](#3-isr_16_timers_array-on-arduino-samd21-samd_nano_33_iot)
-  * [4. TimerInterruptTest on Teensy 4.1](#4-timerinterrupttest-on-teensy-41)
-  * [5. ISR_Timer_Complex on ESP32_DEV](#5-isr_timer_complex-on-esp32_dev)
-  * [6. ISR_Timer_Complex on ESP8266_NODEMCU](#6-isr_timer_complex-on-esp8266_nodemcu)
-  * [7. ISR_Timer_Complex on STM32F7 Nucleo-144 F767ZI using Built-in LAN8742A Ethernet and STM32Ethernet Library](#7-isr_timer_complex-on-stm32f7-nucleo-144-f767zi-using-built-in-lan8742a-ethernet-and-stm32ethernet-library)
-  * [8. TimerInterruptTest on STM32F7 Nucleo-144 F767ZI](#8-timerinterrupttest-on-stm32f7-nucleo-144-f767zi)
-  * [9. ISR_16_Timers_Array_Complex on Nano 33 BLE](#9-isr_16_timers_array_complex-on-nano-33-ble)
+  * [ 1. ISR_Timer_Complex_Ethernet on Arduino SAM DUE](#1-isr_timer_complex_ethernet-on-arduino-sam-due)
+  * [ 2. ISR_Timer_Complex_Ethernet on Adafruit NRF52840_FEATHER EXPRESS](#2-isr_timer_complex_ethernet-on-adafruit-nrf52840_feather-express)
+  * [ 3. ISR_16_Timers_Array on Arduino SAMD21 SAMD_NANO_33_IOT](#3-isr_16_timers_array-on-arduino-samd21-samd_nano_33_iot)
+  * [ 4. TimerInterruptTest on Teensy 4.1](#4-timerinterrupttest-on-teensy-41)
+  * [ 5. ISR_Timer_Complex on ESP32_DEV](#5-isr_timer_complex-on-esp32_dev)
+  * [ 6. ISR_Timer_Complex on ESP8266_NODEMCU](#6-isr_timer_complex-on-esp8266_nodemcu)
+  * [ 7. ISR_Timer_Complex on STM32F7 Nucleo-144 F767ZI using Built-in LAN8742A Ethernet and STM32Ethernet Library](#7-isr_timer_complex-on-stm32f7-nucleo-144-f767zi-using-built-in-lan8742a-ethernet-and-stm32ethernet-library)
+  * [ 8. TimerInterruptTest on STM32F7 Nucleo-144 F767ZI](#8-timerinterrupttest-on-stm32f7-nucleo-144-f767zi)
+  * [ 9. ISR_16_Timers_Array_Complex on Nano 33 BLE](#9-isr_16_timers_array_complex-on-nano-33-ble)
+  * [10. ISR_16_Timers_Array_Complex on Arduino megaAVR Nano Every to show accuracy difference](#10-isr_16_timers_array_complex-on-arduino-megaavr-nano-every-to-show-accuracy-difference)
+    * [10.1 TCB Clock Frequency 16MHz for highest accuracy](#101-tcb-clock-frequency-16mhz-for-highest-accuracy)
+    * [10.2 TCB Clock Frequency 8MHz for very high accuracy](#102-tcb-clock-frequency-8mhz-for-very-high-accuracy)
+    * [10.3 TCB Clock Frequency 250KHz for lower accuracy but longer time](#103-tcb-clock-frequency-250khz-for-lower-accuracy-but-longer-time)
 * [Debug](#debug)
 * [Troubleshooting](#troubleshooting)
 * [Releases](#releases)
@@ -150,7 +166,7 @@
 
 ### Features
 
-This library enables you to use Interrupt from Hardware Timers on supported Arduino boards such as AVR, ESP8266, ESP32, SAMD, SAM DUE, nRF52, STM32F/L/H/G/WB/MP1, Teensy, Nano-33-BLE, etc.
+This library enables you to use Interrupt from Hardware Timers on supported Arduino boards such as AVR, Mega-AVR, ESP8266, ESP32, SAMD, SAM DUE, nRF52, STM32F/L/H/G/WB/MP1, Teensy, Nano-33-BLE, etc.
 
 As **Hardware Timers are rare, and very precious assets** of any board, this library now enables you to use up to **16 ISR-based Timers, while consuming only 1 Hardware Timer**. Timers' interval is very long (**ulong millisecs**).
 
@@ -219,6 +235,9 @@ For Teensy 4.x, this library will be expanded to use other available hardware ti
   - **Arduino Nano-33-BLE**
   
   - **Arduino SAM DUE**.
+  
+  - **ATmega4809-based boards** such as :
+    - **Arduino UNO WiFi Rev2, AVR_NANO_EVERY, etc.**
 
 
 #### Important Notes about ISR
@@ -231,6 +250,10 @@ For Teensy 4.x, this library will be expanded to use other available hardware ti
 ---
 
 ## Changelog
+
+### Releases v1.5.0
+
+1. Add support to **ATmega4809-based boards** such as **Arduino UNO WiFi Rev2, AVR_NANO_EVERY, etc.**
 
 ### Major Releases v1.4.0
 
@@ -286,26 +309,27 @@ For Teensy 4.x, this library will be expanded to use other available hardware ti
  7. [`Teensy core v1.53+`](https://www.pjrc.com/teensy/td_download.html) for Teensy (4.1, 4.0, 3.6, 3.5, 3,2, 3.1, 3.0) boards.
  8. [`Arduino SAM DUE core v1.6.12+`](https://github.com/arduino/ArduinoCore-sam) for SAM DUE ARM Cortex-M3 boards.
  9. [`Arduino SAMD core 1.8.11+`](https://github.com/arduino/ArduinoCore-samd) for SAMD ARM Cortex-M0+ boards. [![GitHub release](https://img.shields.io/github/release/arduino/ArduinoCore-samd.svg)](https://github.com/arduino/ArduinoCore-samd/releases/latest)
-10. [`Adafruit SAMD core 1.6.5+`](https://github.com/adafruit/ArduinoCore-samd) for SAMD ARM Cortex-M0+ and M4 boards (Nano 33 IoT, etc.). [![GitHub release](https://img.shields.io/github/release/adafruit/ArduinoCore-samd.svg)](https://github.com/adafruit/ArduinoCore-samd/releases/latest)
+10. [`Adafruit SAMD core 1.6.7+`](https://github.com/adafruit/ArduinoCore-samd) for SAMD ARM Cortex-M0+ and M4 boards (Nano 33 IoT, etc.). [![GitHub release](https://img.shields.io/github/release/adafruit/ArduinoCore-samd.svg)](https://github.com/adafruit/ArduinoCore-samd/releases/latest)
 11. [`Seeeduino SAMD core 1.8.1+`](https://github.com/Seeed-Studio/ArduinoCore-samd) for SAMD21/SAMD51 boards (XIAO M0, Wio Terminal, etc.). [![Latest release](https://img.shields.io/github/release/Seeed-Studio/ArduinoCore-samd.svg)](https://github.com/Seeed-Studio/ArduinoCore-samd/releases/latest/)
 12. [`Sparkfun SAMD core 1.8.1+`](https://github.com/sparkfun/Arduino_Boards) for SAMD21/SAMD51 boards (SparkFun_RedBoard_Turbo, SparkFun_SAMD51_Thing_Plus, etc.).
 13. [`Adafruit nRF52 v0.21.0+`](https://github.com/adafruit/Adafruit_nRF52_Arduino) for nRF52 boards such as Adafruit NRF52840_FEATHER, NRF52832_FEATHER, NRF52840_FEATHER_SENSE, NRF52840_ITSYBITSY, NRF52840_CIRCUITPLAY, NRF52840_CLUE, NRF52840_METRO, NRF52840_PCA10056, PARTICLE_XENON, **NINA_B302_ublox**, etc. [![GitHub release](https://img.shields.io/github/release/adafruit/Adafruit_nRF52_Arduino.svg)](https://github.com/adafruit/Adafruit_nRF52_Arduino/releases/latest)
 14. [`Arduino Core for STM32 v1.9.0+`](https://github.com/stm32duino/Arduino_Core_STM32) for STM32F/L/H/G/WB/MP1 boards. [![GitHub release](https://img.shields.io/github/release/stm32duino/Arduino_Core_STM32.svg)](https://github.com/stm32duino/Arduino_Core_STM32/releases/latest)
-15. [`Blynk library 0.6.1+`](https://github.com/blynkkk/blynk-library/releases). [![Latest release](https://img.shields.io/github/release/blynkkk/blynk-library.svg)](https://github.com/blynkkk/blynk-library/releases/latest/) to use with certain example.
-16. For built-in LAN8742A Ethernet:
+15. [`Arduino megaAVR core 1.8.7+`](https://github.com/arduino/ArduinoCore-megaavr/releases) for Arduino megaAVR boards. Use Arduino Board Manager to install.
+16. [`Blynk library 0.6.1+`](https://github.com/blynkkk/blynk-library/releases). [![Latest release](https://img.shields.io/github/release/blynkkk/blynk-library.svg)](https://github.com/blynkkk/blynk-library/releases/latest/) to use with certain example.
+17. For built-in LAN8742A Ethernet:
    - [`STM32Ethernet library v1.2.0+`](https://github.com/stm32duino/STM32Ethernet) for built-in LAN8742A Ethernet on (Nucleo-144, Discovery). [![GitHub release](https://img.shields.io/github/release/stm32duino/STM32Ethernet.svg)](https://github.com/stm32duino/STM32Ethernet/releases/latest)
    - [`LwIP library v2.1.2+`](https://github.com/stm32duino/LwIP) for built-in LAN8742A Ethernet on (Nucleo-144, Discovery). [![GitHub release](https://img.shields.io/github/release/stm32duino/LwIP.svg)](https://github.com/stm32duino/LwIP/releases/latest)
-17. For W5x00 Ethernet:
+18. For W5x00 Ethernet:
    - [`Ethernet library v2.0.0+`](https://github.com/arduino-libraries/Ethernet) for W5100, W5200 and W5500.  [![GitHub release](https://img.shields.io/github/release/arduino-libraries/Ethernet.svg)](https://github.com/arduino-libraries/Ethernet/releases/latest)
    - [`EthernetLarge library v2.0.0+`](https://github.com/OPEnSLab-OSU/EthernetLarge) for W5100, W5200 and W5500.
    - [`Ethernet2 library v1.0.4+`](https://github.com/khoih-prog/Ethernet2) for W5500. [![GitHub release](https://img.shields.io/github/release/adafruit/Ethernet2.svg)](https://github.com/adafruit/Ethernet2/releases/latest)
    - [`Ethernet3 library v1.5.5+`](https://github.com/sstaub/Ethernet3) for W5500/WIZ550io/WIZ850io/USR-ES1 with Wiznet W5500 chip. [![GitHub release](https://img.shields.io/github/release/sstaub/Ethernet3.svg)](https://github.com/sstaub/Ethernet3/releases/latest)
-18. For ENC28J60 Ethernet:
+19. For ENC28J60 Ethernet:
    - [`EthernetENC library v2.0.0+`](https://github.com/jandrassy/EthernetENC) for ENC28J60. [![GitHub release](https://img.shields.io/github/release/jandrassy/EthernetENC.svg)](https://github.com/jandrassy/EthernetENC/releases/latest). **New and Better**
    - [`UIPEthernet library v2.0.9+`](https://github.com/UIPEthernet/UIPEthernet) for ENC28J60. [![GitHub release](https://img.shields.io/github/release/UIPEthernet/UIPEthernet.svg)](https://github.com/UIPEthernet/UIPEthernet/releases/latest)
-19. [`WiFiNINA_Generic library v1.8.5+`](https://github.com/khoih-prog/WiFiNINA_Generic) to use WiFiNINA modules/shields. To install. check [![arduino-library-badge](https://www.ardu-badge.com/badge/WiFiNINA_Generic.svg?)](https://www.ardu-badge.com/WiFiNINA_Generic) if using WiFiNINA for boards such as Nano 33 IoT, nRF52, Teensy, etc.
-20. [`Blynk_WiFiNINA_WM library 1.0.4+`](hhttps://github.com/khoih-prog/Blynk_WiFiNINA_WM) to use with Blynk-WiFiNINA-related example. To install. check [![arduino-library-badge](https://www.ardu-badge.com/badge/Blynk_WiFiNINA_WM.svg?)](https://www.ardu-badge.com/Blynk_WiFiNINA_WM)
-21. To use with certain example
+20. [`WiFiNINA_Generic library v1.8.5+`](https://github.com/khoih-prog/WiFiNINA_Generic) to use WiFiNINA modules/shields. To install. check [![arduino-library-badge](https://www.ardu-badge.com/badge/WiFiNINA_Generic.svg?)](https://www.ardu-badge.com/WiFiNINA_Generic) if using WiFiNINA for boards such as Nano 33 IoT, nRF52, Teensy, etc.
+21. [`Blynk_WiFiNINA_WM library 1.0.4+`](hhttps://github.com/khoih-prog/Blynk_WiFiNINA_WM) to use with Blynk-WiFiNINA-related example. To install. check [![arduino-library-badge](https://www.ardu-badge.com/badge/Blynk_WiFiNINA_WM.svg?)](https://www.ardu-badge.com/Blynk_WiFiNINA_WM)
+22. To use with certain example
    - [`SimpleTimer library`](https://github.com/jfturcot/SimpleTimer) for [ISR_16_Timers_Array examples](examples/NRF52/ISR_16_Timers_Array).
    
 ---
@@ -664,23 +688,23 @@ The timer1 counters can be configured to support automatic reload.
 
 From [Arduino 101: Timers and Interrupts](https://www.robotshop.com/community/forum/t/arduino-101-timers-and-interrupts/13072)
 
-#### 1. Timer0:
+#### 3.1. Timer0:
 
 Timer0 is a 8-bit timer.
 
 In the Arduino world timer0 is been used for the timer functions, like delay(), millis() and micros(). If you change Timer0 registers, this may influence the Arduino timer function. So you should know what you are doing.
 
-#### 2. Timer1:
+#### 3.2. Timer1:
 
 Timer1 is a 16-bit timer.
 In the Arduino world the Servo library uses timer1 on Arduino Uno (Timer5 on Arduino Mega).
 
-#### 3. Timer2:
+#### 3.3. Timer2:
 
 Timer2 is a 8-bit timer like Timer0.
 In the Arduino work the tone() function uses Timer2.
 
-#### 4. Timer3, Timer4, Timer5:
+#### 3.4. Timer3, Timer4, Timer5:
 
 Timer 3,4,5 are only available on Arduino Mega boards. These timers are all 16-bit timers.
 
@@ -798,6 +822,19 @@ and
 #define TIM11               ((TIM_TypeDef *) TIM11_BASE)
 
 ```
+
+---
+
+### 5. For Arduino megaAVR
+
+#### 5.1. Documents
+
+1. [Arduino 101: Timers and Interrupts](https://www.robotshop.com/community/forum/t/arduino-101-timers-and-interrupts/13072)
+2. [megaAVR0-series-Family-Data-Sheet](http://ww1.microchip.com/downloads/en/DeviceDoc/megaAVR0-series-Family-Data-Sheet-DS40002015B.pdf)
+
+### 5.2 Timer TCB0-TCB3
+
+TCB0-TCB3 are 16-bit timers.
 
 ---
 ---
@@ -1539,6 +1576,137 @@ Only **Timer1 and Timer2** are supported for Nano, UNO, etc. boards possessing 3
 
 **Timer3, Timer4 and Timer5** are only available for Arduino Mega boards.
 
+
+---
+
+## Usage for Arduino megaAVR
+
+Before using any Timer, you have to make sure the **Timer has not been used by any other purpose.**
+
+**Timer0, Timer1, Timer2 and Timer3 (TCB0-TCB3)** are supported for Nano Every, UNO WiFi Rev2, etc. boards.
+
+Before using any Timer, you have to make sure the Timer has not been used by any other purpose.
+
+### 1. Using only Hardware Timer directly
+
+#### 1.1 Init Hardware Timer
+
+```
+
+#define USE_TIMER_0     false
+#define USE_TIMER_1     true       // <======== This will enable ITimer1
+#define USE_TIMER_2     false
+#define USE_TIMER_3     false
+
+```
+
+#### 1.2 Set Hardware Timer Interval and attach Timer Interrupt Handler function
+
+```
+void TimerHandler1(void)
+{
+  // Doing something here inside ISR
+}
+
+#define TIMER_INTERVAL_MS        1000      // 1s = 1000ms
+void setup()
+{
+  ....
+  
+  // ITimer1 is initialized here
+  ITimer1.init();
+
+  // Interval in millisecs
+  if (ITimer1.attachInterruptInterval(TIMER1_INTERVAL_MS, TimerHandler1))
+  {
+    Serial.print(F("Starting  ITimer1 OK, millis() = ")); Serial.println(millis());
+  }
+  else
+    Serial.println(F("Can't set ITimer1. Select another freq. or timer"));
+
+  ...
+}  
+```
+
+### 2. Using 16 ISR_based Timers from 1 Hardware Timers
+
+
+#### 2.1 Init Hardware Timer and ISR-based Timer
+
+```
+
+// Init ISR_Timer ISR_Timer1 to permit using 16 ISR_based Timers from 1 Hardware Timers (ITimer1)
+ISR_Timer ISR_Timer1;
+
+```
+
+#### 2.2 Set Hardware Timer Interval and attach Timer Interrupt Handler functions
+
+```
+#define USE_TIMER_0     false
+#define USE_TIMER_1     true       // <======== This will enable ITimer1
+#define USE_TIMER_2     false
+#define USE_TIMER_3     false
+
+void TimerHandler1(void)
+{
+  ISR_Timer1.run();
+}
+
+#define HW_TIMER_INTERVAL_MS          50L
+
+#define TIMER_INTERVAL_2S             2000L
+#define TIMER_INTERVAL_5S             5000L
+#define TIMER_INTERVAL_11S            11000L
+#define TIMER_INTERVAL_101S           101000L
+
+// Avoid doing something fancy in ISR, for example complex Serial.print with String() argument
+// The pure simple Serial.prints here are just for demonstration and testing. Must be eliminate in working environment
+// Or you can get this run-time error / crash
+void doingSomething2s()
+{
+  // Doing something here inside ISR
+}
+  
+void doingSomething5s()
+{
+  // Doing something here inside ISR
+}
+
+void doingSomething11s()
+{
+  // Doing something here inside ISR
+}
+
+void doingSomething101s()
+{
+  // Doing something here inside ISR
+}
+
+void setup()
+{
+  ....
+  
+  // ITimer1 is initialized here
+  ITimer1.init();
+
+  // Interval in millisecs
+  if (ITimer1.attachInterruptInterval(HW_TIMER_INTERVAL_MS, TimerHandler1))
+  {
+    Serial.print(F("Starting  ITimer1 OK, millis() = ")); Serial.println(millis());
+  }
+  else
+    Serial.println(F("Can't set ITimer1. Select another freq. or timer"));
+
+  // Just to demonstrate, don't use too many ISR Timers if not absolutely necessary
+  // You can use up to 16 timer for each ISR_Timer
+  ISR_Timer1.setInterval(TIMER_INTERVAL_2S, doingSomething2s);
+  ISR_Timer1.setInterval(TIMER_INTERVAL_5S, doingSomething5s);
+  ISR_Timer1.setInterval(TIMER_INTERVAL_11S, doingSomething11s);
+  ISR_Timer1.setInterval(TIMER_INTERVAL_101S, doingSomething101s);
+}  
+```
+
 ---
 ---
 
@@ -1557,7 +1725,7 @@ Only **Timer1 and Timer2** are supported for Nano, UNO, etc. boards possessing 3
  8. [RPM_Measure](examples/ESP32/RPM_Measure)
  9. [SwitchDebounce](examples/ESP32/SwitchDebounce)
 10. [TimerInterruptTest](examples/ESP32/TimerInterruptTest)
-11. [**Change_Interval**](examples/ESP32/Change_Interval). New.
+11. [**Change_Interval**](examples/ESP32/Change_Interval).
 
 ### 2. ESP8266
 
@@ -1571,7 +1739,7 @@ Only **Timer1 and Timer2** are supported for Nano, UNO, etc. boards possessing 3
  8. [RPM_Measure](examples/ESP8266/RPM_Measure)
  9. [SwitchDebounce](examples/ESP8266/SwitchDebounce)
 10. [TimerInterruptTest](examples/ESP8266/TimerInterruptTest)
-11. [**Change_Interval**](examples/ESP8266/Change_Interval). New.
+11. [**Change_Interval**](examples/ESP8266/Change_Interval).
 
 
 ### 3. NRF52
@@ -1585,9 +1753,9 @@ Only **Timer1 and Timer2** are supported for Nano, UNO, etc. boards possessing 3
  7. [SwitchDebounce](examples/NRF52/SwitchDebounce)
  8. [TimerInterruptLEDDemo](examples/NRF52/TimerInterruptLEDDemo). 
  9. [TimerInterruptTest](examples/NRF52/TimerInterruptTest)
-10. [**ISR_16_Timers_Array_Complex**](examples/NRF52/ISR_16_Timers_Array_Complex). New.
-11. [**Change_Interval**](examples/NRF52/Change_Interval). New.
-12. [**FakeAnalogWrite**](examples/NRF52/FakeAnalogWrite). New.
+10. [**ISR_16_Timers_Array_Complex**](examples/NRF52/ISR_16_Timers_Array_Complex).
+11. [**Change_Interval**](examples/NRF52/Change_Interval).
+12. [**FakeAnalogWrite**](examples/NRF52/FakeAnalogWrite).
  
  
 ### 4. SAMD21/SAMD51
@@ -1601,8 +1769,8 @@ Only **Timer1 and Timer2** are supported for Nano, UNO, etc. boards possessing 3
  7. [SwitchDebounce](examples/SAMD/SwitchDebounce)
  8. [TimerInterruptTest](examples/SAMD/TimerInterruptTest)
  9. [TimerInterruptLEDDemo](examples/SAMD/TimerInterruptLEDDemo)
-10. [**ISR_16_Timers_Array_Complex**](examples/SAMD/ISR_16_Timers_Array_Complex). New.
-11. [**Change_Interval**](examples/SAMD/Change_Interval). New.
+10. [**ISR_16_Timers_Array_Complex**](examples/SAMD/ISR_16_Timers_Array_Complex).
+11. [**Change_Interval**](examples/SAMD/Change_Interval).
 
 ### 5. SAM DUE
 
@@ -1614,8 +1782,8 @@ Only **Timer1 and Timer2** are supported for Nano, UNO, etc. boards possessing 3
  6. [SwitchDebounce](examples/SAMDUE/SwitchDebounce)
  7. [TimerInterruptTest](examples/SAMDUE/TimerInterruptTest)
  8. [TimerInterruptLEDDemo](examples/SAMDUE/TimerInterruptLEDDemo)
- 9. [**ISR_16_Timers_Array_Complex**](examples/SAMDUE/ISR_16_Timers_Array_Complex). New.
-10. [**Change_Interval**](examples/SAMDUE/Change_Interval). New.
+ 9. [**ISR_16_Timers_Array_Complex**](examples/SAMDUE/ISR_16_Timers_Array_Complex).
+10. [**Change_Interval**](examples/SAMDUE/Change_Interval).
 
 ### 6. STM32F/L/H/G/WB/MP1
 
@@ -1627,8 +1795,8 @@ Only **Timer1 and Timer2** are supported for Nano, UNO, etc. boards possessing 3
  6. [SwitchDebounce](examples/STM32/SwitchDebounce)
  7. [TimerInterruptTest](examples/STM32/TimerInterruptTest)
  8. [TimerInterruptLEDDemo](examples/STM32/TimerInterruptLEDDemo)
- 9. [**ISR_16_Timers_Array_Complex**](examples/STM32/ISR_16_Timers_Array_Complex). New.
-10. [**Change_Interval**](examples/STM32/Change_Interval). New.
+ 9. [**ISR_16_Timers_Array_Complex**](examples/STM32/ISR_16_Timers_Array_Complex).
+10. [**Change_Interval**](examples/STM32/Change_Interval).
  
 ### 7. Teensy
 
@@ -1640,8 +1808,8 @@ Only **Timer1 and Timer2** are supported for Nano, UNO, etc. boards possessing 3
  6. [SwitchDebounce](examples/TEENSY/SwitchDebounce)
  7. [TimerInterruptTest](examples/TEENSY/TimerInterruptTest)
  8. [TimerInterruptLEDDemo](examples/TEENSY/TimerInterruptLEDDemo)
- 9. [**ISR_16_Timers_Array_Complex**](examples/TEENSY/ISR_16_Timers_Array_Complex). New.
-10. [**Change_Interval**](examples/TEENSY/Change_Interval). New.
+ 9. [**ISR_16_Timers_Array_Complex**](examples/TEENSY/ISR_16_Timers_Array_Complex).
+10. [**Change_Interval**](examples/TEENSY/Change_Interval).
 
 ### 8. Arduino AVR
 
@@ -1658,9 +1826,9 @@ Only **Timer1 and Timer2** are supported for Nano, UNO, etc. boards possessing 3
 11. [TimerDuration](examples/AVR/TimerDuration)
 12. [TimerInterruptTest](examples/AVR/TimerInterruptTest)
 13. [**ISR_16_Timers_Array_Complex**](examples/AVR/ISR_16_Timers_Array_Complex). New
-14. [**ISR_Timers_Array_Simple**](examples/AVR/TimerInterruptTest). New.
-15. [**Change_Interval**](examples/AVR/Change_Interval). New.
-16. [**FakeAnalogWrite**](examples/AVR/FakeAnalogWrite). New.
+14. [**ISR_Timers_Array_Simple**](examples/AVR/TimerInterruptTest).
+15. [**Change_Interval**](examples/AVR/Change_Interval).
+16. [**FakeAnalogWrite**](examples/AVR/FakeAnalogWrite).
 
 ### 9. Nano-33-BLE. New
 
@@ -1670,8 +1838,28 @@ Only **Timer1 and Timer2** are supported for Nano, UNO, etc. boards possessing 3
  4. [SwitchDebounce](examples/NANO33BLE/SwitchDebounce)
  5. [TimerInterruptLEDDemo](examples/NANO33BLE/TimerInterruptLEDDemo)
  6. [TimerInterruptTest](examples/NANO33BLE/TimerInterruptTest)
- 7. [**FakeAnalogWrite**](examples/NANO33BLE/FakeAnalogWrite). New.
- 8. [**Change_Interval**](examples/NANO33BLE/Change_Interval). New.
+ 7. [**FakeAnalogWrite**](examples/NANO33BLE/FakeAnalogWrite).
+ 8. [**Change_Interval**](examples/NANO33BLE/Change_Interval).
+
+### 10. Arduino megaAVR. New
+
+ 1. [Argument_Complex](examples/MEGA_AVR/Argument_Complex)
+ 2. [Argument_None](examples/MEGA_AVR/Argument_None)
+ 3. [Argument_Simple](examples/MEGA_AVR/Argument_Simple) 
+ 4. [ISR_RPM_Measure](examples/MEGA_AVR/ISR_RPM_Measure) 
+ 5. [ISR_Switch](examples/MEGA_AVR/ISR_Switch)
+ 6. [ISR_Timer_Complex](examples/MEGA_AVR/ISR_Timer_Complex)
+ 7. [ISR_Timer_Switch](examples/MEGA_AVR/ISR_Timer_Switch)
+ 8. [ISR_Timer_Switches](examples/MEGA_AVR/ISR_Timer_Switches) 
+ 9. [RPM_Measure](examples/MEGA_AVR/RPM_Measure)
+10. [SwitchDebounce](examples/MEGA_AVR/SwitchDebounce)
+11. [TimerDuration](examples/MEGA_AVR/TimerDuration)
+12. [TimerInterruptTest](examples/MEGA_AVR/TimerInterruptTest)
+13. [**ISR_16_Timers_Array_Complex**](examples/MEGA_AVR/ISR_16_Timers_Array_Complex).
+14. [**ISR_Timers_Array_Simple**](examples/MEGA_AVR/TimerInterruptTest).
+15. [**Change_Interval**](examples/MEGA_AVR/Change_Interval).
+16. [**FakeAnalogWrite**](examples/MEGA_AVR/FakeAnalogWrite).
+
 
 ---
 ---
@@ -2017,7 +2205,7 @@ While software timer, **programmed for 2s, is activated after 10.917s !!!**. The
 
 ```
 Starting ISR_Timer_Complex_Ethernet on SAM DUE
-TimerInterrupt_Generic v1.4.0
+TimerInterrupt_Generic v1.5.0
 Using Timer(0) = TC0, channel = 0, IRQ = TC0_IRQn
 Timer(0), us = 50000.00
 ITimer attached to Timer(0)
@@ -2109,7 +2297,7 @@ While software timer, **programmed for 2s, is activated after 4.867s !!!**. Then
 
 ```
 Starting ISR_Timer_Complex_Ethernet on NRF52840_FEATHER
-TimerInterrupt_Generic v1.4.0
+TimerInterrupt_Generic v1.5.0
 NRF52TimerInterrupt: F_CPU (MHz) = 64, Timer = NRF_TIMER2
 NRF52TimerInterrupt: _fre = 1000000.00, _count = 50000
 Starting  ITimer OK, millis() = 1419
@@ -2203,7 +2391,7 @@ In this example, 16 independent ISR Timers are used, yet utilized just one Hardw
 
 ```
 Starting ISR_16_Timers_Array on SAMD_NANO_33_IOT
-TimerInterrupt_Generic v1.4.0
+TimerInterrupt_Generic v1.5.0
 CPU Frequency = 48 MHz
 F_CPU (MHz) = 48, TIMER_HZ = 48
 TC_Timer::startTimer _Timer = 0x42002c00, TC3 = 0x42002c00
@@ -2327,7 +2515,7 @@ The following is the sample terminal output when running example [**TimerInterru
 
 ```
 Starting TimerInterruptTest on Teensy 4.0/4.1
-TimerInterrupt_Generic v1.4.0
+TimerInterrupt_Generic v1.5.0
 CPU Frequency = 600 MHz
 TEENSY_TIMER_1, F_BUS_ACTUAL (MHz) = 150, request interval = 30000, actual interval (us) = 29999
 Prescale = 7, _timerCount = 17578
@@ -2373,7 +2561,7 @@ While software timer, **programmed for 2s, is activated after 3.435s !!!**
 ```
 
 Starting Argument_None on ESP32_DEV
-TimerInterrupt_Generic v1.4.0
+TimerInterrupt_Generic v1.5.0
 CPU Frequency = 240 MHz
 ESP32TimerInterrupt: _timerNo = 1, _fre = 1000000.00, _count = 0 - 50000
 Starting  ITimer OK, millis() = 2140
@@ -2440,7 +2628,7 @@ While software timer, **programmed for 2s, is activated after 4.258s !!!**
 
 ```
 Starting ISR_Timer_Complex on ESP8266_NODEMCU
-TimerInterrupt_Generic v1.4.0
+TimerInterrupt_Generic v1.5.0
 CPU Frequency = 160 MHz
 ESP8266TimerInterrupt: _fre = 312500.00, _count = 15625
 Starting  ITimer OK, millis() = 64
@@ -2490,7 +2678,7 @@ While software timer, **programmed for 2s, is activated after 9.782s !!!**. Then
 
 ```
 Starting ISR_Timer_Complex on NUCLEO_F767ZI
-TimerInterrupt_Generic v1.4.0
+TimerInterrupt_Generic v1.5.0
 CPU Frequency = 216 MHz
 STM32TimerInterrupt: Timer Input Freq (Hz) = 216000000, _fre = 1000000.00, _count = 50000
 Starting  ITimer OK, millis() = 6
@@ -2551,7 +2739,7 @@ The following is the sample terminal output when running example [**TimerInterru
 ```
 
 Starting TimerInterruptTest on NUCLEO_F767ZI
-TimerInterrupt_Generic v1.4.0
+TimerInterrupt_Generic v1.5.0
 CPU Frequency = 216 MHz
 STM32TimerInterrupt: Timer Input Freq (Hz) = 216000000, _fre = 1000000.00, _count = 1000000
 Starting  ITimer0 OK, millis() = 108
@@ -2607,7 +2795,7 @@ While software timer, **programmed for 2s, is activated after more than 3.000s i
 
 ```
 Starting ISR_16_Timers_Array_Complex on Nano 33 BLE
-TimerInterrupt_Generic v1.4.0
+TimerInterrupt_Generic v1.5.0
 NRF52_MBED_TimerInterrupt: Timer = NRF_TIMER3
 NRF52_MBED_TimerInterrupt: _fre = 1000000.00, _count = 10000
 Starting  ITimer OK, millis() = 714
@@ -3073,6 +3261,252 @@ Timer : 15, programmed : 80000, actual : 80009
 
 ```
 
+
+---
+
+### 10. ISR_16_Timers_Array_Complex on Arduino megaAVR Nano Every to show accuracy difference.
+
+
+### 10.1. TCB Clock Frequency 16MHz for highest accuracy
+
+
+```
+Starting ISR_16_Timers_Array_Complex on megaAVR Nano Every
+megaAVR_TimerInterrupt v1.3.0
+TimerInterrupt_Generic v1.5.0
+CPU Frequency = 16 MHz
+TCB Clock Frequency = 16MHz for highest accuracy
+Starting  ITimer1 OK, millis() = 6
+SimpleTimer : 2, ms : 10007, Dms : 10007
+Timer : 0, programmed : 5000, actual : 5000
+Timer : 1, programmed : 10000, actual : 10006
+Timer : 2, programmed : 15000, actual : 0
+Timer : 3, programmed : 20000, actual : 0
+Timer : 4, programmed : 25000, actual : 0
+Timer : 5, programmed : 30000, actual : 0
+Timer : 6, programmed : 35000, actual : 0
+Timer : 7, programmed : 40000, actual : 0
+Timer : 8, programmed : 45000, actual : 0
+Timer : 9, programmed : 50000, actual : 0
+Timer : 10, programmed : 55000, actual : 0
+Timer : 11, programmed : 60000, actual : 0
+Timer : 12, programmed : 65000, actual : 0
+Timer : 13, programmed : 70000, actual : 0
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+SimpleTimer : 2, ms : 20066, Dms : 10059
+Timer : 0, programmed : 5000, actual : 5000
+Timer : 1, programmed : 10000, actual : 10000
+Timer : 2, programmed : 15000, actual : 15006
+Timer : 3, programmed : 20000, actual : 20006
+Timer : 4, programmed : 25000, actual : 0
+Timer : 5, programmed : 30000, actual : 0
+Timer : 6, programmed : 35000, actual : 0
+Timer : 7, programmed : 40000, actual : 0
+Timer : 8, programmed : 45000, actual : 0
+Timer : 9, programmed : 50000, actual : 0
+Timer : 10, programmed : 55000, actual : 0
+Timer : 11, programmed : 60000, actual : 0
+Timer : 12, programmed : 65000, actual : 0
+Timer : 13, programmed : 70000, actual : 0
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+
+...
+
+
+SimpleTimer : 2, ms : 211269, Dms : 10064
+Timer : 0, programmed : 5000, actual : 5000            <========== Very accurate @ clock 16MHz
+Timer : 1, programmed : 10000, actual : 10000
+Timer : 2, programmed : 15000, actual : 15000
+Timer : 3, programmed : 20000, actual : 20000
+Timer : 4, programmed : 25000, actual : 25000
+Timer : 5, programmed : 30000, actual : 30000
+Timer : 6, programmed : 35000, actual : 35000
+Timer : 7, programmed : 40000, actual : 40000
+Timer : 8, programmed : 45000, actual : 45000
+Timer : 9, programmed : 50000, actual : 50000
+Timer : 10, programmed : 55000, actual : 55000
+Timer : 11, programmed : 60000, actual : 60000
+Timer : 12, programmed : 65000, actual : 65000
+Timer : 13, programmed : 70000, actual : 70000
+Timer : 14, programmed : 75000, actual : 75000
+Timer : 15, programmed : 80000, actual : 80000
+SimpleTimer : 2, ms : 221333, Dms : 10064
+Timer : 0, programmed : 5000, actual : 5000
+Timer : 1, programmed : 10000, actual : 10000
+Timer : 2, programmed : 15000, actual : 15000
+Timer : 3, programmed : 20000, actual : 20000
+Timer : 4, programmed : 25000, actual : 25000
+Timer : 5, programmed : 30000, actual : 30000
+Timer : 6, programmed : 35000, actual : 35000
+Timer : 7, programmed : 40000, actual : 40000
+Timer : 8, programmed : 45000, actual : 45000
+Timer : 9, programmed : 50000, actual : 50000
+Timer : 10, programmed : 55000, actual : 55000
+Timer : 11, programmed : 60000, actual : 60000
+Timer : 12, programmed : 65000, actual : 65000
+Timer : 13, programmed : 70000, actual : 70000
+Timer : 14, programmed : 75000, actual : 75000
+Timer : 15, programmed : 80000, actual : 80000
+
+```
+
+---
+
+### 10.2. TCB Clock Frequency 8MHz for very high accuracy
+
+```
+
+Starting ISR_16_Timers_Array_Complex on megaAVR Nano Every
+megaAVR_TimerInterrupt v1.3.0
+TimerInterrupt_Generic v1.5.0
+CPU Frequency = 16 MHz
+TCB Clock Frequency = 8MHz for very high accuracy
+Starting  ITimer1 OK, millis() = 10
+SimpleTimer : 2, ms : 10011, Dms : 10011
+Timer : 0, programmed : 5000, actual : 5000
+Timer : 1, programmed : 10000, actual : 10011
+Timer : 2, programmed : 15000, actual : 0
+Timer : 3, programmed : 20000, actual : 0
+Timer : 4, programmed : 25000, actual : 0
+Timer : 5, programmed : 30000, actual : 0
+Timer : 6, programmed : 35000, actual : 0
+Timer : 7, programmed : 40000, actual : 0
+Timer : 8, programmed : 45000, actual : 0
+Timer : 9, programmed : 50000, actual : 0
+Timer : 10, programmed : 55000, actual : 0
+Timer : 11, programmed : 60000, actual : 0
+Timer : 12, programmed : 65000, actual : 0
+Timer : 13, programmed : 70000, actual : 0
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+
+...
+
+
+SimpleTimer : 2, ms : 160949, Dms : 10064
+Timer : 0, programmed : 5000, actual : 5000            <========== Very accurate @ clock 8MHz
+Timer : 1, programmed : 10000, actual : 10000
+Timer : 2, programmed : 15000, actual : 15000
+Timer : 3, programmed : 20000, actual : 20000
+Timer : 4, programmed : 25000, actual : 25000
+Timer : 5, programmed : 30000, actual : 30000
+Timer : 6, programmed : 35000, actual : 35000
+Timer : 7, programmed : 40000, actual : 40000
+Timer : 8, programmed : 45000, actual : 45000
+Timer : 9, programmed : 50000, actual : 50000
+Timer : 10, programmed : 55000, actual : 55000
+Timer : 11, programmed : 60000, actual : 60000
+Timer : 12, programmed : 65000, actual : 65000
+Timer : 13, programmed : 70000, actual : 70000
+Timer : 14, programmed : 75000, actual : 75000
+Timer : 15, programmed : 80000, actual : 80000
+SimpleTimer : 2, ms : 171013, Dms : 10064
+Timer : 0, programmed : 5000, actual : 5000
+Timer : 1, programmed : 10000, actual : 10000
+Timer : 2, programmed : 15000, actual : 15000
+Timer : 3, programmed : 20000, actual : 20000
+Timer : 4, programmed : 25000, actual : 25000
+Timer : 5, programmed : 30000, actual : 30000
+Timer : 6, programmed : 35000, actual : 35000
+Timer : 7, programmed : 40000, actual : 40000
+Timer : 8, programmed : 45000, actual : 45000
+Timer : 9, programmed : 50000, actual : 50000
+Timer : 10, programmed : 55000, actual : 55000
+Timer : 11, programmed : 60000, actual : 60000
+Timer : 12, programmed : 65000, actual : 65000
+Timer : 13, programmed : 70000, actual : 70000
+Timer : 14, programmed : 75000, actual : 75000
+Timer : 15, programmed : 80000, actual : 80000
+
+```
+
+---
+
+### 10.3. TCB Clock Frequency 250KHz for lower accuracy but longer time
+
+```
+Starting ISR_16_Timers_Array_Complex on megaAVR Nano Every
+megaAVR_TimerInterrupt v1.3.0
+TimerInterrupt_Generic v1.5.0
+CPU Frequency = 16 MHz
+TCB Clock Frequency = 250KHz for lower accuracy but longer time
+Starting  ITimer1 OK, millis() = 11
+SimpleTimer : 2, ms : 10012, Dms : 10012
+Timer : 0, programmed : 5000, actual : 5021
+Timer : 1, programmed : 10000, actual : 10015
+Timer : 2, programmed : 15000, actual : 0
+Timer : 3, programmed : 20000, actual : 0
+Timer : 4, programmed : 25000, actual : 0
+Timer : 5, programmed : 30000, actual : 0
+Timer : 6, programmed : 35000, actual : 0
+Timer : 7, programmed : 40000, actual : 0
+Timer : 8, programmed : 45000, actual : 0
+Timer : 9, programmed : 50000, actual : 0
+Timer : 10, programmed : 55000, actual : 0
+Timer : 11, programmed : 60000, actual : 0
+Timer : 12, programmed : 65000, actual : 0
+Timer : 13, programmed : 70000, actual : 0
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+SimpleTimer : 2, ms : 20071, Dms : 10059
+Timer : 0, programmed : 5000, actual : 4994
+Timer : 1, programmed : 10000, actual : 9999
+Timer : 2, programmed : 15000, actual : 15020
+Timer : 3, programmed : 20000, actual : 20014
+Timer : 4, programmed : 25000, actual : 0
+Timer : 5, programmed : 30000, actual : 0
+Timer : 6, programmed : 35000, actual : 0
+Timer : 7, programmed : 40000, actual : 0
+Timer : 8, programmed : 45000, actual : 0
+Timer : 9, programmed : 50000, actual : 0
+Timer : 10, programmed : 55000, actual : 0
+Timer : 11, programmed : 60000, actual : 0
+Timer : 12, programmed : 65000, actual : 0
+Timer : 13, programmed : 70000, actual : 0
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+
+...
+
+
+SimpleTimer : 2, ms : 845278, Dms : 10063
+Timer : 0, programmed : 5000, actual : 4994            <========== Less accurate @ clock 250KHz
+Timer : 1, programmed : 10000, actual : 9997
+Timer : 2, programmed : 15000, actual : 15001
+Timer : 3, programmed : 20000, actual : 20005
+Timer : 4, programmed : 25000, actual : 25000
+Timer : 5, programmed : 30000, actual : 30004
+Timer : 6, programmed : 35000, actual : 34998
+Timer : 7, programmed : 40000, actual : 40001
+Timer : 8, programmed : 45000, actual : 44995
+Timer : 9, programmed : 50000, actual : 50000
+Timer : 10, programmed : 55000, actual : 55004
+Timer : 11, programmed : 60000, actual : 59998
+Timer : 12, programmed : 65000, actual : 64992
+Timer : 13, programmed : 70000, actual : 70005
+Timer : 14, programmed : 75000, actual : 75000
+Timer : 15, programmed : 80000, actual : 80004
+SimpleTimer : 2, ms : 855342, Dms : 10064
+Timer : 0, programmed : 5000, actual : 5004
+Timer : 1, programmed : 10000, actual : 9999
+Timer : 2, programmed : 15000, actual : 15003
+Timer : 3, programmed : 20000, actual : 20005
+Timer : 4, programmed : 25000, actual : 25000
+Timer : 5, programmed : 30000, actual : 30004
+Timer : 6, programmed : 35000, actual : 34998
+Timer : 7, programmed : 40000, actual : 40001
+Timer : 8, programmed : 45000, actual : 45007
+Timer : 9, programmed : 50000, actual : 50000
+Timer : 10, programmed : 55000, actual : 55004
+Timer : 11, programmed : 60000, actual : 59998
+Timer : 12, programmed : 65000, actual : 64992
+Timer : 13, programmed : 70000, actual : 70005
+Timer : 14, programmed : 75000, actual : 75000
+Timer : 15, programmed : 80000, actual : 80004
+```
+
 ---
 ---
 
@@ -3104,6 +3538,10 @@ Sometimes, the library will only work if you update the board core to the latest
 ---
 
 ## Releases
+
+### Releases v1.5.0
+
+1. Add support to **ATmega4809-based boards** such as **Arduino UNO WiFi Rev2, AVR_NANO_EVERY, etc.**
 
 ### Major Releases v1.4.0
 
@@ -3182,6 +3620,9 @@ Sometimes, the library will only work if you update the board core to the latest
   - **Arduino Nano-33-BLE**
   
   - **Arduino SAM DUE**.
+  
+  - **ATmega4809-based boards** such as :
+    - **Arduino UNO WiFi Rev2, AVR_NANO_EVERY, etc.**
 
 ---
 ---
@@ -3199,7 +3640,7 @@ Submit issues to: [TimerInterrupt_Generic issues](https://github.com/khoih-prog/
 
 ## DONE
 
-1. Basic hardware timers for AVR, ESP8266, ESP32, SAMD, SAM DUE, nRF52, Teensy, Mbed-OS Nano-33-BLE, STM32, etc.
+1. Basic hardware timers for AVR, megaAVR, ESP8266, ESP32, SAMD, SAM DUE, nRF52, Teensy, Mbed-OS Nano-33-BLE, STM32, etc.
 2. More hardware-initiated software-enabled timers
 3. Longer time interval
 4. Clean-up all compiler warnings possible.

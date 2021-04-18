@@ -19,7 +19,7 @@
   Built by Khoi Hoang https://github.com/khoih-prog/TimerInterrupt_Generic
   Licensed under MIT license
 
-  Version: 1.4.0
+  Version: 1.5.0
 
    Version Modified By   Date      Comments
    ------- -----------  ---------- -----------
@@ -29,6 +29,7 @@
    1.3.1   K.Hoang      09/12/2020 Add complex examples and board Version String. Fix SAMD bug.
    1.3.2   K.Hoang      06/01/2021 Fix warnings. Optimize examples to reduce memory usage
    1.4.0   K.Hoang      02/04/2021 Add support to Arduino, Adafruit, Sparkfun AVR 32u4, 328P, 128128RFA1 and Sparkfun SAMD
+   1.5.0   K.Hoang      17/04/2021 Add support to Arduino megaAVR ATmega4809-based boards (Nano Every, UNO WiFi Rev2, etc.)
  *****************************************************************************************************************************/
 
 #pragma once
