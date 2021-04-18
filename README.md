@@ -67,7 +67,7 @@
     * [3.3. Timer2](#33-timer2)
     * [3.4. Timer3, Timer4, Timer5](#34-timer3-timer4-timer5)
   * [4. For STM32F/L/H/G/WB/MP1](#4-for-stm32flhgwbmp1)
-  * [5. For Arduino megaAVR](#3-for-arduino-megaavr)
+  * [5. For Arduino megaAVR](#5-for-arduino-megaavr)
     * [5.1. Documents](#51-documents)
     * [5.2. Timer TCB0-TCB3](#52-timer-tcb0-tcb3)
 * [New from v1.1.0](#new-from-v110)
@@ -3640,7 +3640,22 @@ Submit issues to: [TimerInterrupt_Generic issues](https://github.com/khoih-prog/
 
 ## DONE
 
-1. Basic hardware timers for AVR, megaAVR, ESP8266, ESP32, SAMD, SAM DUE, nRF52, Teensy, Mbed-OS Nano-33-BLE, STM32, etc.
+1. Basic hardware timers for 
+
+-[x] AVR
+-[x] megaAVR
+-[x] ESP8266
+-[x] ESP32
+-[x] SAMD
+-[x] SAM DUE
+-[x] nRF52
+-[x] Teensy
+-[x] Mbed-OS Nano-33-BLE
+-[x] STM32F/L/H/G/WB/MP1
+-[] Portenta H7
+-[] Raspberry Pi pico
+
+
 2. More hardware-initiated software-enabled timers
 3. Longer time interval
 4. Clean-up all compiler warnings possible.
