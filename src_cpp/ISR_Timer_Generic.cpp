@@ -1,35 +1,36 @@
 /****************************************************************************************************************************
-   ISR_Timer_Generic.cpp
-   For Generic boards
-   Written by Khoi Hoang
+  ISR_Timer_Generic.cpp
+  For Generic boards
+  Written by Khoi Hoang
 
-   Now even you use all these new 16 ISR-based timers,with their maximum interval practically unlimited (limited only by
-   unsigned long miliseconds), you just consume only one Hardware timer and avoid conflicting with other cores' tasks.
-   The accuracy is nearly perfect compared to software timers. The most important feature is they're ISR-based timers
-   Therefore, their executions are not blocked by bad-behaving functions / tasks.
-   This important feature is absolutely necessary for mission-critical tasks.
+  Now even you use all these new 16 ISR-based timers,with their maximum interval practically unlimited (limited only by
+  unsigned long miliseconds), you just consume only one Hardware timer and avoid conflicting with other cores' tasks.
+  The accuracy is nearly perfect compared to software timers. The most important feature is they're ISR-based timers
+  Therefore, their executions are not blocked by bad-behaving functions / tasks.
+  This important feature is absolutely necessary for mission-critical tasks.
 
-   Based on SimpleTimer - A timer library for Arduino.
-   Author: mromani@ottotecnica.com
-   Copyright (c) 2010 OTTOTECNICA Italy
+  Based on SimpleTimer - A timer library for Arduino.
+  Author: mromani@ottotecnica.com
+  Copyright (c) 2010 OTTOTECNICA Italy
 
-   Based on BlynkTimer.h
-   Author: Volodymyr Shymanskyy
-   
-   Built by Khoi Hoang https://github.com/khoih-prog/TimerInterrupt_Generic
-   Licensed under MIT license
+  Based on BlynkTimer.h
+  Author: Volodymyr Shymanskyy
 
-   Version: 1.5.0
+  Built by Khoi Hoang https://github.com/khoih-prog/TimerInterrupt_Generic
+  Licensed under MIT license
 
-   Version Modified By   Date      Comments
-   ------- -----------  ---------- -----------
-   1.1.0   K Hoang      10/11/2020 Initial Super-Library coding to merge all TimerInterrupt Libraries
-   1.2.0   K Hoang      12/11/2020 Add STM32_TimerInterrupt Library
-   1.3.0   K Hoang      01/12/2020 Add Mbed Mano-33-BLE Library. Add support to AVR UNO, Nano, Arduino Mini, Ethernet, BT. etc.
-   1.3.1   K.Hoang      09/12/2020 Add complex examples and board Version String. Fix SAMD bug.
-   1.3.2   K.Hoang      06/01/2021 Fix warnings. Optimize examples to reduce memory usage
-   1.4.0   K.Hoang      02/04/2021 Add support to Arduino, Adafruit, Sparkfun AVR 32u4, 328P, 128128RFA1 and Sparkfun SAMD
-   1.5.0   K.Hoang      17/04/2021 Add support to Arduino megaAVR ATmega4809-based boards (Nano Every, UNO WiFi Rev2, etc.)
+  Version: 1.6.0
+
+  Version Modified By   Date      Comments
+  ------- -----------  ---------- -----------
+  1.1.0   K Hoang      10/11/2020 Initial Super-Library coding to merge all TimerInterrupt Libraries
+  1.2.0   K Hoang      12/11/2020 Add STM32_TimerInterrupt Library
+  1.3.0   K Hoang      01/12/2020 Add Mbed Mano-33-BLE Library. Add support to AVR UNO, Nano, Arduino Mini, Ethernet, BT. etc.
+  1.3.1   K.Hoang      09/12/2020 Add complex examples and board Version String. Fix SAMD bug.
+  1.3.2   K.Hoang      06/01/2021 Fix warnings. Optimize examples to reduce memory usage
+  1.4.0   K.Hoang      02/04/2021 Add support to Arduino, Adafruit, Sparkfun AVR 32u4, 328P, 128128RFA1 and Sparkfun SAMD
+  1.5.0   K.Hoang      17/04/2021 Add support to Arduino megaAVR ATmega4809-based boards (Nano Every, UNO WiFi Rev2, etc.)
+  1.6.0   K.Hoang      15/06/2021 Add T3/T4 support to 32u4. Add support to RP2040, ESP32-S2
 *****************************************************************************************************************************/
 
 #include "ISR_Timer_Generic.h"
@@ -40,9 +41,9 @@ ISR_Timer::ISR_Timer()
 {
 }
 
-void ISR_Timer::init() 
+void IRAM_ATTR_PREFIX ISR_Timer::init() 
 {
-  unsigned long current_millis = millis();   //elapsed();
+  unsigned long current_millis = millis();
 
   for (uint8_t i = 0; i < MAX_NUMBER_TIMERS; i++) 
   {
@@ -51,15 +52,25 @@ void ISR_Timer::init()
   }
 
   numTimers = 0;
+  
+#if ( defined(ESP32) || ESP32 )
+  // ESP32 is a multi core / multi processing chip. It is mandatory to disable task switches during ISR
+  timerMux = portMUX_INITIALIZER_UNLOCKED;
+#endif
 }
 
-void ISR_Timer::run() 
+void IRAM_ATTR_PREFIX ISR_Timer::run() 
 {
   uint8_t i;
   unsigned long current_millis;
 
   // get current time
-  current_millis = millis();   //elapsed();
+  current_millis = millis();
+  
+#if ( defined(ESP32) || ESP32 )
+  // ESP32 is a multi core / multi processing chip. It is mandatory to disable task switches during ISR
+  portENTER_CRITICAL_ISR(&timerMux);
+#endif
 
   for (i = 0; i < MAX_NUMBER_TIMERS; i++) 
   {
@@ -119,12 +130,17 @@ void ISR_Timer::run()
     if (timer[i].toBeCalled == TIMER_DEFCALL_RUNANDDEL)
       deleteTimer(i);
   }
+  
+#if ( defined(ESP32) || ESP32 )
+  // ESP32 is a multi core / multi processing chip. It is mandatory to disable task switches during ISR
+  portEXIT_CRITICAL_ISR(&timerMux);
+#endif
 }
 
 
 // find the first available slot
 // return -1 if none found
-int ISR_Timer::findFirstFreeSlot() 
+int IRAM_ATTR_PREFIX ISR_Timer::findFirstFreeSlot() 
 {
   // all slots are used
   if (numTimers >= MAX_NUMBER_TIMERS) 
@@ -146,7 +162,7 @@ int ISR_Timer::findFirstFreeSlot()
 }
 
 
-int ISR_Timer::setupTimer(unsigned long d, void* f, void* p, bool h, unsigned n) 
+int IRAM_ATTR_PREFIX ISR_Timer::setupTimer(unsigned long d, void* f, void* p, bool h, unsigned n) 
 {
   int freeTimer;
 
@@ -180,37 +196,37 @@ int ISR_Timer::setupTimer(unsigned long d, void* f, void* p, bool h, unsigned n)
 }
 
 
-int ISR_Timer::setTimer(unsigned long d, timerCallback f, unsigned n) 
+int IRAM_ATTR_PREFIX ISR_Timer::setTimer(unsigned long d, timerCallback f, unsigned n) 
 {
   return setupTimer(d, (void *)f, NULL, false, n);
 }
 
-int ISR_Timer::setTimer(unsigned long d, timerCallback_p f, void* p, unsigned n) 
+int IRAM_ATTR_PREFIX ISR_Timer::setTimer(unsigned long d, timerCallback_p f, void* p, unsigned n) 
 {
   return setupTimer(d, (void *)f, p, true, n);
 }
 
-int ISR_Timer::setInterval(unsigned long d, timerCallback f) 
+int IRAM_ATTR_PREFIX ISR_Timer::setInterval(unsigned long d, timerCallback f) 
 {
   return setupTimer(d, (void *)f, NULL, false, TIMER_RUN_FOREVER);
 }
 
-int ISR_Timer::setInterval(unsigned long d, timerCallback_p f, void* p) 
+int IRAM_ATTR_PREFIX ISR_Timer::setInterval(unsigned long d, timerCallback_p f, void* p) 
 {
   return setupTimer(d, (void *)f, p, true, TIMER_RUN_FOREVER);
 }
 
-int ISR_Timer::setTimeout(unsigned long d, timerCallback f) 
+int IRAM_ATTR_PREFIX ISR_Timer::setTimeout(unsigned long d, timerCallback f) 
 {
   return setupTimer(d, (void *)f, NULL, false, TIMER_RUN_ONCE);
 }
 
-int ISR_Timer::setTimeout(unsigned long d, timerCallback_p f, void* p) 
+int IRAM_ATTR_PREFIX ISR_Timer::setTimeout(unsigned long d, timerCallback_p f, void* p) 
 {
   return setupTimer(d, (void *)f, p, true, TIMER_RUN_ONCE);
 }
 
-bool ISR_Timer::changeInterval(unsigned numTimer, unsigned long d) 
+bool IRAM_ATTR_PREFIX ISR_Timer::changeInterval(unsigned numTimer, unsigned long d) 
 {
   if (numTimer >= MAX_NUMBER_TIMERS) 
   {
@@ -220,8 +236,18 @@ bool ISR_Timer::changeInterval(unsigned numTimer, unsigned long d)
   // Updates interval of existing specified timer
   if (timer[numTimer].callback != NULL) 
   {
+#if ( defined(ESP32) || ESP32 )
+    // ESP32 is a multi core / multi processing chip. It is mandatory to disable task switches during ISR
+    portENTER_CRITICAL(&timerMux);
+#endif
+  
     timer[numTimer].delay = d;
     timer[numTimer].prev_millis = millis();
+
+#if ( defined(ESP32) || ESP32 )
+    // ESP32 is a multi core / multi processing chip. It is mandatory to disable task switches during ISR
+    portEXIT_CRITICAL_ISR(&timerMux);
+#endif
 
     return true;
   }
@@ -230,7 +256,7 @@ bool ISR_Timer::changeInterval(unsigned numTimer, unsigned long d)
   return false;
 }
 
-void ISR_Timer::deleteTimer(unsigned timerId) 
+void IRAM_ATTR_PREFIX ISR_Timer::deleteTimer(unsigned timerId) 
 {
   if (timerId >= MAX_NUMBER_TIMERS) 
   {
@@ -246,27 +272,47 @@ void ISR_Timer::deleteTimer(unsigned timerId)
   // don't decrease the number of timers if the specified slot is already empty
   if (timer[timerId].callback != NULL) 
   {
+#if ( defined(ESP32) || ESP32 )
+    // ESP32 is a multi core / multi processing chip. It is mandatory to disable task switches during ISR
+    portENTER_CRITICAL(&timerMux);
+#endif
+  
     memset((void*) &timer[timerId], 0, sizeof (timer_t));
     timer[timerId].prev_millis = millis();
 
     // update number of timers
     numTimers--;
+    
+#if ( defined(ESP32) || ESP32 )
+    // ESP32 is a multi core / multi processing chip. It is mandatory to disable task switches during ISR
+    portEXIT_CRITICAL(&timerMux);
+#endif    
   }
 }
 
 // function contributed by code@rowansimms.com
-void ISR_Timer::restartTimer(unsigned numTimer) 
+void IRAM_ATTR_PREFIX ISR_Timer::restartTimer(unsigned numTimer) 
 {
   if (numTimer >= MAX_NUMBER_TIMERS) 
   {
     return;
   }
+  
+#if ( defined(ESP32) || ESP32 )
+  // ESP32 is a multi core / multi processing chip. It is mandatory to disable task switches during ISR
+  portENTER_CRITICAL(&timerMux);
+#endif  
 
   timer[numTimer].prev_millis = millis();
+  
+#if ( defined(ESP32) || ESP32 )
+  // ESP32 is a multi core / multi processing chip. It is mandatory to disable task switches during ISR
+  portEXIT_CRITICAL(&timerMux);
+#endif  
 }
 
 
-bool ISR_Timer::isEnabled(unsigned numTimer) 
+bool IRAM_ATTR_PREFIX ISR_Timer::isEnabled(unsigned numTimer) 
 {
   if (numTimer >= MAX_NUMBER_TIMERS) 
   {
@@ -277,7 +323,7 @@ bool ISR_Timer::isEnabled(unsigned numTimer)
 }
 
 
-void ISR_Timer::enable(unsigned numTimer) 
+void IRAM_ATTR_PREFIX ISR_Timer::enable(unsigned numTimer) 
 {
   if (numTimer >= MAX_NUMBER_TIMERS) 
   {
@@ -288,7 +334,7 @@ void ISR_Timer::enable(unsigned numTimer)
 }
 
 
-void ISR_Timer::disable(unsigned numTimer) 
+void IRAM_ATTR_PREFIX ISR_Timer::disable(unsigned numTimer) 
 {
   if (numTimer >= MAX_NUMBER_TIMERS) 
   {
@@ -298,9 +344,14 @@ void ISR_Timer::disable(unsigned numTimer)
   timer[numTimer].enabled = false;
 }
 
-void ISR_Timer::enableAll() 
+void IRAM_ATTR_PREFIX ISR_Timer::enableAll() 
 {
   // Enable all timers with a callback assigned (used)
+
+#if ( defined(ESP32) || ESP32 )
+  // ESP32 is a multi core / multi processing chip. It is mandatory to disable task switches during ISR
+  portENTER_CRITICAL(&timerMux);
+#endif
 
   for (uint8_t i = 0; i < MAX_NUMBER_TIMERS; i++) 
   {
@@ -309,11 +360,21 @@ void ISR_Timer::enableAll()
       timer[i].enabled = true;
     }
   }
+  
+#if ( defined(ESP32) || ESP32 )
+  // ESP32 is a multi core / multi processing chip. It is mandatory to disable task switches during ISR
+  portEXIT_CRITICAL(&timerMux);
+#endif   
 }
 
-void ISR_Timer::disableAll() 
+void IRAM_ATTR_PREFIX ISR_Timer::disableAll() 
 {
   // Disable all timers with a callback assigned (used)
+
+#if ( defined(ESP32) || ESP32 )
+  // ESP32 is a multi core / multi processing chip. It is mandatory to disable task switches during ISR
+  portENTER_CRITICAL(&timerMux);
+#endif
 
   for (uint8_t i = 0; i < MAX_NUMBER_TIMERS; i++) 
   {
@@ -322,9 +383,14 @@ void ISR_Timer::disableAll()
       timer[i].enabled = false;
     }
   }
+  
+#if ( defined(ESP32) || ESP32 )
+  // ESP32 is a multi core / multi processing chip. It is mandatory to disable task switches during ISR
+  portEXIT_CRITICAL(&timerMux);
+#endif  
 }
 
-void ISR_Timer::toggle(unsigned numTimer) 
+void IRAM_ATTR_PREFIX ISR_Timer::toggle(unsigned numTimer) 
 {
   if (numTimer >= MAX_NUMBER_TIMERS) 
   {
@@ -335,7 +401,7 @@ void ISR_Timer::toggle(unsigned numTimer)
 }
 
 
-unsigned ISR_Timer::getNumTimers() 
+int IRAM_ATTR_PREFIX ISR_Timer::getNumTimers() 
 {
   return numTimers;
 }

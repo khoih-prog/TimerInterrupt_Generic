@@ -1,35 +1,36 @@
 /****************************************************************************************************************************
-   SAMDTimerInterrupt.h
-   For SAMD boards
-   Written by Khoi Hoang
+  SAMDTimerInterrupt.h
+  For SAMD boards
+  Written by Khoi Hoang
 
-   Now even you use all these new 16 ISR-based timers,with their maximum interval practically unlimited (limited only by
-   unsigned long miliseconds), you just consume only one Hardware timer and avoid conflicting with other cores' tasks.
-   The accuracy is nearly perfect compared to software timers. The most important feature is they're ISR-based timers
-   Therefore, their executions are not blocked by bad-behaving functions / tasks.
-   This important feature is absolutely necessary for mission-critical tasks.
+  Now even you use all these new 16 ISR-based timers,with their maximum interval practically unlimited (limited only by
+  unsigned long miliseconds), you just consume only one Hardware timer and avoid conflicting with other cores' tasks.
+  The accuracy is nearly perfect compared to software timers. The most important feature is they're ISR-based timers
+  Therefore, their executions are not blocked by bad-behaving functions / tasks.
+  This important feature is absolutely necessary for mission-critical tasks.
 
-   Based on SimpleTimer - A timer library for Arduino.
-   Author: mromani@ottotecnica.com
-   Copyright (c) 2010 OTTOTECNICA Italy
+  Based on SimpleTimer - A timer library for Arduino.
+  Author: mromani@ottotecnica.com
+  Copyright (c) 2010 OTTOTECNICA Italy
 
-   Based on BlynkTimer.h
-   Author: Volodymyr Shymanskyy
-   
-   Built by Khoi Hoang https://github.com/khoih-prog/TimerInterrupt_Generic
-   Licensed under MIT license
+  Based on BlynkTimer.h
+  Author: Volodymyr Shymanskyy
 
-   Version: 1.5.0
+  Built by Khoi Hoang https://github.com/khoih-prog/TimerInterrupt_Generic
+  Licensed under MIT license
 
-   Version Modified By   Date      Comments
-   ------- -----------  ---------- -----------
-   1.1.0   K Hoang      10/11/2020 Initial Super-Library coding to merge all TimerInterrupt Libraries
-   1.2.0   K Hoang      12/11/2020 Add STM32_TimerInterrupt Library
-   1.3.0   K Hoang      01/12/2020 Add Mbed Mano-33-BLE Library. Add support to AVR UNO, Nano, Arduino Mini, Ethernet, BT. etc.
-   1.3.1   K.Hoang      09/12/2020 Add complex examples and board Version String. Fix SAMD bug.
-   1.3.2   K.Hoang      06/01/2021 Fix warnings. Optimize examples to reduce memory usage
-   1.4.0   K.Hoang      02/04/2021 Add support to Arduino, Adafruit, Sparkfun AVR 32u4, 328P, 128128RFA1 and Sparkfun SAMD
-   1.5.0   K.Hoang      17/04/2021 Add support to Arduino megaAVR ATmega4809-based boards (Nano Every, UNO WiFi Rev2, etc.)
+  Version: 1.6.0
+
+  Version Modified By   Date      Comments
+  ------- -----------  ---------- -----------
+  1.1.0   K Hoang      10/11/2020 Initial Super-Library coding to merge all TimerInterrupt Libraries
+  1.2.0   K Hoang      12/11/2020 Add STM32_TimerInterrupt Library
+  1.3.0   K Hoang      01/12/2020 Add Mbed Mano-33-BLE Library. Add support to AVR UNO, Nano, Arduino Mini, Ethernet, BT. etc.
+  1.3.1   K.Hoang      09/12/2020 Add complex examples and board Version String. Fix SAMD bug.
+  1.3.2   K.Hoang      06/01/2021 Fix warnings. Optimize examples to reduce memory usage
+  1.4.0   K.Hoang      02/04/2021 Add support to Arduino, Adafruit, Sparkfun AVR 32u4, 328P, 128128RFA1 and Sparkfun SAMD
+  1.5.0   K.Hoang      17/04/2021 Add support to Arduino megaAVR ATmega4809-based boards (Nano Every, UNO WiFi Rev2, etc.)
+  1.6.0   K.Hoang      15/06/2021 Add T3/T4 support to 32u4. Add support to RP2040, ESP32-S2
 *****************************************************************************************************************************/
 /*
   SAMD21
@@ -96,14 +97,19 @@
   #error Unknown board  
 #endif
 
-// Specific for SAMD21 SparkFun RedBoard Turbo
-#if !defined(Serial) && defined(ARDUINO_SAMD_ZERO)
-  #define Serial    SerialUSB
+// Too many boards sharing the same ARDUINO_SAMD_ZERO but very different, such as SAMD21 SparkFun RedBoard Turbo
+// Have to exclude some from the list
+#if ( defined(ARDUINO_SAMD_ZERO) && ! ( defined(ADAFRUIT_FEATHER_M0) || defined(ARDUINO_SAMD_FEATHER_M0) || defined(ADAFRUIT_METRO_M0_EXPRESS) || \
+      defined(ARDUINO_SAMD_HALLOWING_M0) || defined(ADAFRUIT_BLM_BADGE) ) )
+  // Specific for SAMD21 SparkFun RedBoard Turbo
+  #if !defined(Serial)
+    #define Serial    SerialUSB
+  #endif
 #endif
 
 #include "Arduino.h"
 
-#define SAMD_TIMER_INTERRUPT_VERSION       "SAMDTimerInterrupt v1.3.0"
+#define SAMD_TIMER_INTERRUPT_VERSION       "SAMDTimerInterrupt v1.4.0"
 
 #ifndef TIMER_INTERRUPT_DEBUG
   #define TIMER_INTERRUPT_DEBUG       0
@@ -125,7 +131,7 @@ class SAMDTimerInterrupt;
 
 typedef SAMDTimerInterrupt SAMDTimer;
 
-typedef void (*timerCallback)  (void);
+typedef void (*timerCallback)  ();
 
 timerCallback TC3_callback;
 
@@ -251,7 +257,7 @@ class SAMDTimerInterrupt
       }
     }
 
-    void disableTimer(void)
+    void disableTimer()
     {
       // Disable Timer
       if (_timerNumber == TIMER_TC3)
@@ -272,7 +278,7 @@ class SAMDTimerInterrupt
     }
 
     // Duration (in milliseconds). Duration = 0 or not specified => run indefinitely
-    void enableTimer(void)
+    void enableTimer()
     {     
       // Enable Timer
       if (_timerNumber == TIMER_TC3)
@@ -283,14 +289,14 @@ class SAMDTimerInterrupt
     }
 
     // Just stop clock source, clear the count
-    void stopTimer(void)
+    void stopTimer()
     {
       // TODO, clear the count
       disableTimer();
     }
 
     // Just reconnect clock source, start current count from 0
-    void restartTimer(void)
+    void restartTimer()
     {
       // TODO, clear the count
       enableTimer();
@@ -373,6 +379,9 @@ class SAMDTimerInterrupt
 
       TC3->COUNT16.CTRLA.bit.ENABLE = 1;
       TC3_wait_for_sync();
+      
+      TISR_LOGDEBUG3(F("SAMD51 TC3 period ="), period, F(", _prescaler ="), _prescaler);
+      TISR_LOGDEBUG1(F("_compareValue ="), _compareValue);
     }
 }; // class SAMDTimerInterrupt
 
@@ -392,13 +401,15 @@ class SAMDTimerInterrupt;
 
 typedef SAMDTimerInterrupt SAMDTimer;
 
-typedef void (*timerCallback)  (void);
+typedef void (*timerCallback)  ();
 
 timerCallback TC3_callback;
 timerCallback TCC_callback;
 
+
 #define SAMD_TC3        ((TcCount16*) _SAMDTimer)
 #define SAMD_TCC        ((Tcc*) _SAMDTimer)
+
 
 ////////////////////////////////////////////////////////
 
@@ -480,15 +491,17 @@ class SAMDTimerInterrupt
     {
       _period = (unsigned long) (1000000.0f / frequency);
       
+      TISR_LOGDEBUG3(F("_period ="), _period, F(", frequency ="), frequency);
+      
       if (_timerNumber == TIMER_TC3)
       {    
         REG_GCLK_CLKCTRL = (uint16_t) (GCLK_CLKCTRL_CLKEN | GCLK_CLKCTRL_GEN_GCLK0 | GCLK_CLKCTRL_ID (GCM_TCC2_TC3));
         
         while ( GCLK->STATUS.bit.SYNCBUSY == 1 );
-       
+        
         TISR_LOGWARN3(F("SAMDTimerInterrupt: F_CPU (MHz) ="), F_CPU/1000000, F(", TIMER_HZ ="), TIMER_HZ/1000000);
-        TISR_LOGWARN3(F("TC_Timer::startTimer _Timer = 0x"), String((uint32_t) _SAMDTimer, HEX), F(", TC3 = 0x"), String((uint32_t) TC3, HEX));
-
+        TISR_LOGWARN3(F("TC3_Timer::startTimer _Timer = 0x"), String((uint32_t) _SAMDTimer, HEX), F(", TC3 = 0x"), String((uint32_t) TC3, HEX));
+       
         SAMD_TC3->CTRLA.reg &= ~TC_CTRLA_ENABLE;
 
         // Use the 16-bit timer
@@ -521,10 +534,10 @@ class SAMDTimerInterrupt
         REG_GCLK_CLKCTRL = (uint16_t) (GCLK_CLKCTRL_CLKEN | GCLK_CLKCTRL_GEN_GCLK0 | GCLK_CLKCTRL_ID(GCM_TCC0_TCC1));
 	    
 	      while ( GCLK->STATUS.bit.SYNCBUSY == 1 );
-
-        TISR_LOGWARN3(F("SAMDTimerInterrupt: F_CPU (MHz) ="), F_CPU/1000000, F(", TIMER_HZ ="), TIMER_HZ/1000000);
-        TISR_LOGWARN3(F("TC_Timer::startTimer _Timer = 0x"), String((uint32_t) _SAMDTimer, HEX), F(", TCC0 = 0x"), String((uint32_t) TCC0, HEX));
-        
+	      
+	      TISR_LOGWARN3(F("SAMDTimerInterrupt: F_CPU (MHz) ="), F_CPU/1000000, F(", TIMER_HZ ="), TIMER_HZ/1000000);
+        TISR_LOGWARN3(F("TCC_Timer::startTimer _Timer = 0x"), String((uint32_t) _SAMDTimer, HEX), F(", TCC0 = 0x"), String((uint32_t) TCC0, HEX));
+       
         SAMD_TCC->CTRLA.reg &= ~TCC_CTRLA_ENABLE;   // Disable TC
         
         while (SAMD_TCC->SYNCBUSY.bit.ENABLE == 1); // wait for sync 
@@ -543,7 +556,7 @@ class SAMDTimerInterrupt
 
         NVIC_EnableIRQ(TCC0_IRQn);
 
-        SAMD_TCC->CTRLA.reg |= TCC_CTRLA_ENABLE ;
+        SAMD_TCC->CTRLA.reg |= TCC_CTRLA_ENABLE;
         
         while (SAMD_TCC->SYNCBUSY.bit.ENABLE == 1); // wait for sync 
 
@@ -586,7 +599,7 @@ class SAMDTimerInterrupt
       }
     }
 
-    void disableTimer(void)
+    void disableTimer()
     {
       // Disable Timer
       if (_timerNumber == TIMER_TC3)
@@ -616,7 +629,7 @@ class SAMDTimerInterrupt
     }
 
     // Duration (in milliseconds). Duration = 0 or not specified => run indefinitely
-    void enableTimer(void)
+    void enableTimer()
     {     
       // Enable Timer
       if (_timerNumber == TIMER_TC3)
@@ -632,14 +645,14 @@ class SAMDTimerInterrupt
     }
 
     // Just stop clock source, clear the count
-    void stopTimer(void)
+    void stopTimer()
     {
       // TODO, clear the count
       disableTimer();
     }
 
     // Just reconnect clock source, start current count from 0
-    void restartTimer(void)
+    void restartTimer()
     {
       // TODO, clear the count
       enableTimer();
@@ -650,6 +663,25 @@ class SAMDTimerInterrupt
     void setPeriod_TIMER_TC3(unsigned long period)
     {
       TcCount16* _Timer = (TcCount16*) _SAMDTimer;
+      
+      //uint32_t TC_CTRLA_PRESCALER_DIVN;
+
+      _Timer->CTRLA.reg &= ~TC_CTRLA_ENABLE;
+      while (_Timer->STATUS.bit.SYNCBUSY == 1);
+      _Timer->CTRLA.reg &= ~TC_CTRLA_PRESCALER_DIV1024;
+      while (_Timer->STATUS.bit.SYNCBUSY == 1);
+      _Timer->CTRLA.reg &= ~TC_CTRLA_PRESCALER_DIV256;
+      while (_Timer->STATUS.bit.SYNCBUSY == 1);
+      _Timer->CTRLA.reg &= ~TC_CTRLA_PRESCALER_DIV64;
+      while (_Timer->STATUS.bit.SYNCBUSY == 1);
+      _Timer->CTRLA.reg &= ~TC_CTRLA_PRESCALER_DIV16;
+      while (_Timer->STATUS.bit.SYNCBUSY == 1);
+      _Timer->CTRLA.reg &= ~TC_CTRLA_PRESCALER_DIV4;
+      while (_Timer->STATUS.bit.SYNCBUSY == 1);
+      _Timer->CTRLA.reg &= ~TC_CTRLA_PRESCALER_DIV2;
+      while (_Timer->STATUS.bit.SYNCBUSY == 1);
+      _Timer->CTRLA.reg &= ~TC_CTRLA_PRESCALER_DIV1;
+      while (_Timer->STATUS.bit.SYNCBUSY == 1);
       
 	    if (period > 300000) 
 	    {
@@ -711,11 +743,31 @@ class SAMDTimerInterrupt
       _Timer->CC[0].reg = _compareValue;
       
       while (_Timer->STATUS.bit.SYNCBUSY == 1);
+      
+      TISR_LOGDEBUG3(F("SAMD21 TC3 period ="), period, F(", _prescaler ="), _prescaler);
+      TISR_LOGDEBUG1(F("_compareValue ="), _compareValue);
     }
     
     void setPeriod_TIMER_TCC(unsigned long period)
     {
       Tcc* _Timer = (Tcc*) _SAMDTimer;
+      
+      _Timer->CTRLA.reg &= ~TCC_CTRLA_ENABLE;
+      while (_Timer->SYNCBUSY.bit.ENABLE == 1);
+      _Timer->CTRLA.reg &= ~TCC_CTRLA_PRESCALER_DIV1024;
+      while (_Timer->SYNCBUSY.bit.ENABLE == 1);
+      _Timer->CTRLA.reg &= ~TCC_CTRLA_PRESCALER_DIV256;
+      while (_Timer->SYNCBUSY.bit.ENABLE == 1);
+      _Timer->CTRLA.reg &= ~TCC_CTRLA_PRESCALER_DIV64;
+      while (_Timer->SYNCBUSY.bit.ENABLE == 1);
+      _Timer->CTRLA.reg &= ~TCC_CTRLA_PRESCALER_DIV16;
+      while (_Timer->SYNCBUSY.bit.ENABLE == 1);
+      _Timer->CTRLA.reg &= ~TCC_CTRLA_PRESCALER_DIV4;
+      while (_Timer->SYNCBUSY.bit.ENABLE == 1);
+      _Timer->CTRLA.reg &= ~TCC_CTRLA_PRESCALER_DIV2;
+      while (_Timer->SYNCBUSY.bit.ENABLE == 1);
+      _Timer->CTRLA.reg &= ~TCC_CTRLA_PRESCALER_DIV1;
+      while (_Timer->SYNCBUSY.bit.ENABLE == 1);
       
 	    if (period > 300000) 
 	    {
@@ -765,7 +817,7 @@ class SAMDTimerInterrupt
 		    _Timer->CTRLA.reg |= TCC_CTRLA_PRESCALER_DIV1;
 		    _prescaler = 1;
 	    }
-
+	    
 	    _compareValue = (int)(TIMER_HZ / (_prescaler / ((float)period / 1000000))) - 1;
 
 	    _Timer->PER.reg = _compareValue; 
@@ -780,6 +832,9 @@ class SAMDTimerInterrupt
 	    //_Timer->CC[0].reg = _compareValue;
 	    
       while (_Timer->SYNCBUSY.bit.CC0 == 1);
+      
+      TISR_LOGDEBUG3(F("SAMD21 TCC period ="), period, F(", _prescaler ="), _prescaler);
+      TISR_LOGDEBUG1(F("_compareValue ="), _compareValue);
     } 
 }; // class SAMDTimerInterrupt
 

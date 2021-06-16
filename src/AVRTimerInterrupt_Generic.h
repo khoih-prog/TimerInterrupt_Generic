@@ -1,42 +1,43 @@
 /****************************************************************************************************************************
-   TimerInterrupt.h
-   
-   For Arduino AVR boards (UNO, Nano, Mega, etc. )
-   Written by Khoi Hoang
-  
-   TCNTx - Timer/Counter Register. The actual timer value is stored here.
-   OCRx - Output Compare Register
-   ICRx - Input Capture Register (only for 16bit timer)
-   TIMSKx - Timer/Counter Interrupt Mask Register. To enable/disable timer interrupts.
-   TIFRx - Timer/Counter Interrupt Flag Register. Indicates a pending timer interrupt. 
+  TimerInterrupt.h
 
-   Now even you use all these new 16 ISR-based timers,with their maximum interval practically unlimited (limited only by
-   unsigned long miliseconds), you just consume only one Hardware timer and avoid conflicting with other cores' tasks.
-   The accuracy is nearly perfect compared to software timers. The most important feature is they're ISR-based timers
-   Therefore, their executions are not blocked by bad-behaving functions / tasks.
-   This important feature is absolutely necessary for mission-critical tasks.
+  For Arduino AVR boards (UNO, Nano, Mega, etc. )
+  Written by Khoi Hoang
 
-   Based on SimpleTimer - A timer library for Arduino.
-   Author: mromani@ottotecnica.com
-   Copyright (c) 2010 OTTOTECNICA Italy
+  TCNTx - Timer/Counter Register. The actual timer value is stored here.
+  OCRx - Output Compare Register
+  ICRx - Input Capture Register (only for 16bit timer)
+  TIMSKx - Timer/Counter Interrupt Mask Register. To enable/disable timer interrupts.
+  TIFRx - Timer/Counter Interrupt Flag Register. Indicates a pending timer interrupt. 
 
-   Based on BlynkTimer.h
-   Author: Volodymyr Shymanskyy
-   
-   Built by Khoi Hoang https://github.com/khoih-prog/TimerInterrupt_Generic
-   Licensed under MIT license
+  Now even you use all these new 16 ISR-based timers,with their maximum interval practically unlimited (limited only by
+  unsigned long miliseconds), you just consume only one Hardware timer and avoid conflicting with other cores' tasks.
+  The accuracy is nearly perfect compared to software timers. The most important feature is they're ISR-based timers
+  Therefore, their executions are not blocked by bad-behaving functions / tasks.
+  This important feature is absolutely necessary for mission-critical tasks.
 
-   Version: 1.5.0
+  Based on SimpleTimer - A timer library for Arduino.
+  Author: mromani@ottotecnica.com
+  Copyright (c) 2010 OTTOTECNICA Italy
 
-   Version Modified By   Date      Comments
-   ------- -----------  ---------- -----------
-   1.1.0   K Hoang      10/11/2020 Initial Super-Library coding to merge all TimerInterrupt Libraries
-   1.2.0   K Hoang      12/11/2020 Add STM32_TimerInterrupt Library
-   1.3.0   K Hoang      01/12/2020 Add Mbed Mano-33-BLE Library. Add support to AVR UNO, Nano, Arduino Mini, Ethernet, BT. etc.
-   1.3.1   K.Hoang      09/12/2020 Add complex examples and board Version String. Fix SAMD bug.
-   1.3.2   K.Hoang      06/01/2021 Fix warnings. Optimize examples to reduce memory usage
-   1.4.0   K.Hoang      02/04/2021 Add support to Arduino, Adafruit, Sparkfun AVR 32u4, 328P, 128128RFA1 and Sparkfun SAMD
-   1.5.0   K.Hoang      17/04/2021 Add support to Arduino megaAVR ATmega4809-based boards (Nano Every, UNO WiFi Rev2, etc.)
+  Based on BlynkTimer.h
+  Author: Volodymyr Shymanskyy
+
+  Built by Khoi Hoang https://github.com/khoih-prog/TimerInterrupt_Generic
+  Licensed under MIT license
+
+  Version: 1.6.0
+
+  Version Modified By   Date      Comments
+  ------- -----------  ---------- -----------
+  1.1.0   K Hoang      10/11/2020 Initial Super-Library coding to merge all TimerInterrupt Libraries
+  1.2.0   K Hoang      12/11/2020 Add STM32_TimerInterrupt Library
+  1.3.0   K Hoang      01/12/2020 Add Mbed Mano-33-BLE Library. Add support to AVR UNO, Nano, Arduino Mini, Ethernet, BT. etc.
+  1.3.1   K.Hoang      09/12/2020 Add complex examples and board Version String. Fix SAMD bug.
+  1.3.2   K.Hoang      06/01/2021 Fix warnings. Optimize examples to reduce memory usage
+  1.4.0   K.Hoang      02/04/2021 Add support to Arduino, Adafruit, Sparkfun AVR 32u4, 328P, 128128RFA1 and Sparkfun SAMD
+  1.5.0   K.Hoang      17/04/2021 Add support to Arduino megaAVR ATmega4809-based boards (Nano Every, UNO WiFi Rev2, etc.)
+  1.6.0   K.Hoang      15/06/2021 Add T3/T4 support to 32u4. Add support to RP2040, ESP32-S2
 *****************************************************************************************************************************/
 
 
@@ -50,7 +51,7 @@
 #endif
 
 #ifndef TIMER_INTERRUPT_VERSION
-  #define TIMER_INTERRUPT_VERSION       "TimerInterrupt v1.4.1"
+  #define TIMER_INTERRUPT_VERSION       "TimerInterrupt v1.5.0"
 #endif
 
 #include <avr/interrupt.h>
@@ -59,6 +60,7 @@
 #include "pins_arduino.h"
 
 #define MAX_COUNT_8BIT            255
+#define MAX_COUNT_10BIT           1023
 #define MAX_COUNT_16BIT           65535
 
 #if defined(__AVR_ATmega8__) || defined(__AVR_ATmega128__)
@@ -130,9 +132,7 @@ class TimerInterrupt
     void*           _params;          // function parameter   
     
     ///////////////////////////////////////////
-    
-    //void set_OCR(void);
-    
+       
     void set_OCR()
     {
       // Run with noInterrupt()
@@ -140,71 +140,77 @@ class TimerInterrupt
       // set the toggle count,
       // then turn on the interrupts
       uint32_t _OCRValueToUse;
-      
+
       switch (_timer)
-      {  
+      {
         case 1:
           _OCRValueToUse = min(MAX_COUNT_16BIT, _OCRValueRemaining);
           OCR1A = _OCRValueToUse;
           _OCRValueRemaining -= _OCRValueToUse;
-          
-          #if defined(OCR1A) && defined(TIMSK1) && defined(OCIE1A)         
-            // Bit 1 – OCIEA: Output Compare A Match Interrupt Enable
-            // When this bit is written to '1', and the I-flag in the Status Register is set (interrupts globally enabled), the
-            // Timer/Counter Output Compare A Match interrupt is enabled. The corresponding Interrupt Vector is
-            // executed when the OCFA Flag, located in TIFR1, is set.
-            bitWrite(TIMSK1, OCIE1A, 1);
-          #elif defined(OCR1A) && defined(TIMSK) && defined(OCIE1A)
-            // this combination is for at least the ATmega32
-            bitWrite(TIMSK, OCIE1A, 1);
-          #endif
+
+    #if defined(OCR1A) && defined(TIMSK1) && defined(OCIE1A)
+          // Bit 1 – OCIEA: Output Compare A Match Interrupt Enable
+          // When this bit is written to '1', and the I-flag in the Status Register is set (interrupts globally enabled), the
+          // Timer/Counter Output Compare A Match interrupt is enabled. The corresponding Interrupt Vector is
+          // executed when the OCFA Flag, located in TIFR1, is set.
+          bitWrite(TIMSK1, OCIE1A, 1);
+    #elif defined(OCR1A) && defined(TIMSK) && defined(OCIE1A)
+          // this combination is for at least the ATmega32
+          bitWrite(TIMSK, OCIE1A, 1);
+    #endif
           break;
-      
-        #if defined(OCR2A) && defined(TIMSK2) && defined(OCIE2A)
+
+    #if defined(OCR2A) && defined(TIMSK2) && defined(OCIE2A)
         case 2:
           _OCRValueToUse = min(MAX_COUNT_8BIT, _OCRValueRemaining);
           OCR2A = _OCRValueToUse;
           _OCRValueRemaining -= _OCRValueToUse;
-          
+
           bitWrite(TIMSK2, OCIE2A, 1);
           break;
-          #endif
-      
-        #if defined(OCR3A) && defined(TIMSK3) && defined(OCIE3A)
+    #endif
+
+    #if defined(OCR3A) && defined(TIMSK3) && defined(OCIE3A)
         case 3:
           _OCRValueToUse = min(MAX_COUNT_16BIT, _OCRValueRemaining);
           OCR3A = _OCRValueToUse;
           _OCRValueRemaining -= _OCRValueToUse;
-          
+
           bitWrite(TIMSK3, OCIE3A, 1);
           break;
-          #endif
-      
-        #if defined(OCR4A) && defined(TIMSK4) && defined(OCIE4A)
+    #endif
+
+    #if defined(OCR4A) && defined(TIMSK4) && defined(OCIE4A)
         case 4:
+        
+    #if TIMER_INTERRUPT_USING_ATMEGA_32U4
+          _OCRValueToUse = min(MAX_COUNT_8BIT, _OCRValueRemaining);
+    #else    
           _OCRValueToUse = min(MAX_COUNT_16BIT, _OCRValueRemaining);
+    #endif
+          
           OCR4A = _OCRValueToUse;
           _OCRValueRemaining -= _OCRValueToUse;
-          
+
           bitWrite(TIMSK4, OCIE4A, 1);
           break;
-          #endif
-      
-        #if defined(OCR5A) && defined(TIMSK5) && defined(OCIE5A)
+    #endif
+
+    #if defined(OCR5A) && defined(TIMSK5) && defined(OCIE5A)
         case 5:
           _OCRValueToUse = min(MAX_COUNT_16BIT, _OCRValueRemaining);
           OCR5A = _OCRValueToUse;
           _OCRValueRemaining -= _OCRValueToUse;
-          
+
           bitWrite(TIMSK5, OCIE5A, 1);
           break;
-          #endif
+    #endif
       }
 
       // Flag _OCRValue == 0 => end of long timer
       if (_OCRValueRemaining == 0)
         _timerDone = true;
-      
+
     }
     
     ///////////////////////////////////////////
@@ -247,9 +253,7 @@ class TimerInterrupt
           (*(timer_callback)_callback)();
     }
   }  
-
-  //void init(int8_t timer);
-  
+ 
   void init(int8_t timer)
   {    
     // Set timer specific stuff
@@ -414,8 +418,14 @@ class TimerInterrupt
 
           // We use very large _OCRValue now, and every time timer ISR activates, we deduct min(MAX_COUNT_16BIT, _OCRValueRemaining) from _OCRValueRemaining
           // So that we can create very long timer, even if the counter is only 16-bit.
-          // Use very high frequency (OCRValue / MAX_COUNT_16BIT) around 64 * 1024 to achieve higher accuracy
+          // Use very high frequency (OCRValue / MAX_COUNT_16BIT) around 16 * 1024 to achieve higher accuracy
+  #if TIMER_INTERRUPT_USING_ATMEGA_32U4
+          uint16_t MAX_COUNT_32U4 = (_timer == 4) ? MAX_COUNT_8BIT : MAX_COUNT_16BIT;
+         
+          if ( (OCRValue / MAX_COUNT_32U4) < 16384 )
+  #else        
           if ( (OCRValue / MAX_COUNT_16BIT) < 16384 )
+  #endif        
           {
             _OCRValue           = OCRValue;
             _OCRValueRemaining  = OCRValue;
@@ -423,8 +433,7 @@ class TimerInterrupt
     
             TISR_LOGWARN1(F("OK in loop => _OCR ="), _OCRValue);
             TISR_LOGWARN3(F("_preScalerIndex ="), _prescalerIndex, F(", preScalerDiv ="), prescalerDiv[_prescalerIndex]);
-          
-          
+               
             isSuccess = true;
            
             break;
@@ -464,7 +473,7 @@ class TimerInterrupt
 
           // We use very large _OCRValue now, and every time timer ISR activates, we deduct min(MAX_COUNT_8BIT, _OCRValue) from _OCRValue
           // to create very long timer, even if the counter is only 16-bit.
-          // Use very high frequency (OCRValue / MAX_COUNT_16BIT) around 64 * 1024 to achieve higher accuracy
+          // Use very high frequency (OCRValue / MAX_COUNT_8BIT) around 16 * 1024 to achieve higher accuracy
           if ( (OCRValue / MAX_COUNT_8BIT) < 16384 )
           {
             _OCRValue           = OCRValue;
@@ -555,7 +564,6 @@ class TimerInterrupt
   }
 
   ///////////////////////////////////////////
-  
   
   
   void init()
@@ -672,9 +680,6 @@ class TimerInterrupt
     interrupts();
   }
   
-  // Duration (in milliseconds). Duration = 0 or not specified => run indefinitely
-  // void reattachInterrupt(unsigned long duration = 0);
-
   // Duration (in milliseconds). Duration = 0 or not specified => run indefinitely
   void reattachInterrupt(unsigned long duration = 0)
   {
@@ -855,7 +860,7 @@ class TimerInterrupt
     else if (_timer == 5)
       TCCR5B = (TCCR5B & andMask) | _prescalerIndex;   //prescalarbits;
     #endif  
-  }  
+  }
  
   ///////////////////////////////////////////
  
@@ -904,48 +909,74 @@ class TimerInterrupt
   };
     
   void adjust_OCRValue() //__attribute__((always_inline))
-  { 
+  {
     //cli();//stop interrupts
     noInterrupts();
 
     if (_timer != 2)
+    {
+#if TIMER_INTERRUPT_USING_ATMEGA_32U4
+      if (_timer == 4)
+      {
+        _OCRValueRemaining -= min(MAX_COUNT_8BIT, _OCRValueRemaining);
+      }
+      else
+      {
+        _OCRValueRemaining -= min(MAX_COUNT_16BIT, _OCRValueRemaining);
+      }
+#else
       _OCRValueRemaining -= min(MAX_COUNT_16BIT, _OCRValueRemaining);
+#endif      
+    }
     else
-      _OCRValueRemaining -= min(MAX_COUNT_8BIT, _OCRValueRemaining);      
-      
+      _OCRValueRemaining -= min(MAX_COUNT_8BIT, _OCRValueRemaining);
+
     if (_OCRValueRemaining == 0)
     {
-       // Reset value for next cycle
+      // Reset value for next cycle
       _OCRValueRemaining = _OCRValue;
       _timerDone = true;
     }
     else
       _timerDone = false;
-    
+
     //sei();//enable interrupts
     interrupts();
   };
 
   void reload_OCRValue() //__attribute__((always_inline))
-  { 
+  {
     //cli();//stop interrupts
     noInterrupts();
 
-   // Reset value for next cycle, have to deduct the value already loaded to OCR register
+    // Reset value for next cycle, have to deduct the value already loaded to OCR register
 
     if (_timer != 2)
+    {
+#if TIMER_INTERRUPT_USING_ATMEGA_32U4
+      if (_timer == 4)
+      {
+        _OCRValueRemaining = _OCRValue - min(MAX_COUNT_8BIT, _OCRValueRemaining);
+      }
+      else
+      {
+        _OCRValueRemaining = _OCRValue - min(MAX_COUNT_16BIT, _OCRValueRemaining);
+      }
+#else      
       _OCRValueRemaining = _OCRValue - min(MAX_COUNT_16BIT, _OCRValueRemaining);
+#endif        
+    }  
     else
       _OCRValueRemaining = _OCRValue - min(MAX_COUNT_8BIT, _OCRValueRemaining);
-     
-   _timerDone = false;
-    
+
+    _timerDone = false;
+
     //sei();//enable interrupts
     interrupts();
   };
   
   bool checkTimerDone(void) //__attribute__((always_inline))
-  { 
+  {
     return _timerDone;
   };
 
@@ -961,33 +992,31 @@ class TimerInterrupt
 #if !defined(USE_TIMER_2)
   #define USE_TIMER_2     false
 #elif ( USE_TIMER_2 && TIMER_INTERRUPT_USING_ATMEGA_32U4 )
-  #undef USE_TIMER_2
-  #define USE_TIMER_2     false
-  #warning Timer2 is disabled for ATMEGA_32U4
+  #error Timer2 is disabled for ATMEGA_32U4, only available for ATMEGA_328(P) and Mega
 #endif
 
 #if !defined(USE_TIMER_3)
   #define USE_TIMER_3     false
-#elif ( USE_TIMER_3 && TIMER_INTERRUPT_USING_ATMEGA_32U4 )
-  #undef USE_TIMER_3
-  #define USE_TIMER_3     false
-  #warning Timer3 is disabled for ATMEGA_32U4
+#elif ( USE_TIMER_3 && ( TIMER_INTERRUPT_USING_ATMEGA_32U4 || TIMER_INTERRUPT_USING_ATMEGA2560 ) )
+  #warning Timer3 (16-bit) is OK to use for ATMEGA_32U4 and Mega
+#elif USE_TIMER_3
+  #error Timer3 is only available for ATMEGA_32U4 and Mega
 #endif
 
 #if !defined(USE_TIMER_4)
   #define USE_TIMER_4     false
-#elif ( USE_TIMER_4 && TIMER_INTERRUPT_USING_ATMEGA_32U4 )
-  #undef USE_TIMER_4
-  #define USE_TIMER_4     false
-  #warning Timer4 is disabled for ATMEGA_32U4
+#elif ( USE_TIMER_4 && ( TIMER_INTERRUPT_USING_ATMEGA_32U4 || TIMER_INTERRUPT_USING_ATMEGA2560 ) )
+  #warning Timer4 is OK to use for ATMEGA_32U4 (10-bit but using as 8-bit) and Mega (16-bit)
+#elif USE_TIMER_4
+  #error Timer4 is only available for ATMEGA_32U4 and Mega
 #endif
 
 #if !defined(USE_TIMER_5)
   #define USE_TIMER_5     false
-#elif ( USE_TIMER_5 && TIMER_INTERRUPT_USING_ATMEGA_32U4 )
-  #undef USE_TIMER_5
-  #define USE_TIMER_5     false
-  #warning Timer5 is disabled for ATMEGA_32U4
+#elif ( USE_TIMER_5 && TIMER_INTERRUPT_USING_ATMEGA2560 )
+  #warning Timer5 is OK to use for Mega
+#elif USE_TIMER_5
+  #error Timer5 is only available for Mega
 #endif
 
 //////////////////////////////////////////////
@@ -1004,16 +1033,14 @@ class TimerInterrupt
     ISR(TIMER1_COMPA_vect)
     {
       long countLocal = ITimer1.getCount();
-      
-      TISR_LOGDEBUG3(F("T1 count ="), countLocal, F(", _OCRValueRemaining ="), ITimer1.get_OCRValueRemaining());
-      
+           
       if (ITimer1.getTimer() == 1)
       {
         if (countLocal != 0)
         {
           if (ITimer1.checkTimerDone())
           {
-            TISR_LOGDEBUG3(F("T1 callback, _OCRValueRemaining ="), ITimer1.get_OCRValueRemaining(), F(", millis ="), millis());
+            TISR_LOGDEBUG3(("T1 callback, _OCRValueRemaining ="), ITimer1.get_OCRValueRemaining(), (", millis ="), millis());
             
             ITimer1.callback();
             
@@ -1026,18 +1053,14 @@ class TimerInterrupt
           else
           {
             //Deduct _OCRValue by min(MAX_COUNT_16BIT, _OCRValue)
-            // If _OCRValue == 0, flag _timerDone for next cycle
-            TISR_LOGDEBUG1(F("T1 before _OCRValueRemaining ="), ITimer1.get_OCRValueRemaining());     
-
+            // If _OCRValue == 0, flag _timerDone for next cycle  
             // If last one (_OCRValueRemaining < MAX_COUNT_16BIT) => load _OCR register _OCRValueRemaining
             ITimer1.adjust_OCRValue();
-            
-            TISR_LOGDEBUG1(F("T1 after _OCRValueRemaining ="), ITimer1.get_OCRValueRemaining());
           }         
         }
         else
         {
-          TISR_LOGWARN(F("T1 done"));
+          TISR_LOGWARN(("T1 done"));
           
           ITimer1.detachInterrupt();
         }
@@ -1055,16 +1078,14 @@ class TimerInterrupt
     ISR(TIMER2_COMPA_vect)
     {
       long countLocal = ITimer2.getCount();
-
-      TISR_LOGDEBUG3(F("T2 count ="), countLocal, F(", _OCRValueRemaining ="), ITimer2.get_OCRValueRemaining());
-      
+     
       if (ITimer2.getTimer() == 2)
       {
         if (countLocal != 0)
         {
           if (ITimer2.checkTimerDone())
           {
-            TISR_LOGDEBUG3(F("T2 callback, _OCRValueRemaining ="), ITimer2.get_OCRValueRemaining(), F(", millis ="), millis());
+            TISR_LOGDEBUG3(("T2 callback, _OCRValueRemaining ="), ITimer2.get_OCRValueRemaining(), (", millis ="), millis());
              
             ITimer2.callback();
             // To reload _OCRValue
@@ -1075,19 +1096,15 @@ class TimerInterrupt
 
           }
           else
-          {
-            TISR_LOGDEBUG1(F("T2 before _OCRValueRemaining ="), ITimer2.get_OCRValueRemaining());
-            
+          {           
             //Deduct _OCRValue by min(MAX_COUNT_8BIT, _OCRValue)
             // If _OCRValue == 0, flag _timerDone for next cycle
             ITimer2.adjust_OCRValue();
-               
-            TISR_LOGDEBUG1(F("T2 after _OCRValueRemaining ="), ITimer2.get_OCRValueRemaining());  
           }          
         }    
         else
         {
-          TISR_LOGWARN(F("T2 done"));
+          TISR_LOGWARN(("T2 done"));
           
           ITimer2.detachInterrupt();
         }
@@ -1096,7 +1113,7 @@ class TimerInterrupt
   #endif  //#ifndef TIMER2_INSTANTIATED
 #endif    //#if USE_TIMER_2
 
-#if defined(__AVR_ATmega8__) || defined(__AVR_ATmega128__) || defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__) || defined(__AVR_ATmega1284__) || defined(__AVR_ATmega1284P__) || defined(__AVR_ATmega644__) || defined(__AVR_ATmega644A__) || defined(__AVR_ATmega644P__) || defined(__AVR_ATmega644PA__)
+#if (TIMER_INTERRUPT_USING_ATMEGA2560 || TIMER_INTERRUPT_USING_ATMEGA_32U4)
 
   // Pre-instatiate
   #if USE_TIMER_3
@@ -1109,15 +1126,13 @@ class TimerInterrupt
       {
         long countLocal = ITimer3.getCount();
         
-        TISR_LOGDEBUG3(F("T3 count ="), countLocal, F(", _OCRValueRemaining ="), ITimer3.get_OCRValueRemaining());
-        
         if (ITimer3.getTimer() == 3)
         {
           if (countLocal != 0)
           {
             if (ITimer3.checkTimerDone())
             { 
-              TISR_LOGDEBUG3(F("T3 callback, _OCRValueRemaining ="), ITimer3.get_OCRValueRemaining(), F(", millis ="), millis());
+              TISR_LOGDEBUG3(("T3 callback, _OCRValueRemaining ="), ITimer3.get_OCRValueRemaining(), (", millis ="), millis());
               
               ITimer3.callback();
               
@@ -1130,18 +1145,14 @@ class TimerInterrupt
             else
             {
               //Deduct _OCRValue by min(MAX_COUNT_16BIT, _OCRValue)
-              // If _OCRValue == 0, flag _timerDone for next cycle    
-              TISR_LOGDEBUG1(F("T3 before _OCRValueRemaining ="), ITimer3.get_OCRValueRemaining());
-      
+              // If _OCRValue == 0, flag _timerDone for next cycle          
               // If last one (_OCRValueRemaining < MAX_COUNT_16BIT) => load _OCR register _OCRValueRemaining
               ITimer3.adjust_OCRValue();
-                  
-              TISR_LOGDEBUG1(F("T3 after _OCRValueRemaining ="), ITimer3.get_OCRValueRemaining());
             }
           }
           else
           {
-            TISR_LOGWARN(F("T3 done"));
+            TISR_LOGWARN(("T3 done"));
             
             ITimer3.detachInterrupt();
           }
@@ -1150,7 +1161,14 @@ class TimerInterrupt
       
     #endif  //#ifndef TIMER3_INSTANTIATED
   #endif    //#if USE_TIMER_3
-  
+
+#endif      //#if (TIMER_INTERRUPT_USING_ATMEGA2560 || TIMER_INTERRUPT_USING_ATMEGA_32U4)
+
+#if (TIMER_INTERRUPT_USING_ATMEGA2560 || TIMER_INTERRUPT_USING_ATMEGA_32U4)
+
+  // Even 32u4 Timer4 has 10-bit counter, we use only 8-bit to simplify by not using 2-bit High Byte Register (TC4H)
+  // Check 15.2.2 Accuracy, page 141 of ATmega16U4/32U4 [DATASHEET]
+
   #if USE_TIMER_4
     #ifndef TIMER4_INSTANTIATED
       // To force pre-instatiate only once
@@ -1160,20 +1178,18 @@ class TimerInterrupt
       ISR(TIMER4_COMPA_vect)
       {
         long countLocal = ITimer4.getCount();
-        
-        TISR_LOGDEBUG3(F("T4 count ="), countLocal, F(", _OCRValueRemaining ="), ITimer4.get_OCRValueRemaining());
-        
+                
         if (ITimer4.getTimer() == 4)
         {
           if (countLocal != 0)
           {
             if (ITimer4.checkTimerDone())
             {  
-              TISR_LOGDEBUG3(F("T4 callback, _OCRValueRemaining ="), ITimer4.get_OCRValueRemaining(), F(", millis ="), millis());
+              TISR_LOGDEBUG3(("T4 callback, _OCRValueRemaining ="), ITimer4.get_OCRValueRemaining(), (", millis ="), millis());
               
               ITimer4.callback();
               
-              // To reload _OCRValueRemaining as well as _OCR register to MAX_COUNT_16BIT
+              // To reload _OCRValueRemaining as well as _OCR register to MAX_COUNT_16BIT (Mega2560) or MAX_COUNT_8BIT (32u4)
               ITimer4.reload_OCRValue();
               
               if (countLocal > 0)
@@ -1181,19 +1197,15 @@ class TimerInterrupt
             }
             else
             {
-              //Deduct _OCRValue by min(MAX_COUNT_16BIT, _OCRValue)
-              // If _OCRValue == 0, flag _timerDone for next cycle
-              TISR_LOGDEBUG1(F("T4 before _OCRValueRemaining ="), ITimer4.get_OCRValueRemaining()); 
-      
-              // If last one (_OCRValueRemaining < MAX_COUNT_16BIT) => load _OCR register _OCRValueRemaining
+              //Deduct _OCRValue by min(MAX_COUNT_16BIT, _OCRValue) or min(MAX_COUNT_8BIT, _OCRValue)
+              // If _OCRValue == 0, flag _timerDone for next cycle     
+              // If last one (_OCRValueRemaining < MAX_COUNT_16BIT / MAX_COUNT_8BIT) => load _OCR register _OCRValueRemaining
               ITimer4.adjust_OCRValue();
-                    
-              TISR_LOGDEBUG1(F("T4 after _OCRValueRemaining ="), ITimer4.get_OCRValueRemaining());
             }
           }
           else
           {
-            TISR_LOGWARN(F("T4 done"));
+            TISR_LOGWARN(("T4 done"));
             
             ITimer4.detachInterrupt();
           }
@@ -1203,6 +1215,10 @@ class TimerInterrupt
       
     #endif  //#ifndef TIMER4_INSTANTIATED
   #endif    //#if USE_TIMER_4
+
+#endif      //#if (TIMER_INTERRUPT_USING_ATMEGA2560 || TIMER_INTERRUPT_USING_ATMEGA_32U4)
+
+#if TIMER_INTERRUPT_USING_ATMEGA2560
   
   #if USE_TIMER_5
     #ifndef TIMER5_INSTANTIATED
@@ -1213,16 +1229,14 @@ class TimerInterrupt
       ISR(TIMER5_COMPA_vect)
       {
         long countLocal = ITimer5.getCount();
-        
-        TISR_LOGDEBUG3(F("T5 count ="), countLocal, F(", _OCRValueRemaining ="), ITimer5.get_OCRValueRemaining());
-        
+                
         if (ITimer5.getTimer() == 5)
         {
           if (countLocal != 0)
           {
             if (ITimer5.checkTimerDone())
             {
-              TISR_LOGDEBUG3(F("T5 callback, _OCRValueRemaining ="), ITimer5.get_OCRValueRemaining(), F(", millis ="), millis());
+              TISR_LOGDEBUG3(("T5 callback, _OCRValueRemaining ="), ITimer5.get_OCRValueRemaining(), (", millis ="), millis());
               
               ITimer5.callback();
               
@@ -1235,18 +1249,14 @@ class TimerInterrupt
             else
             {
               //Deduct _OCRValue by min(MAX_COUNT_16BIT, _OCRValue)
-              // If _OCRValue == 0, flag _timerDone for next cycle      
-              TISR_LOGDEBUG1(F("T5 before _OCRValueRemaining ="), ITimer5.get_OCRValueRemaining());
-      
+              // If _OCRValue == 0, flag _timerDone for next cycle           
               // If last one (_OCRValueRemaining < MAX_COUNT_16BIT) => load _OCR register _OCRValueRemaining
               ITimer5.adjust_OCRValue();
-              
-              TISR_LOGDEBUG1(F("T5 after _OCRValueRemaining ="), ITimer5.get_OCRValueRemaining());    
             }
           }
           else
           {
-            TISR_LOGWARN(F("T5 done"));
+            TISR_LOGWARN(("T5 done"));
             
             ITimer5.detachInterrupt();
           }
@@ -1255,7 +1265,8 @@ class TimerInterrupt
           
     #endif  //#ifndef TIMER5_INSTANTIATED
   #endif    //#if USE_TIMER_5
-#endif      //#if defined(__AVR_ATmega8__) || defined(__AVR_ATmega128__)
+  
+#endif      //#if TIMER_INTERRUPT_USING_ATMEGA2560
 
 #endif      //#ifndef TimerInterrupt_h
 

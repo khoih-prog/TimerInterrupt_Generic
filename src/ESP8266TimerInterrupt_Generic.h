@@ -1,40 +1,41 @@
 /****************************************************************************************************************************
-   ESP8266TimerInterrupt.h
-   For ESP8266 boards
-   Written by Khoi Hoang
+  ESP8266TimerInterrupt.h
+  For ESP8266 boards
+  Written by Khoi Hoang
 
-   The ESP8266 timers are badly designed, using only 23-bit counter along with maximum 256 prescaler. They're only better than UNO / Mega.
-   The ESP8266 has two hardware timers, but timer0 has been used for WiFi and it's not advisable to use. Only timer1 is available.
-   The timer1's 23-bit counter terribly can count only up to 8,388,607. So the timer1 maximum interval is very short.
-   Using 256 prescaler, maximum timer1 interval is only 26.843542 seconds !!!
+  The ESP8266 timers are badly designed, using only 23-bit counter along with maximum 256 prescaler. They're only better than UNO/Mega.
+  The ESP8266 has two hardware timers, but timer0 has been used for WiFi and it's not advisable to use. Only timer1 is available.
+  The timer1's 23-bit counter terribly can count only up to 8,388,607. So the timer1 maximum interval is very short.
+  Using 256 prescaler, maximum timer1 interval is only 26.843542 seconds !!!
 
-   Now even you use all these new 16 ISR-based timers,with their maximum interval practically unlimited (limited only by
-   unsigned long miliseconds), you just consume only one Hardware timer and avoid conflicting with other cores' tasks.
-   The accuracy is nearly perfect compared to software timers. The most important feature is they're ISR-based timers
-   Therefore, their executions are not blocked by bad-behaving functions / tasks.
-   This important feature is absolutely necessary for mission-critical tasks.
+  Now even you use all these new 16 ISR-based timers,with their maximum interval practically unlimited (limited only by
+  unsigned long miliseconds), you just consume only one Hardware timer and avoid conflicting with other cores' tasks.
+  The accuracy is nearly perfect compared to software timers. The most important feature is they're ISR-based timers
+  Therefore, their executions are not blocked by bad-behaving functions / tasks.
+  This important feature is absolutely necessary for mission-critical tasks.
 
-   Based on SimpleTimer - A timer library for Arduino.
-   Author: mromani@ottotecnica.com
-   Copyright (c) 2010 OTTOTECNICA Italy
+  Based on SimpleTimer - A timer library for Arduino.
+  Author: mromani@ottotecnica.com
+  Copyright (c) 2010 OTTOTECNICA Italy
 
-   Based on BlynkTimer.h
-   Author: Volodymyr Shymanskyy
-   
-   Built by Khoi Hoang https://github.com/khoih-prog/TimerInterrupt_Generic
-   Licensed under MIT license
+  Based on BlynkTimer.h
+  Author: Volodymyr Shymanskyy
 
-   Version: 1.5.0
+  Built by Khoi Hoang https://github.com/khoih-prog/TimerInterrupt_Generic
+  Licensed under MIT license
 
-   Version Modified By   Date      Comments
-   ------- -----------  ---------- -----------
-   1.1.0   K Hoang      10/11/2020 Initial Super-Library coding to merge all TimerInterrupt Libraries
-   1.2.0   K Hoang      12/11/2020 Add STM32_TimerInterrupt Library
-   1.3.0   K Hoang      01/12/2020 Add Mbed Mano-33-BLE Library. Add support to AVR UNO, Nano, Arduino Mini, Ethernet, BT. etc.
-   1.3.1   K.Hoang      09/12/2020 Add complex examples and board Version String. Fix SAMD bug.
-   1.3.2   K.Hoang      06/01/2021 Fix warnings. Optimize examples to reduce memory usage
-   1.4.0   K.Hoang      02/04/2021 Add support to Arduino, Adafruit, Sparkfun AVR 32u4, 328P, 128128RFA1 and Sparkfun SAMD
-   1.5.0   K.Hoang      17/04/2021 Add support to Arduino megaAVR ATmega4809-based boards (Nano Every, UNO WiFi Rev2, etc.)
+  Version: 1.6.0
+
+  Version Modified By   Date      Comments
+  ------- -----------  ---------- -----------
+  1.1.0   K Hoang      10/11/2020 Initial Super-Library coding to merge all TimerInterrupt Libraries
+  1.2.0   K Hoang      12/11/2020 Add STM32_TimerInterrupt Library
+  1.3.0   K Hoang      01/12/2020 Add Mbed Mano-33-BLE Library. Add support to AVR UNO, Nano, Arduino Mini, Ethernet, BT. etc.
+  1.3.1   K.Hoang      09/12/2020 Add complex examples and board Version String. Fix SAMD bug.
+  1.3.2   K.Hoang      06/01/2021 Fix warnings. Optimize examples to reduce memory usage
+  1.4.0   K.Hoang      02/04/2021 Add support to Arduino, Adafruit, Sparkfun AVR 32u4, 328P, 128128RFA1 and Sparkfun SAMD
+  1.5.0   K.Hoang      17/04/2021 Add support to Arduino megaAVR ATmega4809-based boards (Nano Every, UNO WiFi Rev2, etc.)
+  1.6.0   K.Hoang      15/06/2021 Add T3/T4 support to 32u4. Add support to RP2040, ESP32-S2
 *****************************************************************************************************************************/
 
 #pragma once
@@ -46,10 +47,12 @@
   #error This code is designed to run on ESP8266 and ESP8266-based boards! Please check your Tools->Board setting.
 #endif
 
-#define ESP8266_TIMER_INTERRUPT_VERSION       "ESP8266TimerInterrupt v1.2.0"
+#ifndef ESP8266_TIMER_INTERRUPT_VERSION
+  #define ESP8266_TIMER_INTERRUPT_VERSION       "ESP8266TimerInterrupt v1.4.0"
+#endif
 
 #ifndef TIMER_INTERRUPT_DEBUG
-#define TIMER_INTERRUPT_DEBUG      0
+  #define TIMER_INTERRUPT_DEBUG      0
 #endif
 
 
@@ -128,8 +131,7 @@ class ESP8266TimerInterrupt
       }
 
       // count up
-      TISR_LOGWARN3(F("ESP32TimerInterrupt: _fre ="), _frequency, F(", _count ="), _timerCount);
-
+      TISR_LOGWARN3(F("ESP8266TimerInterrupt: _fre ="), _frequency, F(", _count ="), _timerCount);
 
       // Clock to timer (prescaler) is always 80MHz, even F_CPU is 160 MHz
 

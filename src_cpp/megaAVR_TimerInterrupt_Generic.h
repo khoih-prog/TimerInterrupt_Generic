@@ -12,17 +12,18 @@
   Therefore, their executions are not blocked by bad-behaving functions / tasks.
   This important feature is absolutely necessary for mission-critical tasks.
 
-  Version: 1.5.0
+  Version: 1.6.0
 
-   Version Modified By   Date      Comments
-   ------- -----------  ---------- -----------
-   1.1.0   K Hoang      10/11/2020 Initial Super-Library coding to merge all TimerInterrupt Libraries
-   1.2.0   K Hoang      12/11/2020 Add STM32_TimerInterrupt Library
-   1.3.0   K Hoang      01/12/2020 Add Mbed Mano-33-BLE Library. Add support to AVR UNO, Nano, Arduino Mini, Ethernet, BT. etc.
-   1.3.1   K.Hoang      09/12/2020 Add complex examples and board Version String. Fix SAMD bug.
-   1.3.2   K.Hoang      06/01/2021 Fix warnings. Optimize examples to reduce memory usage
-   1.4.0   K.Hoang      02/04/2021 Add support to Arduino, Adafruit, Sparkfun AVR 32u4, 328P, 128128RFA1 and Sparkfun SAMD
-   1.5.0   K.Hoang      17/04/2021 Add support to Arduino megaAVR ATmega4809-based boards (Nano Every, UNO WiFi Rev2, etc.)
+  Version Modified By   Date      Comments
+  ------- -----------  ---------- -----------
+  1.1.0   K Hoang      10/11/2020 Initial Super-Library coding to merge all TimerInterrupt Libraries
+  1.2.0   K Hoang      12/11/2020 Add STM32_TimerInterrupt Library
+  1.3.0   K Hoang      01/12/2020 Add Mbed Mano-33-BLE Library. Add support to AVR UNO, Nano, Arduino Mini, Ethernet, BT. etc.
+  1.3.1   K.Hoang      09/12/2020 Add complex examples and board Version String. Fix SAMD bug.
+  1.3.2   K.Hoang      06/01/2021 Fix warnings. Optimize examples to reduce memory usage
+  1.4.0   K.Hoang      02/04/2021 Add support to Arduino, Adafruit, Sparkfun AVR 32u4, 328P, 128128RFA1 and Sparkfun SAMD
+  1.5.0   K.Hoang      17/04/2021 Add support to Arduino megaAVR ATmega4809-based boards (Nano Every, UNO WiFi Rev2, etc.)
+  1.6.0   K.Hoang      15/06/2021 Add T3/T4 support to 32u4. Add support to RP2040, ESP32-S2
 ****************************************************************************************************************************/
 
 #pragma once
@@ -283,9 +284,7 @@ class TimerInterrupt
     // frequency (in hertz) and duration (in milliseconds).
     // Return true if frequency is OK with selected timer (CCMPValue is in range)
     bool setFrequency(float frequency, timer_callback_p callback, uint32_t params, unsigned long duration = 0)
-    {
-      bool isSuccess = false;
-      
+    {     
       //frequencyLimit must > 1
       float frequencyLimit = frequency * 17179.840;
 
