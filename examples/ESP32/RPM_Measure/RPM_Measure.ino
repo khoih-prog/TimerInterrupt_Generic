@@ -1,28 +1,28 @@
 /****************************************************************************************************************************
-   RPM_Measure.ino
-   For ESP32 boards
-   Written by Khoi Hoang
- 
-   The ESP32 has two timer groups, each one with two general purpose hardware timers. All the timers are based on 64 bits
-   counters and 16 bit prescalers. The timer counters can be configured to count up or down and support automatic reload
-   and software reload. They can also generate alarms when they reach a specific value, defined by the software. The value
-   of the counter can be read by the software program.
-
-   Now even you use all these new 16 ISR-based timers,with their maximum interval practically unlimited (limited only by
-   unsigned long miliseconds), you just consume only one Hardware timer and avoid conflicting with other cores' tasks.
-   The accuracy is nearly perfect compared to software timers. The most important feature is they're ISR-based timers
-   Therefore, their executions are not blocked by bad-behaving functions / tasks.
-   This important feature is absolutely necessary for mission-critical tasks.
-
-   Based on SimpleTimer - A timer library for Arduino.
-   Author: mromani@ottotecnica.com
-   Copyright (c) 2010 OTTOTECNICA Italy
-
-   Based on BlynkTimer.h
-   Author: Volodymyr Shymanskyy
-   
-   Built by Khoi Hoang https://github.com/khoih-prog/TimerInterrupt_Generic
-   Licensed under MIT license
+  RPM_Measure.ino
+  For ESP32 boards
+  Written by Khoi Hoang
+  
+  The ESP32 has two timer groups, each one with two general purpose hardware timers. All the timers are based on 64 bits
+  counters and 16 bit prescalers. The timer counters can be configured to count up or down and support automatic reload
+  and software reload. They can also generate alarms when they reach a specific value, defined by the software. The value
+  of the counter can be read by the software program.
+  
+  Now even you use all these new 16 ISR-based timers,with their maximum interval practically unlimited (limited only by
+  unsigned long miliseconds), you just consume only one Hardware timer and avoid conflicting with other cores' tasks.
+  The accuracy is nearly perfect compared to software timers. The most important feature is they're ISR-based timers
+  Therefore, their executions are not blocked by bad-behaving functions / tasks.
+  This important feature is absolutely necessary for mission-critical tasks.
+  
+  Based on SimpleTimer - A timer library for Arduino.
+  Author: mromani@ottotecnica.com
+  Copyright (c) 2010 OTTOTECNICA Italy
+  
+  Based on BlynkTimer.h
+  Author: Volodymyr Shymanskyy
+  
+  Built by Khoi Hoang https://github.com/khoih-prog/TimerInterrupt_Generic
+  Licensed under MIT license
 *****************************************************************************************************************************/
 /*
    Notes:
@@ -56,6 +56,10 @@
 
 #ifndef ESP32
   #error This code is designed to run on ESP32 platform, not Arduino nor ESP8266! Please check your Tools->Board setting.
+#elif ( ARDUINO_ESP32S2_DEV || ARDUINO_FEATHERS2 || ARDUINO_ESP32S2_THING_PLUS || ARDUINO_MICROS2 || \
+        ARDUINO_METRO_ESP32S2 || ARDUINO_MAGTAG29_ESP32S2 || ARDUINO_FUNHOUSE_ESP32S2 || \
+        ARDUINO_ADAFRUIT_FEATHER_ESP32S2_NOPSRAM )
+  #error This code is not designed to run on ESP32-S2 platform! Please check your Tools->Board setting. 
 #endif
 
 // These define's must be placed at the beginning before #include "TimerInterrupt_Generic.h"
@@ -139,6 +143,7 @@ void setup()
   delay(100);
   
   Serial.print(F("\nStarting RPM_Measure on ")); Serial.println(ARDUINO_BOARD);
+  Serial.println(ESP32_TIMER_INTERRUPT_VERSION);
   Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
   Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
 

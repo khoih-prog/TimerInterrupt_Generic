@@ -51,11 +51,18 @@
 #define TIMER_INTERRUPT_DEBUG         0
 #define _TIMERINTERRUPT_LOGLEVEL_     0
 
-#define USE_TIMER_1     true
-#define USE_TIMER_2     false
-#define USE_TIMER_3     false
-#define USE_TIMER_4     false
-#define USE_TIMER_5     false
+#if ( defined(__AVR_ATmega644__) || defined(__AVR_ATmega644A__) || defined(__AVR_ATmega644P__) || defined(__AVR_ATmega644PA__)  || \
+        defined(ARDUINO_AVR_UNO) || defined(ARDUINO_AVR_NANO) || defined(ARDUINO_AVR_MINI) ||    defined(ARDUINO_AVR_ETHERNET) || \
+        defined(ARDUINO_AVR_FIO) || defined(ARDUINO_AVR_BT)   || defined(ARDUINO_AVR_LILYPAD) || defined(ARDUINO_AVR_PRO)      || \
+        defined(ARDUINO_AVR_NG) || defined(ARDUINO_AVR_UNO_WIFI_DEV_ED) || defined(ARDUINO_AVR_DUEMILANOVE) || defined(ARDUINO_AVR_FEATHER328P) || \
+        defined(ARDUINO_AVR_METRO) || defined(ARDUINO_AVR_PROTRINKET5) || defined(ARDUINO_AVR_PROTRINKET3) || defined(ARDUINO_AVR_PROTRINKET5FTDI) || \
+        defined(ARDUINO_AVR_PROTRINKET3FTDI) )
+  #define USE_TIMER_1     true
+  #warning Using Timer1
+#else          
+  #define USE_TIMER_3     true
+  #warning Using Timer3
+#endif
 
 #define LOCAL_DEBUG         1
 
@@ -66,7 +73,7 @@
 #endif
 
 #ifndef LED_BUILTIN
-#define LED_BUILTIN       13
+  #define LED_BUILTIN       13
 #endif
 
 // For PWM_Value from 0-255.You can change to 1024 or 2048
@@ -81,21 +88,21 @@ float mappingTable[MAPPING_TABLE_SIZE] =
   230.395, 236.136, 241.206, 245.680, 249.781, 253.509
 };
 
-#define TIMER1_FREQUENCY_HZ     10000UL
-#define TIMER1_INTERVAL_US      (1000000UL / TIMER1_FREQUENCY_HZ)
+#define TIMER_FREQUENCY_HZ     10000UL
+#define TIMER_INTERVAL_US      (1000000UL / TIMER_FREQUENCY_HZ)
 
 volatile uint32_t startMillis = 0;
 
 // Depending on the board, you can select NRF52 Hardware Timer from NRF_TIMER_1,NRF_TIMER_3,NRF_TIMER_4 (1,3 and 4)
 // If you select the already-used NRF_TIMER_0 or NRF_TIMER_2, it'll be auto modified to use NRF_TIMER_1
 
-//ISR_Timer ISR_Timer2;
+//ISR_Timer ISR_timer;
 
 #define LED_TOGGLE_INTERVAL_MS        500L
 
 #define NUMBER_ISR_TIMERS         16
 
-void TimerHandler()
+void TimerHandler(void)
 {
   static bool toggle  = false;
   static uint32_t timeRun  = 0;
@@ -106,8 +113,8 @@ void TimerHandler()
   }
 
   // Toggle LED every LED_TOGGLE_INTERVAL_MS = 500ms = 0.5s
-  if (++timeRun == ((LED_TOGGLE_INTERVAL_MS * TIMER1_FREQUENCY_HZ) / 1000) )
-  {
+  if (++timeRun == ((LED_TOGGLE_INTERVAL_MS * TIMER_FREQUENCY_HZ) / 1000) )
+  {   
     timeRun = 0;
 
     //timer interrupt toggles pin LED_BUILTIN
@@ -120,7 +127,7 @@ void TimerHandler()
 
 
 
-typedef void (*irqCallback)  ();
+typedef void (*irqCallback)  (void);
 
 /////////////////////////////////////////////////
 
@@ -197,19 +204,43 @@ void setup()
 
   Serial.print(F("\nStarting FakeAnalogWrite on "));
   Serial.println(BOARD_TYPE);
+  Serial.println(TIMER_INTERRUPT_VERSION);
   Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
   Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
 
+  // Timer0 is used for micros(), millis(), delay(), etc and can't be used
+  // Select Timer 1-2 for UNO, 1-5 for MEGA, 1,3,4 for 16u4/32u4
+  // Timer 2 is 8-bit timer, only for higher frequency
+  // Timer 4 of 16u4 and 32u4 is 8/10-bit timer, only for higher frequency
+  
+#if USE_TIMER_1
+
   ITimer1.init();
 
-  //if (ITimer1.attachInterruptInterval(TIMER1_INTERVAL_MS, TimerHandler))
-  if (ITimer1.attachInterrupt(TIMER1_FREQUENCY_HZ, TimerHandler))
+  // Using ATmega328 used in UNO => 16MHz CPU clock ,
+
+  //if (ITimer1.attachInterruptInterval(TIMER_INTERVAL_MS, TimerHandler))
+  if (ITimer1.attachInterrupt(TIMER_FREQUENCY_HZ, TimerHandler))
   {
     Serial.print(F("Starting  ITimer1 OK, millis() = ")); Serial.println(millis());
   }
   else
     Serial.println(F("Can't set ITimer1. Select another freq. or timer"));
+    
+#elif USE_TIMER_3
 
+  ITimer3.init();
+
+  //if (ITimer3.attachInterruptInterval(TIMER_INTERVAL_MS, TimerHandler))
+  if (ITimer3.attachInterrupt(TIMER_FREQUENCY_HZ, TimerHandler))
+  {
+    Serial.print(F("Starting  ITimer3 OK, millis() = ")); Serial.println(millis());
+  }
+  else
+    Serial.println(F("Can't set ITimer3. Select another freq. or timer"));
+
+#endif
+    
   // Just to demonstrate, don't use too many ISR Timers if not absolutely necessary
   // You can use up to 16 timer for each ISR_Timer
   for (uint16_t i = 0; i < NUMBER_ISR_TIMERS; i++)
@@ -251,7 +282,7 @@ void fakeAnalogWrite(uint16_t pin, uint16_t value)
       {
         curISRTimerData[i].PWM_PremapValue = localValue;
 
-        // Mapping to correct value
+        // Mapping to corect value
         if ( ( localValue == 0) || ( localValue == MAX_PWM_VALUE - 1) )
         {
           // Keep MAX_PWM_VALUE

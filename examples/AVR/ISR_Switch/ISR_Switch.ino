@@ -45,6 +45,11 @@
     To run MEGA+WiFi combined, turn ON SW 1+2 (MCU <-> ESP) and SW 3+4 (USB <-> MCU)
  *****************************************************************************************************************************/
 
+// To be used with AVR Mega and Blynk v0.6.1 only
+// Compiler error with Blynk v1.0.0
+
+#warning To be used with AVR Mega and Blynk v0.6.1 only. Compiler error with Blynk v1.0.0
+
 #define BLYNK_PRINT Serial
 //#define BLYNK_DEBUG true
 
@@ -54,14 +59,7 @@
 #define TIMER_INTERRUPT_DEBUG         0
 #define _TIMERINTERRUPT_LOGLEVEL_     0
 
-#define USE_TIMER_1     true
-#define USE_TIMER_2     false
-#define USE_TIMER_3     false
-#define USE_TIMER_4     false
-#define USE_TIMER_5     false
-
 #include "TimerInterrupt_Generic.h"
-#include "ISR_Timer_Generic.h"
 
 #if !(TIMER_INTERRUPT_USING_AVR)
   #error This is designed only for Arduino AVR board! Please check your Tools->Board setting.
@@ -253,6 +251,7 @@ void setup()
 
   Serial.print(F("\nStarting ISR_Switch on "));
   Serial.println(BOARD_TYPE);
+  Serial.println(TIMER_INTERRUPT_VERSION);
   Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
   Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
 

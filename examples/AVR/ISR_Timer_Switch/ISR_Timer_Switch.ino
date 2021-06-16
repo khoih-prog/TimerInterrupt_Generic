@@ -46,6 +46,10 @@
     To upload program to MEGA2560+WiFi, only turn ON SW 3+4 (USB <-> MCU).
     To run MEGA+WiFi combined, turn ON SW 1+2 (MCU <-> ESP) and SW 3+4 (USB <-> MCU)
  *****************************************************************************************************************************/
+// To be used with AVR Mega and Blynk v0.6.1 only
+// Compiler error with Blynk v1.0.0
+
+#warning To be used with AVR Mega and Blynk v0.6.1 only. Compiler error with Blynk v1.0.0
 
 #define BLYNK_PRINT Serial
 //#define BLYNK_DEBUG true
@@ -56,11 +60,18 @@
 #define TIMER_INTERRUPT_DEBUG         0
 #define _TIMERINTERRUPT_LOGLEVEL_     0
 
-#define USE_TIMER_1     true
-#define USE_TIMER_2     false
-#define USE_TIMER_3     false
-#define USE_TIMER_4     false
-#define USE_TIMER_5     false
+#if ( defined(__AVR_ATmega644__) || defined(__AVR_ATmega644A__) || defined(__AVR_ATmega644P__) || defined(__AVR_ATmega644PA__)  || \
+        defined(ARDUINO_AVR_UNO) || defined(ARDUINO_AVR_NANO) || defined(ARDUINO_AVR_MINI) ||    defined(ARDUINO_AVR_ETHERNET) || \
+        defined(ARDUINO_AVR_FIO) || defined(ARDUINO_AVR_BT)   || defined(ARDUINO_AVR_LILYPAD) || defined(ARDUINO_AVR_PRO)      || \
+        defined(ARDUINO_AVR_NG) || defined(ARDUINO_AVR_UNO_WIFI_DEV_ED) || defined(ARDUINO_AVR_DUEMILANOVE) || defined(ARDUINO_AVR_FEATHER328P) || \
+        defined(ARDUINO_AVR_METRO) || defined(ARDUINO_AVR_PROTRINKET5) || defined(ARDUINO_AVR_PROTRINKET3) || defined(ARDUINO_AVR_PROTRINKET5FTDI) || \
+        defined(ARDUINO_AVR_PROTRINKET3FTDI) )
+  #define USE_TIMER_1     true
+  #warning Using Timer1
+#else          
+  #define USE_TIMER_3     true
+  #warning Using Timer3
+#endif
 
 #include "TimerInterrupt_Generic.h"
 #include "ISR_Timer_Generic.h"
@@ -203,7 +214,7 @@ void HWCheckButton()
   }
 }
 
-void heartBeatPrint()
+void heartBeatPrint(void)
 {
   static int num = 1;
 
@@ -270,6 +281,12 @@ void setup()
   Serial.begin(115200);
   while (!Serial);
 
+  Serial.print(F("\nStarting ISR_Timer_Switch on "));
+  Serial.println(BOARD_TYPE);
+  Serial.println(TIMER_INTERRUPT_VERSION);
+  Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
+  Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
+
   pinMode(RELAY_PIN, OUTPUT);
   pinMode(BUTTON_PIN, INPUT_PULLUP);
   digitalWrite(RELAY_PIN, LOW);
@@ -279,23 +296,43 @@ void setup()
   EspSerial.begin(ESP8266_BAUD);
   delay(10);
 
-  Serial.print(F("\nStarting ISR_Timer_Switch on "));
-  Serial.println(BOARD_TYPE);
-  Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
-  Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
-    
   Serial.print(F("ESPSerial using ")); Serial.println(ESP8266_BAUD);
 
   attachInterrupt(digitalPinToInterrupt(BUTTON_PIN), Falling, FALLING);
 
   // Interval in millisecs
   // Be sure to place this HW Timer well ahead blocking calls, because it needs to be initialized.
+
+  // Timer0 is used for micros(), millis(), delay(), etc and can't be used
+  // Select Timer 1-2 for UNO, 1-5 for MEGA, 1,3,4 for 16u4/32u4
+  // Timer 2 is 8-bit timer, only for higher frequency
+  // Timer 4 of 16u4 and 32u4 is 8/10-bit timer, only for higher frequency
+  
+#if USE_TIMER_1
+
+  ITimer1.init();
+
+  // Using ATmega328 used in UNO => 16MHz CPU clock ,
+
   if (ITimer1.attachInterruptInterval(TIMER_INTERVAL_MS, HWCheckButton))
   {
     Serial.print(F("Starting  ITimer1 OK, millis() = ")); Serial.println(millis());
   }
   else
     Serial.println(F("Can't set ITimer1. Select another freq. or timer"));
+    
+#elif USE_TIMER_3
+
+  ITimer3.init();
+
+  if (ITimer3.attachInterruptInterval(TIMER_INTERVAL_MS, HWCheckButton))
+  {
+    Serial.print(F("Starting  ITimer3 OK, millis() = ")); Serial.println(millis());
+  }
+  else
+    Serial.println(F("Can't set ITimer3. Select another freq. or timer"));
+
+#endif
 
   Blynk.begin(auth, wifi, ssid, pass, blynk_server, BLYNK_HARDWARE_PORT);
 

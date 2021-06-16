@@ -26,6 +26,15 @@
    functionality.
 *****************************************************************************************************************************/
 
+// To be used with UNO WiFi Rev2 and Blynk v0.6.1 only
+// Compiler error with Blynk v1.0.0
+
+#if !defined(ARDUINO_AVR_UNO_WIFI_REV2)
+  #error To be used with UNO WiFi Rev2 only.
+#else
+  #warning To be used with Blynk v0.6.1 only. Compiler error with Blynk v1.0.0
+#endif
+
 #define BLYNK_PRINT Serial
 //#define BLYNK_DEBUG true
 
@@ -230,8 +239,7 @@ void setup()
   Serial.begin(115200);
   while (!Serial);
 
-  Serial.print(F("\nStarting ISR_Timer_Switch on "));
-  Serial.println(BOARD_NAME);
+  Serial.print(F("\nStarting ISR_Timer_Switch on ")); Serial.println(BOARD_NAME);
   Serial.println(MEGA_AVR_TIMER_INTERRUPT_VERSION);
   Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
   Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));

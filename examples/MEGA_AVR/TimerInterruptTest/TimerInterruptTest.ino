@@ -99,8 +99,7 @@ void setup()
   Serial.begin(115200);
   while (!Serial);
 
-  Serial.print(F("\nStarting TimerInterruptTest on "));
-  Serial.println(BOARD_NAME);
+  Serial.print(F("\nStarting TimerInterruptTest on ")); Serial.println(BOARD_NAME);
   Serial.println(MEGA_AVR_TIMER_INTERRUPT_VERSION);
   Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
   Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));

@@ -44,6 +44,11 @@
     To run MEGA+WiFi combined, turn ON SW 1+2 (MCU <-> ESP) and SW 3+4 (USB <-> MCU)
  *****************************************************************************************************************************/
 
+// To be used with AVR Mega and Blynk v0.6.1 only
+// Compiler error with Blynk v1.0.0
+
+#warning To be used with AVR Mega and Blynk v0.6.1 only. Compiler error with Blynk v1.0.0
+
 #define BLYNK_PRINT Serial
 //#define BLYNK_DEBUG true
 
@@ -53,11 +58,18 @@
 #define TIMER_INTERRUPT_DEBUG         0
 #define _TIMERINTERRUPT_LOGLEVEL_     0
 
-#define USE_TIMER_1     true
-#define USE_TIMER_2     false
-#define USE_TIMER_3     false
-#define USE_TIMER_4     false
-#define USE_TIMER_5     false
+#if ( defined(__AVR_ATmega644__) || defined(__AVR_ATmega644A__) || defined(__AVR_ATmega644P__) || defined(__AVR_ATmega644PA__)  || \
+        defined(ARDUINO_AVR_UNO) || defined(ARDUINO_AVR_NANO) || defined(ARDUINO_AVR_MINI) ||    defined(ARDUINO_AVR_ETHERNET) || \
+        defined(ARDUINO_AVR_FIO) || defined(ARDUINO_AVR_BT)   || defined(ARDUINO_AVR_LILYPAD) || defined(ARDUINO_AVR_PRO)      || \
+        defined(ARDUINO_AVR_NG) || defined(ARDUINO_AVR_UNO_WIFI_DEV_ED) || defined(ARDUINO_AVR_DUEMILANOVE) || defined(ARDUINO_AVR_FEATHER328P) || \
+        defined(ARDUINO_AVR_METRO) || defined(ARDUINO_AVR_PROTRINKET5) || defined(ARDUINO_AVR_PROTRINKET3) || defined(ARDUINO_AVR_PROTRINKET5FTDI) || \
+        defined(ARDUINO_AVR_PROTRINKET3FTDI) )
+  #define USE_TIMER_1     true
+  #warning Using Timer1
+#else          
+  #define USE_TIMER_3     true
+  #warning Using Timer3
+#endif
 
 #include "TimerInterrupt_Generic.h"
 #include "ISR_Timer_Generic.h"
@@ -115,21 +127,21 @@ ESP8266 wifi(&EspSerial);
 volatile uint32_t lastMillis = 0;
 
 // Init BlynkTimer
-ISR_Timer ISR_Timer1;
+ISR_Timer ISR_timer;
 
 // Init BlynkTimer
 BlynkTimer blynkTimer;
 
 #define LED_TOGGLE_INTERVAL_MS      2000L
 
-void TimerHandler()
+void TimerHandler(void)
 {
   static bool toggle = false;
   static bool started = false;
 
   static int timeRun      = 0;
 
-  ISR_Timer1.run();
+  ISR_timer.run();
 
   // Toggle LED every 10 x 200 = 2000ms = 2s
   if (++timeRun == (LED_TOGGLE_INTERVAL_MS / HW_TIMER_INTERVAL_MS) )
@@ -161,7 +173,7 @@ void doingSomething2s()
   Serial.print("doingSomething2s: Delta ms = "); Serial.println(millis() - previousMillis);
 
   previousMillis = millis();
-#endif
+#endif  
 }
 
 void doingSomething5s()
@@ -216,37 +228,57 @@ void setup()
 
   Serial.print(F("\nStarting ISR_Timer_Complex on "));
   Serial.println(BOARD_TYPE);
+  Serial.println(TIMER_INTERRUPT_VERSION);
   Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
   Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
-
+  
   // Set ESP8266 baud rate
   EspSerial.begin(ESP8266_BAUD);
   delay(10);
 
   Serial.print(F("ESPSerial using ")); Serial.println(ESP8266_BAUD);
 
-  // Select Timer 1-2 for UNO, 0-5 for MEGA
-  // Timer 2 is 8-bit timer, only for higher frequency
-  ITimer1.init();
-
+  // Timer0 is used for micros(), millis(), delay(), etc and can't be used
   // Using ATmega328 used in UNO => 16MHz CPU clock ,
   // For 16-bit timer 1, 3, 4 and 5, set frequency from 0.2385 to some KHz
   // For 8-bit timer 2 (prescaler up to 1024, set frequency from 61.5Hz to some KHz
+  
+  // Select Timer 1-2 for UNO, 1-5 for MEGA, 1,3,4 for 16u4/32u4
+  // Timer 2 is 8-bit timer, only for higher frequency
+  // Timer 4 of 16u4 and 32u4 is 8/10-bit timer, only for higher frequency
+  
+#if USE_TIMER_1
 
+  ITimer1.init();
+
+  // Using ATmega328 used in UNO => 16MHz CPU clock ,
   // Interval in millisecs
   if (ITimer1.attachInterruptInterval(HW_TIMER_INTERVAL_MS, TimerHandler))
   {
-    lastMillis = millis();
-    Serial.print(F("Starting  ITimer1 OK, millis() = ")); Serial.println(lastMillis);
+    Serial.print(F("Starting  ITimer1 OK, millis() = ")); Serial.println(millis());
   }
   else
-    Serial.println(F("Can't set ITimer1 correctly. Select another freq. or interval"));
+    Serial.println(F("Can't set ITimer1. Select another freq. or timer"));
+    
+#elif USE_TIMER_3
+
+  ITimer3.init();
+  
+  // Interval in millisecs
+  if (ITimer3.attachInterruptInterval(HW_TIMER_INTERVAL_MS, TimerHandler))
+  {
+    Serial.print(F("Starting  ITimer3 OK, millis() = ")); Serial.println(millis());
+  }
+  else
+    Serial.println(F("Can't set ITimer3. Select another freq. or timer"));
+
+#endif
 
   // Just to demonstrate, don't use too many ISR Timers if not absolutely necessary
-  ISR_Timer1.setInterval(2000L, doingSomething2s);
-  ISR_Timer1.setInterval(5000L, doingSomething5s);
-  ISR_Timer1.setInterval(10000L, doingSomething10s);
-  ISR_Timer1.setInterval(50000L, doingSomething50s);
+  ISR_timer.setInterval(2000L, doingSomething2s);
+  ISR_timer.setInterval(5000L, doingSomething5s);
+  ISR_timer.setInterval(10000L, doingSomething10s);
+  ISR_timer.setInterval(50000L, doingSomething50s);
 
   // You need this timer for non-critical tasks. Avoid abusing ISR if not absolutely necessary.
   blynkTimer.setInterval(BLYNK_TIMER_MS, blynkDoingSomething2s);

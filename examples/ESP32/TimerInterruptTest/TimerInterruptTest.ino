@@ -38,6 +38,10 @@
 
 #ifndef ESP32
   #error This code is designed to run on ESP32 platform, not Arduino nor ESP8266! Please check your Tools->Board setting.
+#elif ( ARDUINO_ESP32S2_DEV || ARDUINO_FEATHERS2 || ARDUINO_ESP32S2_THING_PLUS || ARDUINO_MICROS2 || \
+        ARDUINO_METRO_ESP32S2 || ARDUINO_MAGTAG29_ESP32S2 || ARDUINO_FUNHOUSE_ESP32S2 || \
+        ARDUINO_ADAFRUIT_FEATHER_ESP32S2_NOPSRAM )
+  #error This code is not designed to run on ESP32-S2 platform! Please check your Tools->Board setting. 
 #endif
 
 // These define's must be placed at the beginning before #include "TimerInterrupt_Generic.h"
@@ -112,6 +116,7 @@ void setup()
   delay(100);
   
   Serial.print(F("\nStarting TimerInterruptTest on ")); Serial.println(ARDUINO_BOARD);
+  Serial.println(ESP32_TIMER_INTERRUPT_VERSION);
   Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
   Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
 

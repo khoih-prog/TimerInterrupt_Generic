@@ -42,11 +42,18 @@
 #define TIMER_INTERRUPT_DEBUG         0
 #define _TIMERINTERRUPT_LOGLEVEL_     0
 
-#define USE_TIMER_1     true
-#define USE_TIMER_2     false
-#define USE_TIMER_3     false
-#define USE_TIMER_4     false
-#define USE_TIMER_5     false
+#if ( defined(__AVR_ATmega644__) || defined(__AVR_ATmega644A__) || defined(__AVR_ATmega644P__) || defined(__AVR_ATmega644PA__)  || \
+        defined(ARDUINO_AVR_UNO) || defined(ARDUINO_AVR_NANO) || defined(ARDUINO_AVR_MINI) ||    defined(ARDUINO_AVR_ETHERNET) || \
+        defined(ARDUINO_AVR_FIO) || defined(ARDUINO_AVR_BT)   || defined(ARDUINO_AVR_LILYPAD) || defined(ARDUINO_AVR_PRO)      || \
+        defined(ARDUINO_AVR_NG) || defined(ARDUINO_AVR_UNO_WIFI_DEV_ED) || defined(ARDUINO_AVR_DUEMILANOVE) || defined(ARDUINO_AVR_FEATHER328P) || \
+        defined(ARDUINO_AVR_METRO) || defined(ARDUINO_AVR_PROTRINKET5) || defined(ARDUINO_AVR_PROTRINKET3) || defined(ARDUINO_AVR_PROTRINKET5FTDI) || \
+        defined(ARDUINO_AVR_PROTRINKET3FTDI) )
+  #define USE_TIMER_1     true
+  #warning Using Timer1
+#else          
+  #define USE_TIMER_3     true
+  #warning Using Timer3
+#endif
 
 #include "TimerInterrupt_Generic.h"
 
@@ -56,7 +63,7 @@
 
 unsigned int SWPin = A0;
 
-#define TIMER1_INTERVAL_MS        1
+#define TIMER_INTERVAL_MS        1
 #define DEBOUNCING_INTERVAL_MS    80
 
 #define LOCAL_DEBUG      1
@@ -69,26 +76,18 @@ volatile int debounceCounter;
 
 #define KAVG      100
 
-void TimerHandler1()
+void TimerHandler()
 {
-  static bool started = false;
-
-  if (!started)
-  {
-    started = true;
-    pinMode(SWPin, INPUT_PULLUP);
-  }
-
-  if ( !digitalRead(SWPin) && (debounceCounter >= DEBOUNCING_INTERVAL_MS / TIMER1_INTERVAL_MS ) )
+  if ( !digitalRead(SWPin) && (debounceCounter >= DEBOUNCING_INTERVAL_MS / TIMER_INTERVAL_MS ) )
   {
     //min time between pulses has passed
-    RPM = (float) ( 60000.0f / ( rotationTime * TIMER1_INTERVAL_MS ) );
+    RPM = (float) ( 60000.0f / ( rotationTime * TIMER_INTERVAL_MS ) );
 
     avgRPM = ( 2 * avgRPM + RPM) / 3,
 
 #if (TIMER_INTERRUPT_DEBUG > 1)
       Serial.print("RPM = "); Serial.print(avgRPM);
-      Serial.print(", rotationTime ms = "); Serial.println(rotationTime * TIMER1_INTERVAL_MS);
+      Serial.print(", rotationTime ms = "); Serial.println(rotationTime * TIMER_INTERVAL_MS);
 #endif
 
     rotationTime = 0;
@@ -118,28 +117,47 @@ void TimerHandler1()
 
 void setup()
 {
+  pinMode(SWPin, INPUT_PULLUP);
+  
   Serial.begin(115200);
   while (!Serial);
 
   Serial.print(F("\nStarting RPM_Measure on "));
   Serial.println(BOARD_TYPE);
+  Serial.println(TIMER_INTERRUPT_VERSION);
   Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
   Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
 
   // Timer0 is used for micros(), millis(), delay(), etc and can't be used
-  // Select Timer 1-2 for UNO, 0-5 for MEGA
+  // Select Timer 1-2 for UNO, 1-5 for MEGA, 1,3,4 for 16u4/32u4
   // Timer 2 is 8-bit timer, only for higher frequency
+  // Timer 4 of 16u4 and 32u4 is 8/10-bit timer, only for higher frequency
+  
+#if USE_TIMER_1
 
   ITimer1.init();
 
   // Using ATmega328 used in UNO => 16MHz CPU clock ,
 
-  if (ITimer1.attachInterruptInterval(TIMER1_INTERVAL_MS, TimerHandler1))
+  if (ITimer1.attachInterruptInterval(TIMER_INTERVAL_MS, TimerHandler))
   {
     Serial.print(F("Starting  ITimer1 OK, millis() = ")); Serial.println(millis());
   }
   else
     Serial.println(F("Can't set ITimer1. Select another freq. or timer"));
+    
+#elif USE_TIMER_3
+
+  ITimer3.init();
+
+  if (ITimer3.attachInterruptInterval(TIMER_INTERVAL_MS, TimerHandler))
+  {
+    Serial.print(F("Starting  ITimer3 OK, millis() = ")); Serial.println(millis());
+  }
+  else
+    Serial.println(F("Can't set ITimer3. Select another freq. or timer"));
+
+#endif
 }
 
 void loop()

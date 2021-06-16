@@ -1,28 +1,28 @@
 /****************************************************************************************************************************
-   ISR_Timer_Switch.ino
-   For ESP8266 boards
-   Written by Khoi Hoang
-
-   The ESP8266 timers are badly designed, using only 23-bit counter along with maximum 256 prescaler. They're only better than UNO / Mega.
-   The ESP8266 has two hardware timers, but timer0 has been used for WiFi and it's not advisable to use. Only timer1 is available.
-   The timer1's 23-bit counter terribly can count only up to 8,388,607. So the timer1 maximum interval is very short.
-   Using 256 prescaler, maximum timer1 interval is only 26.843542 seconds !!!
-
-   Now even you use all these new 16 ISR-based timers,with their maximum interval practically unlimited (limited only by
-   unsigned long miliseconds), you just consume only one Hardware timer and avoid conflicting with other cores' tasks.
-   The accuracy is nearly perfect compared to software timers. The most important feature is they're ISR-based timers
-   Therefore, their executions are not blocked by bad-behaving functions / tasks.
-   This important feature is absolutely necessary for mission-critical tasks.
-
-   Based on SimpleTimer - A timer library for Arduino.
-   Author: mromani@ottotecnica.com
-   Copyright (c) 2010 OTTOTECNICA Italy
-
-   Based on BlynkTimer.h
-   Author: Volodymyr Shymanskyy
-   
-   Built by Khoi Hoang https://github.com/khoih-prog/TimerInterrupt_Generic
-   Licensed under MIT license
+  ISR_Timer_Switch.ino
+  For ESP8266 boards
+  Written by Khoi Hoang
+  
+  The ESP8266 timers are badly designed, using only 23-bit counter along with maximum 256 prescaler. They're only better than UNO / Mega.
+  The ESP8266 has two hardware timers, but timer0 has been used for WiFi and it's not advisable to use. Only timer1 is available.
+  The timer1's 23-bit counter terribly can count only up to 8,388,607. So the timer1 maximum interval is very short.
+  Using 256 prescaler, maximum timer1 interval is only 26.843542 seconds !!!
+  
+  Now even you use all these new 16 ISR-based timers,with their maximum interval practically unlimited (limited only by
+  unsigned long miliseconds), you just consume only one Hardware timer and avoid conflicting with other cores' tasks.
+  The accuracy is nearly perfect compared to software timers. The most important feature is they're ISR-based timers
+  Therefore, their executions are not blocked by bad-behaving functions / tasks.
+  This important feature is absolutely necessary for mission-critical tasks.
+  
+  Based on SimpleTimer - A timer library for Arduino.
+  Author: mromani@ottotecnica.com
+  Copyright (c) 2010 OTTOTECNICA Italy
+  
+  Based on BlynkTimer.h
+  Author: Volodymyr Shymanskyy
+  
+  Built by Khoi Hoang https://github.com/khoih-prog/TimerInterrupt_Generic
+  Licensed under MIT license
 *****************************************************************************************************************************/
 /* Notes:
    Special design is necessary to share data between interrupt code and the rest of your program.
@@ -127,13 +127,13 @@ volatile bool SwitchReset  = true;
 unsigned int myWiFiTimeout        =  3200L;  //  3.2s WiFi connection timeout   (WCT)
 unsigned int buttonInterval       =  511L;   //  0.5s update button state
 
-void ICACHE_RAM_ATTR Falling();
-void ICACHE_RAM_ATTR Rising();
+void IRAM_ATTR Falling();
+void IRAM_ATTR Rising();
 
-void ICACHE_RAM_ATTR lightOn();
-void ICACHE_RAM_ATTR lightOff();
-void ICACHE_RAM_ATTR ButtonCheck();
-void ICACHE_RAM_ATTR ToggleRelay();
+void IRAM_ATTR lightOn();
+void IRAM_ATTR lightOff();
+void IRAM_ATTR ButtonCheck();
+void IRAM_ATTR ToggleRelay();
 
 BlynkTimer Timer;
 
@@ -151,7 +151,7 @@ BLYNK_WRITE(VPIN)
     ToggleRelay();
 }
 
-void ICACHE_RAM_ATTR Rising()
+void IRAM_ATTR Rising()
 {
   unsigned long currentTime  = millis();
   unsigned long TimeDiff;
@@ -165,7 +165,7 @@ void ICACHE_RAM_ATTR Rising()
   }
 }
 
-void ICACHE_RAM_ATTR Falling()
+void IRAM_ATTR Falling()
 {
   unsigned long currentTime  = millis();
 
@@ -177,7 +177,7 @@ void ICACHE_RAM_ATTR Falling()
   }
 }
 
-void ICACHE_RAM_ATTR HWCheckButton()
+void IRAM_ATTR HWCheckButton()
 {
   if (!alreadyTriggered && buttonPressed)
   {
@@ -227,7 +227,7 @@ void checkButton()
     Blynk.setProperty(LAMPSTATE_PIN, "color", BLYNK_GREEN);
 }
 
-void ICACHE_RAM_ATTR ButtonCheck()
+void IRAM_ATTR ButtonCheck()
 {
   boolean SwitchState = (digitalRead(BUTTON_PIN));
 
@@ -242,7 +242,7 @@ void ICACHE_RAM_ATTR ButtonCheck()
   }
 }
 
-void ICACHE_RAM_ATTR ToggleRelay()
+void IRAM_ATTR ToggleRelay()
 {
   if (LampState)
     lightOff();
@@ -250,13 +250,13 @@ void ICACHE_RAM_ATTR ToggleRelay()
     lightOn();
 }
 
-void ICACHE_RAM_ATTR lightOn()
+void IRAM_ATTR lightOn()
 {
   digitalWrite(RELAY_PIN, HIGH);
   LampState = true;
 }
 
-void ICACHE_RAM_ATTR lightOff()
+void IRAM_ATTR lightOff()
 {
   digitalWrite(RELAY_PIN, LOW);
   LampState = false;
@@ -270,6 +270,7 @@ void setup()
   delay(200);
 
   Serial.print(F("\nStarting ISR_Timer_Switch on ")); Serial.println(ARDUINO_BOARD);
+  Serial.println(ESP8266_TIMER_INTERRUPT_VERSION);
   Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
   Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
 

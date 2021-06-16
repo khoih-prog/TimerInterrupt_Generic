@@ -1,28 +1,28 @@
 /****************************************************************************************************************************
-   ISR_Timer_Complex.ino
-   For ESP8266 boards
-   Written by Khoi Hoang
-
-   The ESP8266 timers are badly designed, using only 23-bit counter along with maximum 256 prescaler. They're only better than UNO / Mega.
-   The ESP8266 has two hardware timers, but timer0 has been used for WiFi and it's not advisable to use. Only timer1 is available.
-   The timer1's 23-bit counter terribly can count only up to 8,388,607. So the timer1 maximum interval is very short.
-   Using 256 prescaler, maximum timer1 interval is only 26.843542 seconds !!!
-
-   Now even you use all these new 16 ISR-based timers,with their maximum interval practically unlimited (limited only by
-   unsigned long miliseconds), you just consume only one Hardware timer and avoid conflicting with other cores' tasks.
-   The accuracy is nearly perfect compared to software timers. The most important feature is they're ISR-based timers
-   Therefore, their executions are not blocked by bad-behaving functions / tasks.
-   This important feature is absolutely necessary for mission-critical tasks.
-
-   Based on SimpleTimer - A timer library for Arduino.
-   Author: mromani@ottotecnica.com
-   Copyright (c) 2010 OTTOTECNICA Italy
-
-   Based on BlynkTimer.h
-   Author: Volodymyr Shymanskyy
-   
-   Built by Khoi Hoang https://github.com/khoih-prog/TimerInterrupt_Generic
-   Licensed under MIT license
+  ISR_Timer_Complex.ino
+  For ESP8266 boards
+  Written by Khoi Hoang
+  
+  The ESP8266 timers are badly designed, using only 23-bit counter along with maximum 256 prescaler. They're only better than UNO / Mega.
+  The ESP8266 has two hardware timers, but timer0 has been used for WiFi and it's not advisable to use. Only timer1 is available.
+  The timer1's 23-bit counter terribly can count only up to 8,388,607. So the timer1 maximum interval is very short.
+  Using 256 prescaler, maximum timer1 interval is only 26.843542 seconds !!!
+  
+  Now even you use all these new 16 ISR-based timers,with their maximum interval practically unlimited (limited only by
+  unsigned long miliseconds), you just consume only one Hardware timer and avoid conflicting with other cores' tasks.
+  The accuracy is nearly perfect compared to software timers. The most important feature is they're ISR-based timers
+  Therefore, their executions are not blocked by bad-behaving functions / tasks.
+  This important feature is absolutely necessary for mission-critical tasks.
+  
+  Based on SimpleTimer - A timer library for Arduino.
+  Author: mromani@ottotecnica.com
+  Copyright (c) 2010 OTTOTECNICA Italy
+  
+  Based on BlynkTimer.h
+  Author: Volodymyr Shymanskyy
+  
+  Built by Khoi Hoang https://github.com/khoih-prog/TimerInterrupt_Generic
+  Licensed under MIT license
 *****************************************************************************************************************************/
 /* Notes:
    Special design is necessary to share data between interrupt code and the rest of your program.
@@ -105,7 +105,7 @@ ISR_Timer ESP8266_ISR_Timer;
 
 BlynkTimer blynkTimer;
 
-void ICACHE_RAM_ATTR TimerHandler()
+void IRAM_ATTR TimerHandler()
 {
   static bool toggle = false;
   static bool started = false;
@@ -136,7 +136,7 @@ void ICACHE_RAM_ATTR TimerHandler()
   }
 }
 
-void ICACHE_RAM_ATTR doingSomething2s()
+void IRAM_ATTR doingSomething2s()
 {
 #if (TIMER_INTERRUPT_DEBUG > 0)  
   static unsigned long previousMillis = lastMillis;
@@ -147,7 +147,7 @@ void ICACHE_RAM_ATTR doingSomething2s()
 #endif
 }
 
-void ICACHE_RAM_ATTR doingSomething5s()
+void IRAM_ATTR doingSomething5s()
 {
 #if (TIMER_INTERRUPT_DEBUG > 0)  
   static unsigned long previousMillis = lastMillis;
@@ -158,7 +158,7 @@ void ICACHE_RAM_ATTR doingSomething5s()
 #endif
 }
 
-void ICACHE_RAM_ATTR doingSomething10s()
+void IRAM_ATTR doingSomething10s()
 {
 #if (TIMER_INTERRUPT_DEBUG > 0)  
   static unsigned long previousMillis = lastMillis;
@@ -169,7 +169,7 @@ void ICACHE_RAM_ATTR doingSomething10s()
 #endif
 }
 
-void ICACHE_RAM_ATTR doingSomething50s()
+void IRAM_ATTR doingSomething50s()
 {
 #if (TIMER_INTERRUPT_DEBUG > 0)  
   static unsigned long previousMillis = lastMillis;
@@ -200,6 +200,7 @@ void setup()
   delay(200);
 
   Serial.print(F("\nStarting ISR_Timer_Complex on ")); Serial.println(ARDUINO_BOARD);
+  Serial.println(ESP8266_TIMER_INTERRUPT_VERSION);
   Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
   Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
   

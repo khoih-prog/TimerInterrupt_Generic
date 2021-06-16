@@ -23,6 +23,15 @@
    written
 *****************************************************************************************************************************/
 
+// To be used with UNO WiFi Rev2 and Blynk v0.6.1 only
+// Compiler error with Blynk v1.0.0
+
+#if !defined(ARDUINO_AVR_UNO_WIFI_REV2)
+  #error To be used with UNO WiFi Rev2 only.
+#else
+  #warning To be used with Blynk v0.6.1 only. Compiler error with Blynk v1.0.0
+#endif
+
 #if ( defined(__AVR_ATmega328__) || defined(__AVR_ATmega168__) )
   #error This is designed only for Arduino or Adafruit AVR board with more memory! Please check your Tools->Board setting.
 #endif
@@ -178,8 +187,7 @@ void setup()
   Serial.begin(115200);
   while (!Serial);
 
-  Serial.print(F("\nStarting ISR_Timer_Complex on "));
-  Serial.println(BOARD_NAME);
+  Serial.print(F("\nStarting ISR_Timer_Complex on ")); Serial.println(BOARD_NAME);
   Serial.println(MEGA_AVR_TIMER_INTERRUPT_VERSION);
   Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
   Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
