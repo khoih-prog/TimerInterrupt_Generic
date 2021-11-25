@@ -925,7 +925,7 @@ TCB0-TCB3 are 16-bit timers.
 Now with these new `16 ISR-based timers` (while consuming only **1 hardware timer**), the maximum interval is practically unlimited (limited only by unsigned long miliseconds). The accuracy is nearly perfect compared to software timers. The most important feature is they're ISR-based timers Therefore, their executions are not blocked by bad-behaving functions / tasks.
 This important feature is absolutely necessary for mission-critical tasks. 
 
-The [**ISR_16_Timers_Array**](examples/SAMD/ISR_16_Timers_Array) and [**ISR_Timer_Complex_Ethernet**](examples/SAMDUE/ISR_Timer_Complex_Ethernet) examples will demonstrate the nearly perfect accuracy compared to software timers by printing the actual elapsed millisecs of each type of timers.
+The [**ISR_16_Timers_Array_Complex**](examples/SAMD/ISR_16_Timers_Array_Complex) and [**ISR_16_Timers_Array_Complex**](examples/SAMDUE/ISR_16_Timers_Array_Complex) examples will demonstrate the nearly perfect accuracy compared to software timers by printing the actual elapsed millisecs of each type of timers.
 Being ISR-based timers, their executions are not blocked by bad-behaving functions / tasks, such as connecting to WiFi, Internet and Blynk services. You can also have many `(up to 16)` timers to use.
 This non-being-blocked important feature is absolutely necessary for mission-critical tasks. 
 You'll see blynkTimer Software is blocked while system is connecting to WiFi / Internet / Blynk, as well as by blocking task 
@@ -1801,24 +1801,24 @@ void setup()
 
 ### 1. ESP32
 
- 1. [Argument_None](examples/Argument_None)
- 2. [RPM_Measure](examples/RPM_Measure)
- 3. [SwitchDebounce](examples/SwitchDebounce)
- 4. [TimerInterruptTest](examples/TimerInterruptTest)
- 5. [**Change_Interval**](examples/Change_Interval).
- 6. [**ISR_16_Timers_Array**](examples/ISR_16_Timers_Array)
- 7. [**ISR_16_Timers_Array_Complex**](examples/ISR_16_Timers_Array_Complex).
+ 1. [Argument_None](examples/ESP32/Argument_None)
+ 2. [RPM_Measure](examples/ESP32/RPM_Measure)
+ 3. [SwitchDebounce](examples/ESP32/SwitchDebounce)
+ 4. [TimerInterruptTest](examples/ESP32/TimerInterruptTest)
+ 5. [**Change_Interval**](examples/ESP32/Change_Interval).
+ 6. [**ISR_16_Timers_Array**](examples/ESP32/ISR_16_Timers_Array)
+ 7. [**ISR_16_Timers_Array_Complex**](examples/ESP32/ISR_16_Timers_Array_Complex).
 
 ### 2. ESP8266
 
- 1. [Argument_None](examples/Argument_None)
- 2. [ISR_RPM_Measure](examples/ISR_RPM_Measure)
- 3. [RPM_Measure](examples/RPM_Measure)
- 4. [SwitchDebounce](examples/SwitchDebounce)
- 5. [TimerInterruptTest](examples/TimerInterruptTest)
- 6. [Change_Interval](examples/Change_Interval).
- 7. [**ISR_16_Timers_Array**](examples/ISR_16_Timers_Array) **New**
- 8. [**ISR_16_Timers_Array_Complex**](examples/ISR_16_Timers_Array_Complex) **New**
+ 1. [Argument_None](examples/ESP8266/Argument_None)
+ 2. [ISR_RPM_Measure](examples/ESP8266/ISR_RPM_Measure)
+ 3. [RPM_Measure](examples/ESP8266/RPM_Measure)
+ 4. [SwitchDebounce](examples/ESP8266/SwitchDebounce)
+ 5. [TimerInterruptTest](examples/ESP8266/TimerInterruptTest)
+ 6. [Change_Interval](examples/ESP8266/Change_Interval).
+ 7. [**ISR_16_Timers_Array**](examples/ESP8266/ISR_16_Timers_Array) **New**
+ 8. [**ISR_16_Timers_Array_Complex**](examples/ESP8266/ISR_16_Timers_Array_Complex) **New**
 
 
 ### 3. NRF52
@@ -1891,19 +1891,19 @@ void setup()
 
 ### 8. Arduino AVR
 
- 1. [Argument_Complex](examples/Argument_Complex)
- 2. [Argument_None](examples/Argument_None)
- 3. [Argument_Simple](examples/Argument_Simple)
- 4. [Change_Interval](examples/Change_Interval)
- 5. [FakeAnalogWrite](examples/FakeAnalogWrite)
- 6. [ISR_16_Timers_Array_Complex](examples/ISR_16_Timers_Array_Complex)
- 7. [ISR_RPM_Measure](examples/ISR_RPM_Measure)
- 8. [ISR_Timers_Array_Simple](examples/ISR_Timers_Array_Simple)
- 9. [RPM_Measure](examples/RPM_Measure)
-10. [SwitchDebounce](examples/SwitchDebounce)
-11. [TimerDuration](examples/TimerDuration)
-12. [TimerInterruptTest](examples/TimerInterruptTest)
-13. [**Change_Interval_HF**](examples/Change_Interval_HF). New.
+ 1. [Argument_Complex](examples/AVR/Argument_Complex)
+ 2. [Argument_None](examples/AVR/Argument_None)
+ 3. [Argument_Simple](examples/AVR/Argument_Simple)
+ 4. [Change_Interval](examples/AVR/Change_Interval)
+ 5. [FakeAnalogWrite](examples/AVR/FakeAnalogWrite)
+ 6. [ISR_16_Timers_Array_Complex](examples/AVR/ISR_16_Timers_Array_Complex)
+ 7. [ISR_RPM_Measure](examples/AVR/ISR_RPM_Measure)
+ 8. [ISR_Timers_Array_Simple](examples/AVR/ISR_Timers_Array_Simple)
+ 9. [RPM_Measure](examples/AVR/RPM_Measure)
+10. [SwitchDebounce](examples/AVR/SwitchDebounce)
+11. [TimerDuration](examples/AVR/TimerDuration)
+12. [TimerInterruptTest](examples/AVR/TimerInterruptTest)
+13. [**Change_Interval_HF**](examples/AVR/Change_Interval_HF). New.
 
 ### 9. Nano-33-BLE
 
@@ -1918,19 +1918,19 @@ void setup()
 
 ### 10. Arduino megaAVR
 
- 1. [Argument_Complex](examples/Argument_Complex)
- 2. [Argument_None](examples/Argument_None)
- 3. [Argument_Simple](examples/Argument_Simple)
- 4. [Change_Interval](examples/Change_Interval).
- 5. [FakeAnalogWrite](examples/FakeAnalogWrite).
- 6. [**ISR_16_Timers_Array_Complex**](examples/ISR_16_Timers_Array_Complex).
- 7. [ISR_RPM_Measure](examples/ISR_RPM_Measure)
- 8. [**Change_Interval_HF**](examples/Change_Interval_HF)
- 9. [**ISR_Timers_Array_Simple**](examples/ISR_Timers_Array_Simple).
-10. [RPM_Measure](examples/RPM_Measure)
-11. [SwitchDebounce](examples/SwitchDebounce)
-12. [TimerDuration](examples/TimerDuration)
-13. [TimerInterruptTest](examples/TimerInterruptTest)
+ 1. [Argument_Complex](examples/MEGA_AVR/Argument_Complex)
+ 2. [Argument_None](examples/MEGA_AVR/Argument_None)
+ 3. [Argument_Simple](examples/MEGA_AVR/Argument_Simple)
+ 4. [Change_Interval](examples/MEGA_AVR/Change_Interval).
+ 5. [FakeAnalogWrite](examples/MEGA_AVR/FakeAnalogWrite).
+ 6. [**ISR_16_Timers_Array_Complex**](examples/MEGA_AVR/ISR_16_Timers_Array_Complex).
+ 7. [ISR_RPM_Measure](examples/MEGA_AVR/ISR_RPM_Measure)
+ 8. [**Change_Interval_HF**](examples/MEGA_AVR/Change_Interval_HF)
+ 9. [**ISR_Timers_Array_Simple**](examples/MEGA_AVR/ISR_Timers_Array_Simple).
+10. [RPM_Measure](examples/MEGA_AVR/RPM_Measure)
+11. [SwitchDebounce](examples/MEGA_AVR/SwitchDebounce)
+12. [TimerDuration](examples/MEGA_AVR/TimerDuration)
+13. [TimerInterruptTest](examples/MEGA_AVR/TimerInterruptTest)
 
 ### 11. RP2040
 
@@ -2843,7 +2843,7 @@ SimpleTimer : 2, ms : 92538, Dms : 10063
 
 ### 6. ISR_16_Timers_Array_Complex on ESP8266_NODEMCU_ESP12E
 
-The following is the sample terminal output when running example [ISR_16_Timers_Array_Complex](examples/ISR_16_Timers_Array_Complex) on **ESP8266_NODEMCU_ESP12E** to demonstrate of ISR Hardware Timer, especially when system is very busy or blocked. The 16 independent ISR timers are programmed to be activated repetitively after certain intervals, is activated exactly after that programmed interval !!!
+The following is the sample terminal output when running example [ISR_16_Timers_Array_Complex](examples/ESP8266/ISR_16_Timers_Array_Complex) on **ESP8266_NODEMCU_ESP12E** to demonstrate of ISR Hardware Timer, especially when system is very busy or blocked. The 16 independent ISR timers are programmed to be activated repetitively after certain intervals, is activated exactly after that programmed interval !!!
 
 
 ```
