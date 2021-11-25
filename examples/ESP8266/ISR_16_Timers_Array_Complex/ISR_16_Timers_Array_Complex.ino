@@ -2,27 +2,20 @@
   ISR_16_Timers_Array_Complex.ino
   For ESP8266 boards
   Written by Khoi Hoang
-  
+
+  Built by Khoi Hoang https://github.com/khoih-prog/TimerInterrupt_Generic
+  Licensed under MIT license
+  Licensed under MIT license
+
   The ESP8266 timers are badly designed, using only 23-bit counter along with maximum 256 prescaler. They're only better than UNO / Mega.
   The ESP8266 has two hardware timers, but timer0 has been used for WiFi and it's not advisable to use. Only timer1 is available.
   The timer1's 23-bit counter terribly can count only up to 8,388,607. So the timer1 maximum interval is very short.
   Using 256 prescaler, maximum timer1 interval is only 26.843542 seconds !!!
-  
-  Now even you use all these new 16 ISR-based timers,with their maximum interval practically unlimited (limited only by
-  unsigned long miliseconds), you just consume only one Hardware timer and avoid conflicting with other cores' tasks.
+
+  Now with these new 16 ISR-based timers, the maximum interval is practically unlimited (limited only by unsigned long miliseconds)
   The accuracy is nearly perfect compared to software timers. The most important feature is they're ISR-based timers
   Therefore, their executions are not blocked by bad-behaving functions / tasks.
   This important feature is absolutely necessary for mission-critical tasks.
-  
-  Based on SimpleTimer - A timer library for Arduino.
-  Author: mromani@ottotecnica.com
-  Copyright (c) 2010 OTTOTECNICA Italy
-  
-  Based on BlynkTimer.h
-  Author: Volodymyr Shymanskyy
-  
-  Built by Khoi Hoang https://github.com/khoih-prog/TimerInterrupt_Generic
-  Licensed under MIT license
 *****************************************************************************************************************************/
 /*
    Notes:
@@ -48,7 +41,7 @@
   #error This code is designed to run on ESP8266 and ESP8266-based boards! Please check your Tools->Board setting.
 #endif
 
-// These define's must be placed at the beginning before #include "ESP8266TimerInterrupt.h"
+// These define's must be placed at the beginning before #include "TimerInterrupt_Generic.h"
 // _TIMERINTERRUPT_LOGLEVEL_ from 0 to 4
 // Don't define _TIMERINTERRUPT_LOGLEVEL_ > 0. Only for special ISR debugging only. Can hang the system.
 // Don't define TIMER_INTERRUPT_DEBUG > 2. Only for special ISR debugging only. Can hang the system.
@@ -76,23 +69,16 @@
 
 volatile uint32_t startMillis = 0;
 
-// Init ESP8266 timer 0
+// Init ESP8266 timer 1
 ESP8266Timer ITimer;
 
-// Init BlynkTimer
+// Init ESP8266_ISR_Timer
 ISR_Timer ESP8266_ISR_Timer;
 
 #define LED_TOGGLE_INTERVAL_MS        2000L
 
 void IRAM_ATTR TimerHandler()
-{
-#if USING_ESP32_S2_TIMER_INTERRUPT
-  /////////////////////////////////////////////////////////
-  // Always call this for ESP32-S2 before processing ISR
-  TIMER_ISR_START(timerNo);
-  /////////////////////////////////////////////////////////
-#endif
-  
+{ 
   static bool toggle  = false;
   static int timeRun  = 0;
 
@@ -107,13 +93,6 @@ void IRAM_ATTR TimerHandler()
     digitalWrite(LED_BUILTIN, toggle);
     toggle = !toggle;
   }
-
-  #if USING_ESP32_S2_TIMER_INTERRUPT
-  /////////////////////////////////////////////////////////
-  // Always call this for ESP32-S2 after processing ISR
-  TIMER_ISR_END(timerNo);
-  /////////////////////////////////////////////////////////
-#endif
 }
 
 /////////////////////////////////////////////////
@@ -136,7 +115,7 @@ typedef struct
   unsigned long previousMillis;
 } ISRTimerData;
 
-// In NRF52, avoid doing something fancy in ISR, for example Serial.print()
+// In ESP8266, avoid doing something fancy in ISR, for example Serial.print()
 // The pure simple Serial.prints here are just for demonstration and testing. Must be eliminate in working environment
 // Or you can get this run-time error / crash
 
@@ -334,7 +313,7 @@ void setup()
   Serial.begin(115200);
   while (!Serial);
 
-  delay(100);
+  delay(300);
 
   Serial.print(F("\nStarting ISR_16_Timers_Array_Complex on ")); Serial.println(ARDUINO_BOARD);
   Serial.println(ESP8266_TIMER_INTERRUPT_VERSION);

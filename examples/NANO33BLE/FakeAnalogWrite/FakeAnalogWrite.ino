@@ -2,8 +2,8 @@
   FakeAnalogWrite.ino
   For NRF52 boards using mbed-RTOS such as Nano-33-BLE
   Written by Khoi Hoang
-  
-  Built by Khoi Hoang https://github.com/khoih-prog/NRF52_MBED_TimerInterrupt
+
+  Built by Khoi Hoang https://github.com/khoih-prog/TimerInterrupt_Generic
   Licensed under MIT license
   
   Now even you use all these new 16 ISR-based timers,with their maximum interval practically unlimited (limited only by

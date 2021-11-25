@@ -3,7 +3,7 @@
   For Arduino megaAVR ATMEGA4809-based boards (UNO WiFi Rev2, NANO_EVERY, etc. )
   Written by Khoi Hoang
 
-  Built by Khoi Hoang https://github.com/khoih-prog/TimerInterrupt_Generic
+  Built by Khoi Hoang https://github.com/khoih-prog/megaAVR_TimerInterrupt
   Licensed under MIT license
 
   Now with we can use these new 16 ISR-based timers, while consuming only 1 hwarware Timer.
@@ -22,17 +22,9 @@
    if the interrupt changes a multi-byte variable between a sequence of instructions, it can be read incorrectly.
    If your data is multiple variables, such as an array and a count, usually interrupts need to be disabled
    or the entire sequence of your code which accesses the data.
-
-   This example will demonstrate the nearly perfect accuracy compared to software timers by printing the actual elapsed millisecs.
-   Being ISR-based timers, their executions are not blocked by bad-behaving functions / tasks, such as connecting to WiFi, Internet
-   and Blynk services. You can also have many (up to 16) timers to use.
-   This non-being-blocked important feature is absolutely necessary for mission-critical tasks.
-   You'll see blynkTimer is blocked while connecting to WiFi / Internet / Blynk, and elapsed time is very unaccurate
-   In this super simple example, you don't see much different after Blynk is connected, because of no competing task is
-   written
 */
   
-// These define's must be placed at the beginning before #include "TimerInterrupt_Generic.h"
+// These define's must be placed at the beginning before #include "megaAVR_TimerInterrupt.h"
 // _TIMERINTERRUPT_LOGLEVEL_ from 0 to 4
 // Don't define _TIMERINTERRUPT_LOGLEVEL_ > 0. Only for special ISR debugging only. Can hang the system.
 #define TIMER_INTERRUPT_DEBUG         0

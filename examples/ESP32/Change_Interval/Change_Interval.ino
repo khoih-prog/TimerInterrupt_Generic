@@ -1,28 +1,24 @@
 /****************************************************************************************************************************
   Change_Interval.ino
-  For ESP32 boards
+  For ESP32, ESP32_S2, ESP32_C3 boards with ESP32 core v2.0.0+
   Written by Khoi Hoang
+
+  Built by Khoi Hoang https://github.com/khoih-prog/ESP32_New_TimerInterrupt
+  Licensed under MIT license
+
+  The ESP32, ESP32_S2, ESP32_C3 have two timer groups, TIMER_GROUP_0 and TIMER_GROUP_1
+  1) each group of ESP32, ESP32_S2 has two general purpose hardware timers, TIMER_0 and TIMER_1
+  2) each group of ESP32_C3 has ony one general purpose hardware timer, TIMER_0
   
-  The ESP32 has two timer groups, each one with two general purpose hardware timers. All the timers are based on 64 bits
-  counters and 16 bit prescalers. The timer counters can be configured to count up or down and support automatic reload
-  and software reload. They can also generate alarms when they reach a specific value, defined by the software. The value
-  of the counter can be read by the software program.
-  
+  All the timers are based on 64 bits counters and 16 bit prescalers. The timer counters can be configured to count up or down 
+  and support automatic reload and software reload. They can also generate alarms when they reach a specific value, defined by 
+  the software. The value of the counter can be read by the software program.
+
   Now even you use all these new 16 ISR-based timers,with their maximum interval practically unlimited (limited only by
-  unsigned long miliseconds), you just consume only one Hardware timer and avoid conflicting with other cores' tasks.
+  unsigned long miliseconds), you just consume only one ESP32-S2 timer and avoid conflicting with other cores' tasks.
   The accuracy is nearly perfect compared to software timers. The most important feature is they're ISR-based timers
   Therefore, their executions are not blocked by bad-behaving functions / tasks.
   This important feature is absolutely necessary for mission-critical tasks.
-  
-  Based on SimpleTimer - A timer library for Arduino.
-  Author: mromani@ottotecnica.com
-  Copyright (c) 2010 OTTOTECNICA Italy
-  
-  Based on BlynkTimer.h
-  Author: Volodymyr Shymanskyy
-  
-  Built by Khoi Hoang https://github.com/khoih-prog/TimerInterrupt_Generic
-  Licensed under MIT license
 *****************************************************************************************************************************/
 
 /*
@@ -37,19 +33,12 @@
    or the entire sequence of your code which accesses the data.
 */
 
-#ifndef ESP32
-  #error This code is designed to run on ESP32 platform, not Arduino nor ESP8266! Please check your Tools->Board setting.
-#elif ( ARDUINO_ESP32S2_DEV || ARDUINO_FEATHERS2 || ARDUINO_ESP32S2_THING_PLUS || ARDUINO_MICROS2 || \
-        ARDUINO_METRO_ESP32S2 || ARDUINO_MAGTAG29_ESP32S2 || ARDUINO_FUNHOUSE_ESP32S2 || \
-        ARDUINO_ADAFRUIT_FEATHER_ESP32S2_NOPSRAM )
-  #error This code is not designed to run on ESP32-S2 platform! Please check your Tools->Board setting. 
+#if !defined( ESP32 )
+  #error This code is intended to run on the ESP32 platform! Please check your Tools->Board setting.
 #endif
 
-// These define's must be placed at the beginning before #include "TimerInterrupt_Generic.h"
-// _TIMERINTERRUPT_LOGLEVEL_ from 0 to 4
-// Don't define _TIMERINTERRUPT_LOGLEVEL_ > 0. Only for special ISR debugging only. Can hang the system.
-#define TIMER_INTERRUPT_DEBUG         0
-#define _TIMERINTERRUPT_LOGLEVEL_     0
+// These define's must be placed at the beginning before #include "ESP32_New_TimerInterrupt.h"
+#define _TIMERINTERRUPT_LOGLEVEL_     1
 
 #include "TimerInterrupt_Generic.h"
 
@@ -57,41 +46,45 @@
   #define LED_BUILTIN       2         // Pin D2 mapped to pin GPIO2/ADC12 of ESP32, control on-board LED
 #endif
 
-#define PIN_D23             23        // Pin D23 mapped to pin GPIO23/VSPI_MOSI of ESP32
+// Don't use PIN_D1 in core v2.0.0 and v2.0.1. Check https://github.com/espressif/arduino-esp32/issues/5868
+#define PIN_D2              2         // Pin D2 mapped to pin GPIO2/ADC12/TOUCH2/LED_BUILTIN of ESP32
+#define PIN_D3              3         // Pin D3 mapped to pin GPIO3/RX0 of ESP32
 
 volatile uint32_t Timer0Count = 0;
 volatile uint32_t Timer1Count = 0;
 
-void IRAM_ATTR TimerHandler0()
-{
+// With core v2.0.0+, you can't use Serial.print/println in ISR or crash.
+// and you can't use float calculation inside ISR
+// Only OK in core v1.0.6-
+bool IRAM_ATTR TimerHandler0(void * timerNo)
+{ 
   static bool toggle0 = false;
 
   // Flag for checking to be sure ISR is working as Serial.print is not OK here in ISR
   Timer0Count++;
 
-#if (TIMER_INTERRUPT_DEBUG > 0)
-  Serial.print("ITimer0: millis() = "); Serial.println(millis());
-#endif
-
   //timer interrupt toggles pin LED_BUILTIN
   digitalWrite(LED_BUILTIN, toggle0);
   toggle0 = !toggle0;
+
+  return true;
 }
 
-void IRAM_ATTR TimerHandler1()
-{
+// With core v2.0.0+, you can't use Serial.print/println in ISR or crash.
+// and you can't use float calculation inside ISR
+// Only OK in core v1.0.6-
+bool IRAM_ATTR TimerHandler1(void * timerNo)
+{  
   static bool toggle1 = false;
 
   // Flag for checking to be sure ISR is working as Serial.print is not OK here in ISR
   Timer1Count++;
 
-#if (TIMER_INTERRUPT_DEBUG > 0)
-  Serial.print("ITimer1: millis() = "); Serial.println(millis());
-#endif
-
-  //timer interrupt toggles PIN_D23
-  digitalWrite(PIN_D23, toggle1);
+  //timer interrupt toggles PIN_D3
+  digitalWrite(PIN_D3, toggle1);
   toggle1 = !toggle1;
+
+  return true;
 }
 
 void printResult(uint32_t currTime)
@@ -101,9 +94,9 @@ void printResult(uint32_t currTime)
   Serial.print(F(", Timer1Count = ")); Serial.println(Timer1Count);
 }
 
-#define TIMER0_INTERVAL_MS        500
+#define TIMER0_INTERVAL_MS        2000
 
-#define TIMER1_INTERVAL_MS        1000
+#define TIMER1_INTERVAL_MS        5000
 
 // Init ESP32 timer 0
 ESP32Timer ITimer0(0);
@@ -112,7 +105,7 @@ ESP32Timer ITimer1(1);
 void setup()
 {
   pinMode(LED_BUILTIN,  OUTPUT);
-  pinMode(PIN_D23,      OUTPUT);
+  pinMode(PIN_D3,       OUTPUT);
   
   Serial.begin(115200);
   while (!Serial);

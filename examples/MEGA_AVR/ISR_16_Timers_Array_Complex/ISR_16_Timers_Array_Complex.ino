@@ -3,7 +3,7 @@
   For Arduino megaAVR ATMEGA4809-based boards (UNO WiFi Rev2, NANO_EVERY, etc. )
   Written by Khoi Hoang
 
-  Built by Khoi Hoang https://github.com/khoih-prog/TimerInterrupt_Generic
+  Built by Khoi Hoang https://github.com/khoih-prog/megaAVR_TimerInterrupt
   Licensed under MIT license
 
   Now with we can use these new 16 ISR-based timers, while consuming only 1 hwarware Timer.
@@ -13,7 +13,7 @@
   This important feature is absolutely necessary for mission-critical tasks.
 *****************************************************************************************************************************/
 
-// These define's must be placed at the beginning before #include "TimerInterrupt_Generic.h"
+// These define's must be placed at the beginning before #include "megaAVR_TimerInterrupt.h"
 // _TIMERINTERRUPT_LOGLEVEL_ from 0 to 4
 // Don't define _TIMERINTERRUPT_LOGLEVEL_ > 0. Only for special ISR debugging only. Can hang the system.
 #define TIMER_INTERRUPT_DEBUG         0
@@ -23,14 +23,14 @@
 // Select USING_8MHZ      == true for   8MHz to Timer TCBx => shorter timer, but better accuracy
 // Select USING_250KHZ    == true for 250KHz to Timer TCBx => shorter timer, but better accuracy
 // Not select for default 250KHz to Timer TCBx => longer timer,  but worse accuracy
-#define USING_16MHZ     false
+#define USING_16MHZ     true
 #define USING_8MHZ      false
-#define USING_250KHZ    true
+#define USING_250KHZ    false
 
 
 #define USE_TIMER_0     false
 #define USE_TIMER_1     true
-#define USE_TIMER_2     false
+#define USE_TIMER_2     true
 #define USE_TIMER_3     false
 
 #include "TimerInterrupt_Generic.h"
