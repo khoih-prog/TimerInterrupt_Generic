@@ -17,16 +17,7 @@
   * [Notes for Teensy boards](#notes-for-teensy-boards)
   * [Currently Supported Boards](#currently-supported-boards)
   * [Important Notes about ISR](#important-notes-about-isr)
-* [Changelog](#changelog)
-  * [Releases v1.7.0](#releases-v170)
-  * [Major Releases v1.6.0](#major-releases-v160)
-  * [Releases v1.5.0](#releases-v150)
-  * [Major Releases v1.4.0](#major-releases-v140)
-  * [Releases v1.3.2](#releases-v132)
-  * [Releases v1.3.1](#releases-v131)
-  * [Releases v1.3.0](#releases-v130)
-  * [Releases v1.2.0](#releases-v120)
-  * [Releases v1.1.0](#releases-v110)
+* [Changelog](changelog.md)
 * [Prerequisites](#prerequisites)
 * [Installation](#installation)
   * [Use Arduino Library Manager](#use-arduino-library-manager)
@@ -47,6 +38,7 @@
   * [8. For RP2040-based boards using Earle Philhower arduino-pico core](#8-for-rp2040-based-boards-using-earle-philhower-arduino-pico-core)
     * [8.1. To use BOARD_NAME](#81-to-use-board_name)
     * [8.2. To avoid compile error relating to microsecondsToClockCycles](#82-to-avoid-compile-error-relating-to-microsecondstoclockcycles)
+  * [9. For Portenta_H7 boards using Arduino IDE in Linux](#9-for-portenta_h7-boards-using-arduino-ide-in-linux)
 * [Libraries' Patches](#libraries-patches)
   * [1. For application requiring 2K+ HTML page](#1-for-application-requiring-2k-html-page)
   * [2. For Ethernet library](#2-for-ethernet-library)
@@ -55,22 +47,8 @@
   * [5. For Ethernet3 library](#5-for-ethernet3-library)
   * [6. For UIPEthernet library](#6-for-uipethernet-library)
   * [7. For fixing ESP32 compile error](#7-for-fixing-esp32-compile-error)
-  * [8. For STM32 core F3 and F4 using UIPEthernet library](#8-for-stm32-core-f3-and-f4-using-uipethernet-library)
-* [HOWTO Install esp32 core for ESP32-S2 (Saola, AI-Thinker ESP-12K) and ESP32-C3 boards into Arduino IDE](#howto-install-esp32-core-for-esp32-s2-saola-ai-thinker-esp-12k-and-esp32-c3-boards-into-arduino-ide)
-  * [1. Save the original esp32 core](#1-save-the-original-esp32-core)
-  * [2. Install esp32 core v1.0.6](#2-install-esp32-core-v106)
-    * [2.1 Install esp32 core](#21-install-esp32-core)
-    * [2.2 Download latest zip with esp32-s2 support](#22-download-latest-zip-with-esp32-s2-support)
-    * [2.3 Unzip](#23-unzip)
-    * [2.3 Update esp32 core directories](#24-update-esp32-core-directories)
-  * [3. Download tools for ESP32-S2](#3-download-tools-for-esp32-s2) 
-    * [3.1 Download Toolchain for Xtensa (ESP32-S2) based on GCC](#31-download-toolchain-for-xtensa-esp32-s2-based-on-gcc)
-    * [3.2 Download esptool](#32-download-esptool)
-    * [3.3 Unzip](#33-unzip)
-  * [4. Update tools](#4-update-tools)
-    * [4.1 Update Toolchain](#41-update-toolchain)
-    * [4.2 Update esptool](#42-update-esptool)
-  * [5. Download tools for ESP32-C3](#5-download-tools-for-esp32-c3) 
+  * [8. For fixing ESP8266 compile error](#8-for-fixing-esp8266-compile-error)
+  * [9. For STM32 core F3 and F4 using UIPEthernet library](#9-for-stm32-core-f3-and-f4-using-uipethernet-library)
 * [HOWTO Fix `Multiple Definitions` Linker Error](#howto-fix-multiple-definitions-linker-error)
 * [HOWTO Use analogRead() with ESP32 running WiFi and/or BlueTooth (BT/BLE)](#howto-use-analogread-with-esp32-running-wifi-andor-bluetooth-btble)
   * [1. ESP32 has 2 ADCs, named ADC1 and ADC2](#1--esp32-has-2-adcs-named-adc1-and-adc2)
@@ -155,18 +133,17 @@
   * [ 8. Arduino AVR](#8-arduino-avr)
   * [ 9. Nano-33-BLE.](#9-nano-33-ble)
   * [10. Arduino megaAVR.](#10-arduino-megaavr)
-  * [11. ESP32-S2](#11-esp32-s2) **New**
-  * [12. RP2040](#12-rp2040) **New**
-  * [13. MBED RP2040](#13-mbed-rp2040) **New**
+  * [11. RP2040](#11-rp2040) **New**
+  * [12. MBED RP2040](#12-mbed-rp2040) **New**
 * [Example ISR_16_Timers_Array_Complex for MBED RP2040 boards](#example-isr_16_timers_array_complex-for-mbed-rp2040-boards)
 * [Debug Terminal Output Samples](#debug-terminal-output-samples)
   * [ 1. ISR_Timer_Complex_Ethernet on Arduino SAM DUE](#1-isr_timer_complex_ethernet-on-arduino-sam-due)
   * [ 2. ISR_Timer_Complex_Ethernet on Adafruit NRF52840_FEATHER EXPRESS](#2-isr_timer_complex_ethernet-on-adafruit-nrf52840_feather-express)
-  * [ 3. ISR_16_Timers_Array on Arduino SAMD21 SAMD_NANO_33_IOT](#3-isr_16_timers_array-on-arduino-samd21-samd_nano_33_iot)
+  * [ 3. ISR_16_Timers_Array_Complex on Arduino SAMD21 SAMD_NANO_33_IOT](#3-ISR_16_Timers_Array_Complex-on-arduino-samd21-samd_nano_33_iot)
   * [ 4. TimerInterruptTest on Teensy 4.1](#4-timerinterrupttest-on-teensy-41)
-  * [ 5. ISR_Timer_Complex on ESP32_DEV](#5-isr_timer_complex-on-esp32_dev)
-  * [ 6. ISR_Timer_Complex on ESP8266_NODEMCU](#6-isr_timer_complex-on-esp8266_nodemcu)
-  * [ 7. ISR_Timer_Complex on STM32F7 Nucleo-144 F767ZI using Built-in LAN8742A Ethernet and STM32Ethernet Library](#7-isr_timer_complex-on-stm32f7-nucleo-144-f767zi-using-built-in-lan8742a-ethernet-and-stm32ethernet-library)
+  * [ 5. ISR_16_Timers_Array_Complex on ESP32_DEV](#5-ISR_16_Timers_Array_Complex-on-esp32_dev)
+  * [ 6. ISR_16_Timers_Array_Complex on ESP8266_NODEMCU](#6-ISR_16_Timers_Array_Complex-on-esp8266_nodemcu)
+  * [ 7. ISR_16_Timers_Array_Complex on STM32F7 Nucleo-144 F767ZI](#7-ISR_16_Timers_Array_Complex-on-stm32f7-nucleo-144-f767zi)
   * [ 8. TimerInterruptTest on STM32F7 Nucleo-144 F767ZI](#8-timerinterrupttest-on-stm32f7-nucleo-144-f767zi)
   * [ 9. ISR_16_Timers_Array_Complex on Nano 33 BLE](#9-isr_16_timers_array_complex-on-nano-33-ble)
   * [10. ISR_16_Timers_Array_Complex on Arduino megaAVR Nano Every to show accuracy difference](#10-isr_16_timers_array_complex-on-arduino-megaavr-nano-every-to-show-accuracy-difference)
@@ -175,7 +152,6 @@
     * [10.3 TCB Clock Frequency 250KHz for lower accuracy but longer time](#103-tcb-clock-frequency-250khz-for-lower-accuracy-but-longer-time)
 * [Debug](#debug)
 * [Troubleshooting](#troubleshooting)
-* [Releases](#releases)
 * [Issues](#issues)
 * [TO DO](#to-do)
 * [DONE](#done)
@@ -277,120 +253,55 @@ For Teensy 4.x, this library will be expanded to use other available hardware ti
 ---
 ---
 
-## Changelog
-
-### Releases v1.7.0
-
-1. Add support to Adafruit nRF52 core v0.22.0+
-2. Add support to nRF52 Raytac MDBT50Q_RX Dongle
-
-**Warnings for Releases v1.6.0-** : Use [`Adafruit nRF52 v0.22.0+`](https://github.com/adafruit/Adafruit_nRF52_Arduino/releases/tag/0.22.0) will create **compiler errors**. If so, please use the [`Adafruit nRF52 v0.21.0`](https://github.com/adafruit/Adafruit_nRF52_Arduino/releases/tag/0.21.0). It's advisable to update to Releases v1.7.0+
-
-### Major Releases v1.6.0
-
-1. Add support to **MBED RP2040 boards** such as **Nano_RP2040_Connect, RASPBERRY_PI_PICO**, using [**Arduino-mbed RP2040** core](https://github.com/arduino/ArduinoCore-mbed)
-2. Add support to **RP2040-based boards such as **RASPBERRY_PI_PICO, ADAFRUIT_ITSYBITSY_RP2040, ADAFRUIT_QTPY_RP2040, ADAFRUIT_STEMMAFRIEND_RP2040, ADAFRUIT_TRINKEYQT_RP2040, ADAFRUIT_MACROPAD_RP2040, SPARKFUN_PROMICRO_RP2040, etc.**, using [**Earle Philhower's arduino-pico** core](https://github.com/earlephilhower/arduino-pico)
-3. Add support to **ESP32-S2** such as **Saola, AI-Thinker ESP-12K, etc.**
-4. Update for many other boards
-5. Add and Update examples
-
-### Releases v1.5.0
-
-1. Add support to **ATmega4809-based boards** such as **Arduino UNO WiFi Rev2, AVR_NANO_EVERY, etc.**
-
-### Major Releases v1.4.0
-
-1. Add support to **Generic or Sparkfun AVR ATmega_32U4** such as **AVR_MAKEYMAKEY, AVR_PROMICRO, etc.**
-2. Add support to **Generic or Sparkfun AVR ATmega_328(P)** such as **ARDUINO_REDBOT, ARDUINO_AVR_DIGITAL_SANDBOX, etc.**
-3. Add support to **Generic or Sparkfun AVR ATmega128RFA1** such as **ATMEGA128RFA1_DEV_BOARD, etc.**
-4. Add support to **Adafruit AVR ATMEGA_32U4** such as **AVR_FLORA8, AVR_FEATHER32U4, etc.**
-5. Add support to **Adafruit AVR ATMEGA_328(P)** such as **AVR_FEATHER328P, AVR_METRO, etc.**
-6. Add support to **AVR ATMEGA_16U4, ATMEGA_32U4** such as **Leonardo, YUN, ESPLORA, etc.**
-7. Add support to **Sparkfun SAMD21 boards** such as **SparkFun_RedBoard_Turbo, SparkFun_Qwiic_Micro, etc.**
-8. Add support to **Sparkfun SAMD51 boards** such as **SparkFun_SAMD51_Thing_Plus, SparkFun_SAMD51_MicroMod, etc.**
-9. Update examples
-
-### Releases v1.3.2
-
-1. Clean-up all compiler warnings possible.
-2. Optimize library and examples to reduce memory usage by using Flash String whenever possible.
-3. Add Table of Contents
-4. Add better debug feature
-
-### Releases v1.3.1
-
-1. Add many complex examples.
-2. Add board Version String.
-3. Fix SAMD bug.
-
-
-### Releases v1.3.0
-
-1. Add [**NRF52_MBED_TimerInterrupt Library**](https://github.com/khoih-prog/NRF52_MBED_TimerInterrupt) to support **NRF52840-based board using mbed-RTOS such as Nano-33-BLE.**
-2. Add support for UNO, Nano, Mini, Arduino Ethernet, Fio, BT, LilyPad, Pro, Pro Mini, NG, UNO WiFi.
-
-
-### Releases v1.2.0
-
-1. Add [**STM32_TimerInterrupt Library**](https://github.com/khoih-prog/STM32_TimerInterrupt)
-
-### Releases v1.1.0
-
-1. Initial Super-Library coding to merge all TimerInterrupt Libraries
-   
----
----
-
 ## Prerequisites
 
- 1. [`Arduino IDE 1.8.15+` for Arduino](https://www.arduino.cc/en/Main/Software)
+ 1. [`Arduino IDE 1.8.16+` for Arduino](https://www.arduino.cc/en/Main/Software)
  
  ---
  
- 2. [`ESP32 Core 1.0.6+`](https://github.com/espressif/arduino-esp32) for ESP32-based boards. [![Latest release](https://img.shields.io/github/release/espressif/arduino-esp32.svg)](https://github.com/espressif/arduino-esp32/releases/latest/)
- 3. [`ESP32-S2/C3 Core 1.0.6+`](https://github.com/espressif/arduino-esp32) for ESP32-S2/C3-based boards. Must follow [HOWTO Install esp32 core for ESP32-S2 (Saola, AI-Thinker ESP-12K) and ESP32-C3 boards into Arduino IDE](#howto-install-esp32-core-for-esp32-s2-saola-ai-thinker-esp-12k-and-esp32-c3-boards-into-arduino-ide).
- 4. [`ESP8266 Core 3.0.2+`](https://github.com/esp8266/Arduino) for ESP8266-based boards. [![Latest release](https://img.shields.io/github/release/esp8266/Arduino.svg)](https://github.com/esp8266/Arduino/releases/latest/). To use ESP8266 core 2.7.1+ for LittleFS. 
- 5. [`Arduino AVR core 1.8.3+`](https://github.com/arduino/ArduinoCore-avr) for Arduino (Use Arduino Board Manager) for AVR boards. [![GitHub release](https://img.shields.io/github/release/arduino/ArduinoCore-avr.svg)](https://github.com/arduino/ArduinoCore-avr/releases/latest)
- 6. [`Adafruit AVR core 1.4.13+`](https://github.com/adafruit/Adafruit_Arduino_Boards) for Adafruit AVR boards. Use Arduino Board Manager to install. 
- 7. [`Sparkfun AVR core 1.1.13+`](https://github.com/sparkfun/Arduino_Boards) for Sparkfun AVR boards. Use Arduino Board Manager to install. 
- 8. [`Teensy core v1.53+`](https://www.pjrc.com/teensy/td_download.html) for Teensy (4.1, 4.0, 3.6, 3.5, 3,2, 3.1, 3.0) boards.
- 9. [`Arduino SAM DUE core v1.6.12+`](https://github.com/arduino/ArduinoCore-sam) for SAM DUE ARM Cortex-M3 boards.
-10. [`Arduino SAMD core 1.8.11+`](https://github.com/arduino/ArduinoCore-samd) for SAMD ARM Cortex-M0+ boards. [![GitHub release](https://img.shields.io/github/release/arduino/ArduinoCore-samd.svg)](https://github.com/arduino/ArduinoCore-samd/releases/latest)
-11. [`Adafruit SAMD core 1.7.2+`](https://github.com/adafruit/ArduinoCore-samd) for SAMD ARM Cortex-M0+ and M4 boards (Nano 33 IoT, etc.). [![GitHub release](https://img.shields.io/github/release/adafruit/ArduinoCore-samd.svg)](https://github.com/adafruit/ArduinoCore-samd/releases/latest)
-12. [`Seeeduino SAMD core 1.8.1+`](https://github.com/Seeed-Studio/ArduinoCore-samd) for SAMD21/SAMD51 boards (XIAO M0, Wio Terminal, etc.). [![Latest release](https://img.shields.io/github/release/Seeed-Studio/ArduinoCore-samd.svg)](https://github.com/Seeed-Studio/ArduinoCore-samd/releases/latest/)
-13. [`Sparkfun SAMD core 1.8.1+`](https://github.com/sparkfun/Arduino_Boards) for SAMD21/SAMD51 boards (SparkFun_RedBoard_Turbo, SparkFun_SAMD51_Thing_Plus, etc.).
-14. [`Adafruit nRF52 v0.24.0+`](https://github.com/adafruit/Adafruit_nRF52_Arduino) for nRF52 boards such as Adafruit NRF52840_FEATHER, NRF52832_FEATHER, NRF52840_FEATHER_SENSE, NRF52840_ITSYBITSY, NRF52840_CIRCUITPLAY, NRF52840_CLUE, NRF52840_METRO, NRF52840_PCA10056, PARTICLE_XENON, **NINA_B302_ublox**, etc. [![GitHub release](https://img.shields.io/github/release/adafruit/Adafruit_nRF52_Arduino.svg)](https://github.com/adafruit/Adafruit_nRF52_Arduino/releases/latest)
-15. [`Arduino Core for STM32 v2.0.0+`](https://github.com/stm32duino/Arduino_Core_STM32) for STM32F/L/H/G/WB/MP1 boards. [![GitHub release](https://img.shields.io/github/release/stm32duino/Arduino_Core_STM32.svg)](https://github.com/stm32duino/Arduino_Core_STM32/releases/latest)
-16. [`Arduino megaAVR core 1.8.7+`](https://github.com/arduino/ArduinoCore-megaavr/releases) for Arduino megaAVR boards. Use Arduino Board Manager to install.
-17. [`Arduino mbed_rp2040 core 2.4.1+`](https://github.com/arduino/ArduinoCore-mbed) for Arduino (Use Arduino Board Manager) RP2040-based boards, such as **Arduino Nano RP2040 Connect, RASPBERRY_PI_PICO, etc.**. [![GitHub release](https://img.shields.io/github/release/arduino/ArduinoCore-mbed.svg)](https://github.com/arduino/ArduinoCore-mbed/releases/latest)
-18. [`Earle Philhower's arduino-pico core v1.9.4+`](https://github.com/earlephilhower/arduino-pico) for RP2040-based boards such as **RASPBERRY_PI_PICO, ADAFRUIT_FEATHER_RP2040 and GENERIC_RP2040**, etc. [![GitHub release](https://img.shields.io/github/release/earlephilhower/arduino-pico.svg)](https://github.com/earlephilhower/arduino-pico/releases/latest)
+ 2. [`ESP32 Core 2.0.1+`](https://github.com/espressif/arduino-esp32) for ESP32-based boards. [![Latest release](https://img.shields.io/github/release/espressif/arduino-esp32.svg)](https://github.com/espressif/arduino-esp32/releases/latest/)
+ 3. [`ESP8266 Core 3.0.2+`](https://github.com/esp8266/Arduino) for ESP8266-based boards. [![Latest release](https://img.shields.io/github/release/esp8266/Arduino.svg)](https://github.com/esp8266/Arduino/releases/latest/). To use ESP8266 core 2.7.1+ for LittleFS. 
+ 4. [`Arduino AVR core 1.8.3+`](https://github.com/arduino/ArduinoCore-avr) for Arduino (Use Arduino Board Manager) for AVR boards. [![GitHub release](https://img.shields.io/github/release/arduino/ArduinoCore-avr.svg)](https://github.com/arduino/ArduinoCore-avr/releases/latest)
+ 5. [`Adafruit AVR core 1.4.13+`](https://github.com/adafruit/Adafruit_Arduino_Boards) for Adafruit AVR boards. Use Arduino Board Manager to install. 
+ 6. [`Sparkfun AVR core 1.1.13+`](https://github.com/sparkfun/Arduino_Boards) for Sparkfun AVR boards. Use Arduino Board Manager to install. 
+ 7. [`Teensy core v1.55+`](https://www.pjrc.com/teensy/td_download.html) for Teensy (4.1, 4.0, 3.6, 3.5, 3,2, 3.1, 3.0) boards.
+ 8. [`Arduino SAM DUE core v1.6.12+`](https://github.com/arduino/ArduinoCore-sam) for SAM DUE ARM Cortex-M3 boards.
+ 9. [`Arduino SAMD core 1.8.12+`](https://github.com/arduino/ArduinoCore-samd) for SAMD ARM Cortex-M0+ boards. [![GitHub release](https://img.shields.io/github/release/arduino/ArduinoCore-samd.svg)](https://github.com/arduino/ArduinoCore-samd/releases/latest)
+10. [`Adafruit SAMD core 1.7.5+`](https://github.com/adafruit/ArduinoCore-samd) for SAMD ARM Cortex-M0+ and M4 boards (Nano 33 IoT, etc.). [![GitHub release](https://img.shields.io/github/release/adafruit/ArduinoCore-samd.svg)](https://github.com/adafruit/ArduinoCore-samd/releases/latest)
+11. [`Seeeduino SAMD core 1.8.2+`](https://github.com/Seeed-Studio/ArduinoCore-samd) for SAMD21/SAMD51 boards (XIAO M0, Wio Terminal, etc.). [![Latest release](https://img.shields.io/github/release/Seeed-Studio/ArduinoCore-samd.svg)](https://github.com/Seeed-Studio/ArduinoCore-samd/releases/latest/)
+12. [`Sparkfun SAMD core 1.8.1+`](https://github.com/sparkfun/Arduino_Boards) for SAMD21/SAMD51 boards (SparkFun_RedBoard_Turbo, SparkFun_SAMD51_Thing_Plus, etc.).
+13. [`Adafruit nRF52 v1.1.0+`](https://github.com/adafruit/Adafruit_nRF52_Arduino) for nRF52 boards such as Adafruit NRF52840_FEATHER, NRF52832_FEATHER, NRF52840_FEATHER_SENSE, NRF52840_ITSYBITSY, NRF52840_CIRCUITPLAY, NRF52840_CLUE, NRF52840_METRO, NRF52840_PCA10056, PARTICLE_XENON, **NINA_B302_ublox**, etc. [![GitHub release](https://img.shields.io/github/release/adafruit/Adafruit_nRF52_Arduino.svg)](https://github.com/adafruit/Adafruit_nRF52_Arduino/releases/latest)
+14. [`Arduino Core for STM32 v2.1.0+`](https://github.com/stm32duino/Arduino_Core_STM32) for STM32F/L/H/G/WB/MP1 boards. [![GitHub release](https://img.shields.io/github/release/stm32duino/Arduino_Core_STM32.svg)](https://github.com/stm32duino/Arduino_Core_STM32/releases/latest)
+15. [`Arduino megaAVR core 1.8.7+`](https://github.com/arduino/ArduinoCore-megaavr/releases) for Arduino megaAVR boards. Use Arduino Board Manager to install.
+16. [`Arduino mbed_rp2040 core 2.6.1+`](https://github.com/arduino/ArduinoCore-mbed) for Arduino (Use Arduino Board Manager) RP2040-based boards, such as **Arduino Nano RP2040 Connect, RASPBERRY_PI_PICO, etc.**. [![GitHub release](https://img.shields.io/github/release/arduino/ArduinoCore-mbed.svg)](https://github.com/arduino/ArduinoCore-mbed/releases/latest)
+17. [`Earle Philhower's arduino-pico core v1.9.6+`](https://github.com/earlephilhower/arduino-pico) for RP2040-based boards such as **RASPBERRY_PI_PICO, ADAFRUIT_FEATHER_RP2040 and GENERIC_RP2040**, etc. [![GitHub release](https://img.shields.io/github/release/earlephilhower/arduino-pico.svg)](https://github.com/earlephilhower/arduino-pico/releases/latest)
 
 ---
 
-19. [`Blynk library 0.6.1`](https://github.com/blynkkk/blynk-library/releases). [![Latest release](https://img.shields.io/github/release/blynkkk/blynk-library.svg)](https://github.com/blynkkk/blynk-library/releases/latest/) to use with certain example.
+18. [`Blynk library 1.0.1`](https://github.com/blynkkk/blynk-library/releases). [![Latest release](https://img.shields.io/github/release/blynkkk/blynk-library.svg)](https://github.com/blynkkk/blynk-library/releases/latest/) to use with certain examples.
 
 ---
 
-20. For built-in LAN8742A Ethernet:
+19. For built-in LAN8742A Ethernet:
    - [`STM32Ethernet library v1.2.0+`](https://github.com/stm32duino/STM32Ethernet) for built-in LAN8742A Ethernet on (Nucleo-144, Discovery). [![GitHub release](https://img.shields.io/github/release/stm32duino/STM32Ethernet.svg)](https://github.com/stm32duino/STM32Ethernet/releases/latest)
    - [`LwIP library v2.1.2+`](https://github.com/stm32duino/LwIP) for built-in LAN8742A Ethernet on (Nucleo-144, Discovery). [![GitHub release](https://img.shields.io/github/release/stm32duino/LwIP.svg)](https://github.com/stm32duino/LwIP/releases/latest)
    
-21. For W5x00 Ethernet:
+20. For W5x00 Ethernet:
    - [`Ethernet library v2.0.0+`](https://github.com/arduino-libraries/Ethernet) for W5100, W5200 and W5500.  [![GitHub release](https://img.shields.io/github/release/arduino-libraries/Ethernet.svg)](https://github.com/arduino-libraries/Ethernet/releases/latest)
    - [`EthernetLarge library v2.0.0+`](https://github.com/OPEnSLab-OSU/EthernetLarge) for W5100, W5200 and W5500.
    - [`Ethernet2 library v1.0.4+`](https://github.com/khoih-prog/Ethernet2) for W5500. [![GitHub release](https://img.shields.io/github/release/adafruit/Ethernet2.svg)](https://github.com/adafruit/Ethernet2/releases/latest)
    - [`Ethernet3 library v1.5.5+`](https://github.com/sstaub/Ethernet3) for W5500/WIZ550io/WIZ850io/USR-ES1 with Wiznet W5500 chip. [![GitHub release](https://img.shields.io/github/release/sstaub/Ethernet3.svg)](https://github.com/sstaub/Ethernet3/releases/latest)
    
-22. For ENC28J60 Ethernet:
+21. For ENC28J60 Ethernet:
    - [`EthernetENC library v2.0.1+`](https://github.com/jandrassy/EthernetENC) for ENC28J60. [![GitHub release](https://img.shields.io/github/release/jandrassy/EthernetENC.svg)](https://github.com/jandrassy/EthernetENC/releases/latest). **New and Better**
    - [`UIPEthernet library v2.0.10+`](https://github.com/UIPEthernet/UIPEthernet) for ENC28J60. [![GitHub release](https://img.shields.io/github/release/UIPEthernet/UIPEthernet.svg)](https://github.com/UIPEthernet/UIPEthernet/releases/latest)
    
 ---
 
-23. [`WiFiNINA_Generic library v1.8.13+`](https://github.com/khoih-prog/WiFiNINA_Generic) to use WiFiNINA modules/shields. To install. check [![arduino-library-badge](https://www.ardu-badge.com/badge/WiFiNINA_Generic.svg?)](https://www.ardu-badge.com/WiFiNINA_Generic) if using WiFiNINA for boards such as Nano 33 IoT, nRF52, Teensy, etc.
-24. [`Blynk_WiFiNINA_WM library 1.1.1+`](https://github.com/khoih-prog/Blynk_WiFiNINA_WM) to use with Blynk-WiFiNINA-related example. To install. check [![arduino-library-badge](https://www.ardu-badge.com/badge/Blynk_WiFiNINA_WM.svg?)](https://www.ardu-badge.com/Blynk_WiFiNINA_WM)
+22. [`WiFiNINA_Generic library v1.8.13+`](https://github.com/khoih-prog/WiFiNINA_Generic) to use WiFiNINA modules/shields. To install. check [![arduino-library-badge](https://www.ardu-badge.com/badge/WiFiNINA_Generic.svg?)](https://www.ardu-badge.com/WiFiNINA_Generic) if using WiFiNINA for boards such as Nano 33 IoT, nRF52, Teensy, etc.
+23. [`Blynk_WiFiNINA_WM library 1.1.2+`](https://github.com/khoih-prog/Blynk_WiFiNINA_WM) to use with Blynk-WiFiNINA-related example. To install. check [![arduino-library-badge](https://www.ardu-badge.com/badge/Blynk_WiFiNINA_WM.svg?)](https://www.ardu-badge.com/Blynk_WiFiNINA_WM)
 
-25. To use with certain example
+24. To use with certain examples
    - [`SimpleTimer library`](https://github.com/jfturcot/SimpleTimer) for `ISR_16_Timers_Array examples`
    
 ---
@@ -426,22 +337,28 @@ Another way to install is to:
 
 #### 1. For Adafruit nRF52840 and nRF52832 boards
 
-**To be able to compile, run and automatically detect and display BOARD_NAME on nRF52840/nRF52832 boards**, you have to copy the whole [nRF52 0.24.0](Packages_Patches/adafruit/hardware/nrf52/0.24.0) directory into Adafruit nRF52 directory (~/.arduino15/packages/adafruit/hardware/nrf52/0.24.0). 
+**To be able to compile, run and automatically detect and display BOARD_NAME on nRF52840/nRF52832 boards**, you have to copy the whole [nRF52 Packages_Patches](Packages_Patches/adafruit/hardware/nrf52/1.1.0) directory into Adafruit nRF52 directory (~/.arduino15/packages/adafruit/hardware/nrf52/1.1.0). 
 
-Supposing the Adafruit nRF52 version is 0.24.0. These files must be copied into the directory:
-- `~/.arduino15/packages/adafruit/hardware/nrf52/0.24.0/platform.txt`
-- `~/.arduino15/packages/adafruit/hardware/nrf52/0.24.0/boards.txt`
-- `~/.arduino15/packages/adafruit/hardware/nrf52/0.24.0/variants/NINA_B302_ublox/variant.h`
-- `~/.arduino15/packages/adafruit/hardware/nrf52/0.24.0/variants/NINA_B302_ublox/variant.cpp`
-- `~/.arduino15/packages/adafruit/hardware/nrf52/0.24.0/variants/NINA_B112_ublox/variant.h`
-- `~/.arduino15/packages/adafruit/hardware/nrf52/0.24.0/variants/NINA_B112_ublox/variant.cpp`
-- **`~/.arduino15/packages/adafruit/hardware/nrf52/0.24.0/cores/nRF5/Udp.h`**
+Supposing the Adafruit nRF52 version is 1.1.0. These files must be copied into the directory:
+- `~/.arduino15/packages/adafruit/hardware/nrf52/1.1.0/platform.txt`
+- `~/.arduino15/packages/adafruit/hardware/nrf52/1.1.0/boards.txt`
+- `~/.arduino15/packages/adafruit/hardware/nrf52/1.1.0/cores/nRF5/Udp.h`
+- `~/.arduino15/packages/adafruit/hardware/nrf52/1.1.0/cores/nRF5/Print.h`
+- `~/.arduino15/packages/adafruit/hardware/nrf52/1.1.0/cores/nRF5/Print.cpp`
+- `~/.arduino15/packages/adafruit/hardware/nrf52/1.1.0/variants/NINA_B302_ublox/variant.h`
+- `~/.arduino15/packages/adafruit/hardware/nrf52/1.1.0/variants/NINA_B302_ublox/variant.cpp`
+- `~/.arduino15/packages/adafruit/hardware/nrf52/1.1.0/variants/NINA_B112_ublox/variant.h`
+- `~/.arduino15/packages/adafruit/hardware/nrf52/1.1.0/variants/NINA_B112_ublox/variant.cpp`
+- **`~/.arduino15/packages/adafruit/hardware/nrf52/1.1.0/cores/nRF5/Udp.h`**
 
 Whenever a new version is installed, remember to copy these files into the new version directory. For example, new version is x.yy.z
 These files must be copied into the directory:
 
 - `~/.arduino15/packages/adafruit/hardware/nrf52/x.yy.z/platform.txt`
 - `~/.arduino15/packages/adafruit/hardware/nrf52/x.yy.z/boards.txt`
+- `~/.arduino15/packages/adafruit/hardware/nrf52/x.yy.z/cores/nRF5/Udp.h`
+- `~/.arduino15/packages/adafruit/hardware/nrf52/x.yy.z/cores/nRF5/Print.h`
+- `~/.arduino15/packages/adafruit/hardware/nrf52/x.yy.z/cores/nRF5/Print.cpp`
 - `~/.arduino15/packages/adafruit/hardware/nrf52/x.yy.z/variants/NINA_B302_ublox/variant.h`
 - `~/.arduino15/packages/adafruit/hardware/nrf52/x.yy.z/variants/NINA_B302_ublox/variant.cpp`
 - `~/.arduino15/packages/adafruit/hardware/nrf52/x.yy.z/variants/NINA_B112_ublox/variant.h`
@@ -450,14 +367,14 @@ These files must be copied into the directory:
 
 #### 2. For Teensy boards
  
- **To be able to compile and run on Teensy boards**, you have to copy the files in [**Packages_Patches for Teensy directory**](Packages_Patches/hardware/teensy/avr) into Teensy hardware directory (./arduino-1.8.13/hardware/teensy/avr/boards.txt). 
+ **To be able to compile and run on Teensy boards**, you have to copy the files in [**Packages_Patches for Teensy directory**](Packages_Patches/hardware/teensy/avr) into Teensy hardware directory (./arduino-1.8.15/hardware/teensy/avr/boards.txt). 
 
-Supposing the Arduino version is 1.8.13. These files must be copied into the directory:
+Supposing the Arduino version is 1.8.15. These files must be copied into the directory:
 
-- `./arduino-1.8.13/hardware/teensy/avr/boards.txt`
-- `./arduino-1.8.13/hardware/teensy/avr/cores/teensy/Stream.h`
-- `./arduino-1.8.13/hardware/teensy/avr/cores/teensy3/Stream.h`
-- `./arduino-1.8.13/hardware/teensy/avr/cores/teensy4/Stream.h`
+- `./arduino-1.8.15/hardware/teensy/avr/boards.txt`
+- `./arduino-1.8.15/hardware/teensy/avr/cores/teensy/Stream.h`
+- `./arduino-1.8.15/hardware/teensy/avr/cores/teensy3/Stream.h`
+- `./arduino-1.8.15/hardware/teensy/avr/cores/teensy4/Stream.h`
 
 Whenever a new version is installed, remember to copy this file into the new version directory. For example, new version is x.yy.zz
 These files must be copied into the directory:
@@ -482,7 +399,7 @@ This file must be copied into the directory:
 
 #### 4. For Arduino SAMD boards
  
- ***To be able to compile without error and automatically detect and display BOARD_NAME on Arduino SAMD (Nano-33-IoT, etc) boards***, you have to copy the whole [Arduino SAMD cores 1.8.11](Packages_Patches/arduino/hardware/samd/1.8.11) directory into Arduino SAMD directory (~/.arduino15/packages/arduino/hardware/samd/1.8.11).
+ ***To be able to compile, run and automatically detect and display BOARD_NAME on Arduino SAMD (Nano-33-IoT, etc) boards***, you have to copy the whole [Arduino SAMD Packages_Patches](Packages_Patches/arduino/hardware/samd/1.8.11) directory into Arduino SAMD directory (~/.arduino15/packages/arduino/hardware/samd/1.8.11).
  
 #### For core version v1.8.10+
 
@@ -521,29 +438,39 @@ Whenever the above-mentioned compiler error issue is fixed with the new Arduino 
 
 #### 5. For Adafruit SAMD boards
  
- ***To be able to automatically detect and display BOARD_NAME on Adafruit SAMD (Itsy-Bitsy M4, etc) boards***, you have to copy the file [Adafruit SAMD platform.txt](Packages_Patches/adafruit/hardware/samd/1.7.1) into Adafruit samd directory (~/.arduino15/packages/adafruit/hardware/samd/1.7.1). 
+ ***To be able to compile, run and automatically detect and display BOARD_NAME on Adafruit SAMD (Itsy-Bitsy M4, etc) boards***, you have to copy the whole [Adafruit SAMD Packages_Patches](Packages_Patches/adafruit/hardware/samd/1.7.5) directory into Adafruit samd directory (~/.arduino15/packages/adafruit/hardware/samd/1.7.5). 
 
-Supposing the Adafruit SAMD core version is 1.7.1. This file must be copied into the directory:
+Supposing the Adafruit SAMD core version is 1.7.5. This file must be copied into the directory:
 
-- `~/.arduino15/packages/adafruit/hardware/samd/1.7.1/platform.txt`
+- `~/.arduino15/packages/adafruit/hardware/samd/1.7.5/platform.txt`
+- `~/.arduino15/packages/adafruit/hardware/samd/1.7.5/cores/arduino/Print.h`
+- `~/.arduino15/packages/adafruit/hardware/samd/1.7.5/cores/arduino/Print.cpp`
 
 Whenever a new version is installed, remember to copy this file into the new version directory. For example, new version is x.yy.zz
 This file must be copied into the directory:
 
 - `~/.arduino15/packages/adafruit/hardware/samd/x.yy.zz/platform.txt`
+- `~/.arduino15/packages/adafruit/hardware/samd/x.yy.zz/cores/arduino/Print.h`
+- `~/.arduino15/packages/adafruit/hardware/samd/x.yy.zz/cores/arduino/Print.cpp`
 
 #### 6. For Seeeduino SAMD boards
  
- ***To be able to automatically detect and display BOARD_NAME on Seeeduino SAMD (XIAO M0, Wio Terminal, etc) boards***, you have to copy the file [Seeeduino SAMD platform.txt](Packages_Patches/Seeeduino/hardware/samd/1.8.1) into Adafruit samd directory (~/.arduino15/packages/Seeeduino/hardware/samd/1.8.1). 
+ ***To be able to compile, run and automatically detect and display BOARD_NAME on Seeeduino SAMD (XIAO M0, Wio Terminal, etc) boards***, you have to copy the whole [Seeeduino SAMD Packages_Patches](Packages_Patches/Seeeduino/hardware/samd/1.8.2) directory into Seeeduino samd directory (~/.arduino15/packages/Seeeduino/hardware/samd/1.8.2). 
 
-Supposing the Seeeduino SAMD core version is 1.8.1. This file must be copied into the directory:
+Supposing the Seeeduino SAMD core version is 1.8.2. This file must be copied into the directory:
 
-- `~/.arduino15/packages/Seeeduino/hardware/samd/1.8.1/platform.txt`
+- `~/.arduino15/packages/Seeeduino/hardware/samd/1.8.2/platform.txt`
+- `~/.arduino15/packages/Seeeduino/hardware/samd/1.8.2/cores/arduino/Arduino.h`
+- `~/.arduino15/packages/Seeeduino/hardware/samd/1.8.2/cores/arduino/Print.h`
+- `~/.arduino15/packages/Seeeduino/hardware/samd/1.8.2/cores/arduino/Print.cpp`
 
 Whenever a new version is installed, remember to copy this file into the new version directory. For example, new version is x.yy.zz
 This file must be copied into the directory:
 
 - `~/.arduino15/packages/Seeeduino/hardware/samd/x.yy.zz/platform.txt`
+- `~/.arduino15/packages/Seeeduino/hardware/samd/x.yy.zz/cores/arduino/Arduino.h`
+- `~/.arduino15/packages/Seeeduino/hardware/samd/x.yy.zz/cores/arduino/Print.h`
+- `~/.arduino15/packages/Seeeduino/hardware/samd/x.yy.zz/cores/arduino/Print.cpp`
 
 #### 7. For STM32 boards
 
@@ -555,12 +482,12 @@ To use LAN8720 on some STM32 boards
 - **Discovery (DISCO_F746NG)**
 - **STM32F4 boards (BLACK_F407VE, BLACK_F407VG, BLACK_F407ZE, BLACK_F407ZG, BLACK_F407VE_Mini, DIYMORE_F407VGT, FK407M1)**
 
-you have to copy the files [stm32f4xx_hal_conf_default.h](Packages_Patches/STM32/hardware/stm32/1.9.0/system/STM32F4xx) and [stm32f7xx_hal_conf_default.h](Packages_Patches/STM32/hardware/stm32/1.9.0/system/STM32F7xx) into STM32 stm32 directory (~/.arduino15/packages/STM32/hardware/stm32/1.9.0/system) to overwrite the old files.
+you have to copy the files [stm32f4xx_hal_conf_default.h](Packages_Patches/STM32/hardware/stm32/2.1.0/system/STM32F4xx) and [stm32f7xx_hal_conf_default.h](Packages_Patches/STM32/hardware/stm32/2.1.0/system/STM32F7xx) into STM32 stm32 directory (~/.arduino15/packages/STM32/hardware/stm32/2.1.0/system) to overwrite the old files.
 
-Supposing the STM32 stm32 core version is 1.9.0. These files must be copied into the directory:
+Supposing the STM32 stm32 core version is 2.1.0. These files must be copied into the directory:
 
-- `~/.arduino15/packages/STM32/hardware/stm32/1.9.0/system/STM32F4xx/stm32f4xx_hal_conf_default.h` for STM32F4.
-- `~/.arduino15/packages/STM32/hardware/stm32/1.9.0/system/STM32F7xx/stm32f7xx_hal_conf_default.h` for Nucleo-144 STM32F7.
+- `~/.arduino15/packages/STM32/hardware/stm32/2.1.0/system/STM32F4xx/stm32f4xx_hal_conf_default.h` for STM32F4.
+- `~/.arduino15/packages/STM32/hardware/stm32/2.1.0/system/STM32F7xx/stm32f7xx_hal_conf_default.h` for Nucleo-144 STM32F7.
 
 Whenever a new version is installed, remember to copy this file into the new version directory. For example, new version is x.yy.zz,
 theses files must be copied into the corresponding directory:
@@ -571,18 +498,18 @@ theses files must be copied into the corresponding directory:
 
 #### 7.2 For STM32 boards to use Serial1
 
-**To use Serial1 on some STM32 boards without Serial1 definition (Nucleo-144 NUCLEO_F767ZI, Nucleo-64 NUCLEO_L053R8, etc.) boards**, you have to copy the files [STM32 variant.h](Packages_Patches/STM32/hardware/stm32/1.9.0) into STM32 stm32 directory (~/.arduino15/packages/STM32/hardware/stm32/1.9.0). You have to modify the files corresponding to your boards, this is just an illustration how to do.
+**To use Serial1 on some STM32 boards without Serial1 definition (Nucleo-144 NUCLEO_F767ZI, Nucleo-64 NUCLEO_L053R8, etc.) boards**, you have to copy the files [STM32 variant.h](Packages_Patches/STM32/hardware/stm32/2.1.0) into STM32 stm32 directory (~/.arduino15/packages/STM32/hardware/stm32/2.1.0). You have to modify the files corresponding to your boards, this is just an illustration how to do.
 
-Supposing the STM32 stm32 core version is 1.9.0. These files must be copied into the directory:
+Supposing the STM32 stm32 core version is 2.1.0. These files must be copied into the directory:
 
-- `~/.arduino15/packages/STM32/hardware/stm32/1.9.0/variants/NUCLEO_F767ZI/variant.h` for Nucleo-144 NUCLEO_F767ZI.
-- `~/.arduino15/packages/STM32/hardware/stm32/1.9.0/variants/NUCLEO_L053R8/variant.h` for Nucleo-64 NUCLEO_L053R8.
+- `~/.arduino15/packages/STM32/hardware/stm32/2.1.0/variants/STM32F7xx/F765Z(G-I)T_F767Z(G-I)T_F777ZIT/NUCLEO_F767ZI/variant.h` for Nucleo-144 NUCLEO_F767ZI.
+- `~/.arduino15/packages/STM32/hardware/stm32/2.1.0/variants/STM32L0xx/L052R(6-8)T_L053R(6-8)T_L063R8T/NUCLEO_L053R8/variant.h` for Nucleo-64 NUCLEO_L053R8.
 
 Whenever a new version is installed, remember to copy this file into the new version directory. For example, new version is x.yy.zz,
 theses files must be copied into the corresponding directory:
 
-- `~/.arduino15/packages/STM32/hardware/stm32/x.yy.zz/variants/NUCLEO_F767ZI/variant.h`
-- `~/.arduino15/packages/STM32/hardware/stm32/x.yy.zz/variants/NUCLEO_L053R8/variant.h`
+- `~/.arduino15/packages/STM32/hardware/stm32/x.yy.zz/variants/STM32F7xx/F765Z(G-I)T_F767Z(G-I)T_F777ZIT/NUCLEO_F767ZI/variant.h`
+- `~/.arduino15/packages/STM32/hardware/stm32/x.yy.zz/variants/STM32L0xx/L052R(6-8)T_L053R(6-8)T_L063R8T/NUCLEO_L053R8/variant.h`
 
 #### 8. For RP2040-based boards using [Earle Philhower arduino-pico core](https://github.com/earlephilhower/arduino-pico)
 
@@ -615,6 +542,38 @@ This file must be copied to replace:
 - `~/.arduino15/packages/rp2040/hardware/rp2040/x.yy.zz/cores/rp2040/Arduino.h`
 
 With core after v1.5.0, this step is not necessary anymore thanks to the PR [Add defs for compatibility #142](https://github.com/earlephilhower/arduino-pico/pull/142).
+
+
+#### 9. For Portenta_H7 boards using Arduino IDE in Linux
+
+  **To be able to upload firmware to Portenta_H7 using Arduino IDE in Linux (Ubuntu, etc.)**, you have to copy the file [portenta_post_install.sh](Packages_Patches/arduino/hardware/mbed_portenta/2.5.2/portenta_post_install.sh) into mbed_portenta directory (~/.arduino15/packages/arduino/hardware/mbed_portenta/2.5.2/portenta_post_install.sh). 
+  
+  Then run the following command using `sudo`
+  
+```
+$ cd ~/.arduino15/packages/arduino/hardware/mbed_portenta/2.5.2
+$ chmod 755 portenta_post_install.sh
+$ sudo ./portenta_post_install.sh
+```
+
+This will create the file `/etc/udev/rules.d/49-portenta_h7.rules` as follows:
+
+```
+# Portenta H7 bootloader mode UDEV rules
+
+SUBSYSTEMS=="usb", ATTRS{idVendor}=="2341", ATTRS{idProduct}=="035b", GROUP="plugdev", MODE="0666"
+```
+
+Supposing the ArduinoCore-mbed core version is 2.5.2. Now only one file must be copied into the directory:
+
+- `~/.arduino15/packages/arduino/hardware/mbed_portenta/2.5.2/portenta_post_install.sh`
+
+Whenever a new version is installed, remember to copy this files into the new version directory. For example, new version is x.yy.zz
+
+This file must be copied into the directory:
+
+- `~/.arduino15/packages/arduino/hardware/mbed_portenta/x.yy.zz/portenta_post_install.sh`
+
 
 ---
 ---
@@ -673,150 +632,25 @@ To add UDP Multicast support, necessary for the [**UPnP_Generic library**](https
 
 #### 7. For fixing ESP32 compile error
 
-To fix [`ESP32 compile error`](https://github.com/espressif/arduino-esp32), just copy the following file into the [`ESP32`](https://github.com/espressif/arduino-esp32) cores/esp32 directory (e.g. ./arduino-1.8.12/hardware/espressif/cores/esp32) to overwrite the old file:
+To fix [`ESP32 compile error`](https://github.com/espressif/arduino-esp32), just copy the following file into the [`ESP32`](https://github.com/espressif/arduino-esp32) cores/esp32 directory (e.g. ./arduino-1.8.13/hardware/espressif/cores/esp32) to overwrite the old file:
 - [Server.h](LibraryPatches/esp32/cores/esp32/Server.h)
 
-#### 8. For STM32 core F3 and F4 using UIPEthernet library
+#### 8. For fixing ESP8266 compile error
+
+To fix `ESP8266 compile error` such as
+
+```
+error: 'class EthernetClass' has no member named 'init'
+Ethernet.init (USE_THIS_SS_PIN);
+```
+
+just rename the following file in ./arduino-1.8.16/hardware/esp8266com/esp8266/libraries/Ethernet directory
+
+- From `Ethernet.h` to `Ethernet_ESP8266.h`
+
+#### 9. For STM32 core F3 and F4 using UIPEthernet library
 
 Check if you need to install the UIPEthernet patch [new STM32 core F3/F4 compatibility](https://github.com/UIPEthernet/UIPEthernet/commit/c6d6519a260166b722b9cee5dd1f0fb2682e6782) to avoid errors `#include HardwareSPI.h` on some STM32 boards (Nucleo-32 F303K8, etc.)
-
-
----
----
-
-## HOWTO Install esp32 core for ESP32-S2 (Saola, AI-Thinker ESP-12K) and ESP32-C3 boards into Arduino IDE
-
-
-These are instructions demonstrating the steps to install esp32-s2/c3 core on Ubuntu machines. For Windows or other OS'es, just follow the the similar principles and steps.
-
-* Windows 10, follows these steps in [Steps to install Arduino ESP32 support on Windows](https://github.com/espressif/arduino-esp32/blob/master/docs/arduino-ide/windows.md) 
-
-* Mac OS, follows these steps in [Installation instructions for Mac OS](https://github.com/espressif/arduino-esp32/blob/master/docs/arduino-ide/mac.md)
-
-* Fedora, follows these steps in [Installation instructions for Fedora](https://github.com/espressif/arduino-esp32/blob/master/docs/arduino-ide/fedora.md)
-
-* openSUSE, follows these steps in [Installation instructions for openSUSE](https://github.com/espressif/arduino-esp32/blob/master/docs/arduino-ide/opensuse.md)
-
-* You can also try to add [package_esp32_dev_index.json](https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_dev_index.json) into Arduino IDE `File - Preferences - Additional Boards Manager URLs` 
-
-
-```
-https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_dev_index.json
-```
-
-and have Board Manager auto-install the **development** esp32 core. For example : esp32 core `v2.0.0-alpha1`
-
-
----
-
-If you're already successful in testing the core, after installing by using the above procedures, you don't need to follows the hereafter manual steps.
-
----
-
-Assuming you already installed Arduino IDE ESP32 core and the installed directory is
-
-`/home/your_account/.arduino15/packages/esp32`
-
-
-### 1. Save the original esp32 core
-
-First, copy the whole original esp32 core to another safe place. Then delete all the sub-directories of
-
-`/home/your_account/.arduino15/packages/esp32/hardware/esp32/1.0.4`
-
----
-
-
-### 2. Install esp32 core v1.0.6
-
-#### 2.1 Install esp32 core
-
-Just use Arduino IDE Board Manager to install [ESP32 Arduino Release 1.0.6 based on ESP-IDF v3.3.5](https://github.com/espressif/arduino-esp32/releases/tag/1.0.6). This official v1.06 core doesn't have esp32-s2/s3 support. You have to download and use the latest master branch.
-
-
-#### 2.2 Download latest zip with esp32-s2 support
-
-As of **April 16th 2021**, the **esp32-s2/c3** board support has been included in master branch of esp32 core. Download [**esp32 core, master branch**](https://github.com/espressif/arduino-esp32) in the zip format.
-
-#### 2.3 Unzip
-
-<p align="center">
-    <img src="https://github.com/khoih-prog/TimerInterrupt_Generic/blob/main/pics/esp32_s2_Core_Unzipped.png">
-</p>
-
-#### 2.4 Update esp32 core directories
-
-Copy all subdirectories of esp32 core into `/home/your_account/.arduino15/packages/esp32/hardware/esp32/1.0.6`
-
-
----
-
-### 3 Download tools for ESP32-S2
-
-
-#### 3.1 Download Toolchain for Xtensa (ESP32-S2) based on GCC
-
-Download [**esp32-s2 Toolchain**](https://docs.espressif.com/projects/esp-idf/en/latest/esp32s2/api-guides/tools/idf-tools.html#xtensa-esp32s2-elf) corresponding to your environment (linux-amd64, win64, etc.).
-
-For example `xtensa-esp32s2-elf-gcc8_4_0-esp-2020r3-linux-amd64.tar.gz`, then un-archive.
-
-
-<p align="center">
-    <img src="https://github.com/khoih-prog/TimerInterrupt_Generic/blob/main/pics/esp32_s2_Toolchain.png">
-</p>
-
-#### 3.2 Download esptool
-
-
-Download [esptool](https://github.com/espressif/esptool/releases) int the `zip` format:
-
-`esptool-3.0.zip`
-
-#### 3.3 Unzip
-
-<p align="center">
-    <img src="https://github.com/khoih-prog/TimerInterrupt_Generic/blob/main/pics/esp32_s2_esptool.png">
-</p>
-
----
-
-### 4. Update tools
-
-#### 4.1 Update Toolchain
-
-Copy whole `xtensa-esp32s2-elf` directory into `/home/your_account/.arduino15/packages/esp32/hardware/esp32/1.0.6/tools`
-
-
-#### 4.2 Update esptool
-
-Rename `esptool-3.0` directory to `esptool`
-
-
-Copy whole `esptool` directory into `/home/your_account/.arduino15/packages/esp32/hardware/esp32/1.0.6/tools`
-
-
-<p align="center">
-    <img src="https://github.com/khoih-prog/TimerInterrupt_Generic/blob/main/pics/esp32_s2_tools.png">
-</p>
-
-
-### 5 Download tools for ESP32-C3
-
-Download [**esp32-c3 Toolchain**](https://docs.espressif.com/projects/esp-idf/en/latest/esp32s2/api-guides/tools/idf-tools.html#riscv32-esp-elf) corresponding to your environment (linux-amd64, win64, etc.).
-
-For example`riscv32-esp-elf-gcc8_4_0-crosstool-ng-1.24.0-123-g64eb9ff-linux-amd64.tar.gz`, then un-archive.
-
-Then using the similar steps as in
-
-* [3. Download tools for ESP32-S2](#3-download-tools-for-esp32-s2) 
-  * [3.1 Download Toolchain for Xtensa (ESP32-S2) based on GCC](#31-download-toolchain-for-xtensa-esp32-s2-based-on-gcc)
-  * [3.2 Download esptool](#32-download-esptool)
-  * [3.3 Unzip](#33-unzip)
-* [4. Update tools](#4-update-tools)
-  * [4.1 Update Toolchain](#41-update-toolchain)
-  * [4.2 Update esptool](#42-update-esptool)
-
-then copy whole `riscv32-esp-elf` directory into `/home/your_account/.arduino15/packages/esp32/hardware/esp32/1.0.6/tools`
 
 
 ---
@@ -1708,11 +1542,16 @@ Before using any Timer, you have to make sure the Timer has not been used by any
 #### 1.1 Init Hardware Timer
 
 ```
-// Depending on the board, you can select NRF52 Hardware Timer from NRF_TIMER_1-NRF_TIMER_4 (1 to 4)
-// If you select the already-used NRF_TIMER_0, it'll be auto modified to use NRF_TIMER_1
+// For core mbed core 1.3.2-
+// Depending on the board, you can select NRF52 Hardware Timer from NRF_TIMER_1,NRF_TIMER_3,NRF_TIMER_4 (1,3 and 4)
+// If you select the already-used NRF_TIMER_0 or NRF_TIMER_2, it'll be auto modified to use NRF_TIMER_1
 
-// Init NRF52 timer NRF_TIMER1
-NRF52_MBED_Timer ITimer(NRF_TIMER_1);
+// For core mbed core 2.0.0-
+// Depending on the board, you can select NRF52 Hardware Timer from NRF_TIMER_3,NRF_TIMER_4 (3 and 4)
+// If you select the already-used NRF_TIMER_0, NRF_TIMER_1 or NRF_TIMER_2, it'll be auto modified to use NRF_TIMER_3
+
+// Init NRF52 timer NRF_TIMER4
+NRF52_MBED_Timer ITimer0(NRF_TIMER_4);
 ```
 
 #### 1.2 Set Hardware Timer Interval and attach Timer Interrupt Handler function
@@ -1962,33 +1801,24 @@ void setup()
 
 ### 1. ESP32
 
- 1. [Argument_None](examples/ESP32/Argument_None)
- 2. [ISR_RPM_Measure](examples/ESP32/ISR_RPM_Measure)
- 3. [ISR_Switch](examples/ESP32/ISR_Switch) 
- 4. [ISR_Timer_4_Switches](examples/ESP32/ISR_Timer_4_Switches) 
- 5. [ISR_Timer_Complex](examples/ESP32/ISR_Timer_Complex)
- 6. [ISR_Timer_Switch](examples/ESP32/ISR_Timer_Switch)
- 7. [ISR_Timer_Switches](examples/ESP32/ISR_Timer_Switches) 
- 8. [RPM_Measure](examples/ESP32/RPM_Measure)
- 9. [SwitchDebounce](examples/ESP32/SwitchDebounce)
-10. [TimerInterruptTest](examples/ESP32/TimerInterruptTest)
-11. [Change_Interval](examples/ESP32/Change_Interval)
-12. [**ISR_16_Timers_Array**](examples/ESP32/ISR_16_Timers_Array)
-13. [**ISR_16_Timers_Array_Complex**](examples/ESP32/ISR_16_Timers_Array_Complex)
+ 1. [Argument_None](examples/Argument_None)
+ 2. [RPM_Measure](examples/RPM_Measure)
+ 3. [SwitchDebounce](examples/SwitchDebounce)
+ 4. [TimerInterruptTest](examples/TimerInterruptTest)
+ 5. [**Change_Interval**](examples/Change_Interval).
+ 6. [**ISR_16_Timers_Array**](examples/ISR_16_Timers_Array)
+ 7. [**ISR_16_Timers_Array_Complex**](examples/ISR_16_Timers_Array_Complex).
 
 ### 2. ESP8266
 
- 1. [Argument_None](examples/ESP8266/Argument_None)
- 2. [ISR_RPM_Measure](examples/ESP8266/ISR_RPM_Measure)
- 3. [ISR_Switch](examples/ESP8266/ISR_Switch) 
- 4. [ISR_Timer_4_Switches](examples/ESP8266/ISR_Timer_4_Switches) 
- 5. [ISR_Timer_Complex](examples/ESP8266/ISR_Timer_Complex)
- 6. [ISR_Timer_Switch](examples/ESP8266/ISR_Timer_Switch)
- 7. [ISR_Timer_Switches](examples/ESP8266/ISR_Timer_Switches) 
- 8. [RPM_Measure](examples/ESP8266/RPM_Measure)
- 9. [SwitchDebounce](examples/ESP8266/SwitchDebounce)
-10. [TimerInterruptTest](examples/ESP8266/TimerInterruptTest)
-11. [**Change_Interval**](examples/ESP8266/Change_Interval).
+ 1. [Argument_None](examples/Argument_None)
+ 2. [ISR_RPM_Measure](examples/ISR_RPM_Measure)
+ 3. [RPM_Measure](examples/RPM_Measure)
+ 4. [SwitchDebounce](examples/SwitchDebounce)
+ 5. [TimerInterruptTest](examples/TimerInterruptTest)
+ 6. [Change_Interval](examples/Change_Interval).
+ 7. [**ISR_16_Timers_Array**](examples/ISR_16_Timers_Array) **New**
+ 8. [**ISR_16_Timers_Array_Complex**](examples/ISR_16_Timers_Array_Complex) **New**
 
 
 ### 3. NRF52
@@ -2039,13 +1869,12 @@ void setup()
  1. [Argument_None](examples/STM32/Argument_None)
  2. [ISR_16_Timers_Array](examples/STM32/ISR_16_Timers_Array)
  3. [ISR_RPM_Measure](examples/STM32/ISR_RPM_Measure)
- 4. [ISR_Timer_Complex](examples/STM32/ISR_Timer_Complex)
- 5. [RPM_Measure](examples/STM32/RPM_Measure)
- 6. [SwitchDebounce](examples/STM32/SwitchDebounce)
- 7. [TimerInterruptTest](examples/STM32/TimerInterruptTest)
- 8. [TimerInterruptLEDDemo](examples/STM32/TimerInterruptLEDDemo)
- 9. [**ISR_16_Timers_Array_Complex**](examples/STM32/ISR_16_Timers_Array_Complex).
-10. [**Change_Interval**](examples/STM32/Change_Interval).
+ 4. [RPM_Measure](examples/STM32/RPM_Measure)
+ 5. [SwitchDebounce](examples/STM32/SwitchDebounce)
+ 6. [TimerInterruptTest](examples/STM32/TimerInterruptTest)
+ 7. [TimerInterruptLEDDemo](examples/STM32/TimerInterruptLEDDemo)
+ 8. [**ISR_16_Timers_Array_Complex**](examples/STM32/ISR_16_Timers_Array_Complex).
+ 9. [**Change_Interval**](examples/STM32/Change_Interval).
  
 ### 7. Teensy
 
@@ -2062,22 +1891,19 @@ void setup()
 
 ### 8. Arduino AVR
 
- 1. [Argument_Complex](examples/AVR/Argument_Complex)
- 2. [Argument_None](examples/AVR/Argument_None)
- 3. [Argument_Simple](examples/AVR/Argument_Simple) 
- 4. [ISR_RPM_Measure](examples/AVR/ISR_RPM_Measure) 
- 5. [ISR_Switch](examples/AVR/ISR_Switch)
- 6. [ISR_Timer_Complex](examples/AVR/ISR_Timer_Complex)
- 7. [ISR_Timer_Switch](examples/AVR/ISR_Timer_Switch)
- 8. [ISR_Timer_Switches](examples/AVR/ISR_Timer_Switches) 
- 9. [RPM_Measure](examples/AVR/RPM_Measure)
-10. [SwitchDebounce](examples/AVR/SwitchDebounce)
-11. [TimerDuration](examples/AVR/TimerDuration)
-12. [TimerInterruptTest](examples/AVR/TimerInterruptTest)
-13. [**ISR_16_Timers_Array_Complex**](examples/AVR/ISR_16_Timers_Array_Complex). New
-14. [**ISR_Timers_Array_Simple**](examples/AVR/TimerInterruptTest).
-15. [**Change_Interval**](examples/AVR/Change_Interval).
-16. [**FakeAnalogWrite**](examples/AVR/FakeAnalogWrite).
+ 1. [Argument_Complex](examples/Argument_Complex)
+ 2. [Argument_None](examples/Argument_None)
+ 3. [Argument_Simple](examples/Argument_Simple)
+ 4. [Change_Interval](examples/Change_Interval)
+ 5. [FakeAnalogWrite](examples/FakeAnalogWrite)
+ 6. [ISR_16_Timers_Array_Complex](examples/ISR_16_Timers_Array_Complex)
+ 7. [ISR_RPM_Measure](examples/ISR_RPM_Measure)
+ 8. [ISR_Timers_Array_Simple](examples/ISR_Timers_Array_Simple)
+ 9. [RPM_Measure](examples/RPM_Measure)
+10. [SwitchDebounce](examples/SwitchDebounce)
+11. [TimerDuration](examples/TimerDuration)
+12. [TimerInterruptTest](examples/TimerInterruptTest)
+13. [**Change_Interval_HF**](examples/Change_Interval_HF). New.
 
 ### 9. Nano-33-BLE
 
@@ -2092,40 +1918,21 @@ void setup()
 
 ### 10. Arduino megaAVR
 
- 1. [Argument_Complex](examples/MEGA_AVR/Argument_Complex)
- 2. [Argument_None](examples/MEGA_AVR/Argument_None)
- 3. [Argument_Simple](examples/MEGA_AVR/Argument_Simple) 
- 4. [ISR_RPM_Measure](examples/MEGA_AVR/ISR_RPM_Measure) 
- 5. [ISR_Switch](examples/MEGA_AVR/ISR_Switch)
- 6. [ISR_Timer_Complex](examples/MEGA_AVR/ISR_Timer_Complex)
- 7. [ISR_Timer_Switch](examples/MEGA_AVR/ISR_Timer_Switch)
- 8. [ISR_Timer_Switches](examples/MEGA_AVR/ISR_Timer_Switches) 
- 9. [RPM_Measure](examples/MEGA_AVR/RPM_Measure)
-10. [SwitchDebounce](examples/MEGA_AVR/SwitchDebounce)
-11. [TimerDuration](examples/MEGA_AVR/TimerDuration)
-12. [TimerInterruptTest](examples/MEGA_AVR/TimerInterruptTest)
-13. [**ISR_16_Timers_Array_Complex**](examples/MEGA_AVR/ISR_16_Timers_Array_Complex).
-14. [**ISR_Timers_Array_Simple**](examples/MEGA_AVR/TimerInterruptTest).
-15. [**Change_Interval**](examples/MEGA_AVR/Change_Interval).
-16. [**FakeAnalogWrite**](examples/MEGA_AVR/FakeAnalogWrite).
+ 1. [Argument_Complex](examples/Argument_Complex)
+ 2. [Argument_None](examples/Argument_None)
+ 3. [Argument_Simple](examples/Argument_Simple)
+ 4. [Change_Interval](examples/Change_Interval).
+ 5. [FakeAnalogWrite](examples/FakeAnalogWrite).
+ 6. [**ISR_16_Timers_Array_Complex**](examples/ISR_16_Timers_Array_Complex).
+ 7. [ISR_RPM_Measure](examples/ISR_RPM_Measure)
+ 8. [**Change_Interval_HF**](examples/Change_Interval_HF)
+ 9. [**ISR_Timers_Array_Simple**](examples/ISR_Timers_Array_Simple).
+10. [RPM_Measure](examples/RPM_Measure)
+11. [SwitchDebounce](examples/SwitchDebounce)
+12. [TimerDuration](examples/TimerDuration)
+13. [TimerInterruptTest](examples/TimerInterruptTest)
 
-### 11. ESP32-S2
-
- 1. [Argument_None](examples/ESP32_S2/Argument_None)
- 2. [ISR_RPM_Measure](examples/ESP32_S2/ISR_RPM_Measure)
- 3. [ISR_Switch](examples/ESP32_S2/ISR_Switch) 
- 4. [ISR_Timer_4_Switches](examples/ESP32_S2/ISR_Timer_4_Switches) 
- 5. [ISR_Timer_Complex](examples/ESP32_S2/ISR_Timer_Complex)
- 6. [ISR_Timer_Switch](examples/ESP32_S2/ISR_Timer_Switch)
- 7. [ISR_Timer_Switches](examples/ESP32_S2/ISR_Timer_Switches) 
- 8. [RPM_Measure](examples/ESP32_S2/RPM_Measure)
- 9. [SwitchDebounce](examples/ESP32_S2/SwitchDebounce)
-10. [TimerInterruptTest](examples/ESP32_S2/TimerInterruptTest)
-11. [Change_Interval](examples/ESP32_S2/Change_Interval)
-12. [**ISR_16_Timers_Array**](examples/ESP32_S2/ISR_16_Timers_Array)
-13. [**ISR_16_Timers_Array_Complex**](examples/ESP32_S2/ISR_16_Timers_Array_Complex)
-
-### 12. RP2040
+### 11. RP2040
 
  1. [Argument_Complex](examples/RP2040/Argument_Complex)
  2. [Argument_None](examples/RP2040/Argument_None)
@@ -2137,7 +1944,7 @@ void setup()
  8. [SwitchDebounce](examples/RP2040/RPM_Measure)
  9. [TimerInterruptTest](examples/RP2040/TimerInterruptTest)
 
-### 13. MBED RP2040
+### 12. MBED RP2040
 
  1. [Argument_Complex](examples/MBED_RP2040/Argument_Complex)
  2. [Argument_None](examples/MBED_RP2040/Argument_None)
@@ -2507,7 +2314,7 @@ While software timer, **programmed for 2s, is activated after 10.917s !!!**. The
 ```
 Starting ISR_Timer_Complex_Ethernet on SAM DUE
 SAMDUETimerInterrupt v1.2.0
-TimerInterrupt_Generic v1.7.0
+TimerInterrupt_Generic v1.8.0
 Using Timer(0) = TC0, channel = 0, IRQ = TC0_IRQn
 Timer(0), us = 50000.00
 ITimer attached to Timer(0)
@@ -2599,8 +2406,8 @@ While software timer, **programmed for 2s, is activated after 4.867s !!!**. Then
 
 ```
 Starting ISR_Timer_Complex_Ethernet on NRF52840_FEATHER
-NRF52TimerInterrupt v1.2.0
-TimerInterrupt_Generic v1.7.0
+NRF52TimerInterrupt v1.3.0
+TimerInterrupt_Generic v1.8.0
 NRF52TimerInterrupt: F_CPU (MHz) = 64, Timer = NRF_TIMER2
 NRF52TimerInterrupt: _fre = 1000000.00, _count = 50000
 Starting  ITimer OK, millis() = 1419
@@ -2683,133 +2490,158 @@ blynkDoingSomething2s: Delta programmed ms = 2000, actual = 3000
 
 ---
 
-### 3. ISR_16_Timers_Array on Arduino SAMD21 SAMD_NANO_33_IOT
+### 3. ISR_16_Timers_Array_Complex on Arduino SAMD21 SAMD_NANO_33_IOT
 
-The following is the sample terminal output when running example [ISR_16_Timers_Array](examples/SAMD/ISR_16_Timers_Array) on **Arduino SAMD21 SAMD_NANO_33_IOT** to demonstrate the accuracy of ISR Hardware Timer, **especially when system is very busy or blocked**. The 16 independent ISR timers are **programmed to be activated repetitively after certain intervals, is activated exactly after that programmed interval !!!**
-
-While software timer, **programmed for 2s, is activated after 10.000s in loop()!!!**.
+The following is the sample terminal output when running example [ISR_16_Timers_Array_Complex](examples/SAMD/ISR_16_Timers_Array_Complex) on **Arduino SAMD21 SAMD_NANO_33_IOT** to demonstrate the accuracy of ISR Hardware Timer, **especially when system is very busy or blocked**. The 16 independent ISR timers are **programmed to be activated repetitively after certain intervals, is activated exactly after that programmed interval !!!**
 
 In this example, 16 independent ISR Timers are used, yet utilized just one Hardware Timer. The Timer Intervals and Function Pointers are stored in arrays to facilitate the code modification.
 
 
 ```
-Starting ISR_16_Timers_Array on SAMD_NANO_33_IOT
-SAMDTimerInterrupt v1.4.0
-TimerInterrupt_Generic v1.7.0
+Starting ISR_16_Timers_Array_Complex on SAMD_NANO_33_IOT
+SAMDTimerInterrupt v1.5.0
+TimerInterrupt_Generic v1.8.0
 CPU Frequency = 48 MHz
-F_CPU (MHz) = 48, TIMER_HZ = 48
-TC_Timer::startTimer _Timer = 0x42002c00, TC3 = 0x42002c00
-Starting  ITimer OK, millis() = 1421
-1s: Delta ms = 1000, ms = 2421
-1s: Delta ms = 1000, ms = 3421
-2s: Delta ms = 2000, ms = 3421
-1s: Delta ms = 1000, ms = 4421
-3s: Delta ms = 3000, ms = 4421
-1s: Delta ms = 1000, ms = 5421
-2s: Delta ms = 2000, ms = 5421
-4s: Delta ms = 4000, ms = 5421
-1s: Delta ms = 1000, ms = 6421
-5s: Delta ms = 5000, ms = 6421
-1s: Delta ms = 1000, ms = 7421
-2s: Delta ms = 2000, ms = 7421
-3s: Delta ms = 3000, ms = 7421
-6s: Delta ms = 6000, ms = 7421
-1s: Delta ms = 1000, ms = 8421
-7s: Delta ms = 7000, ms = 8421
-1s: Delta ms = 1000, ms = 9421
-2s: Delta ms = 2000, ms = 9421
-4s: Delta ms = 4000, ms = 9421
-8s: Delta ms = 8000, ms = 9421
-1s: Delta ms = 1000, ms = 10421
-3s: Delta ms = 3000, ms = 10421
-9s: Delta ms = 9000, ms = 10421
-1s: Delta ms = 1000, ms = 11421
-2s: Delta ms = 2000, ms = 11421
-5s: Delta ms = 5000, ms = 11421
-10s: Delta ms = 10000, ms = 11421
-simpleTimerDoingSomething2s: Delta programmed ms = 2000, actual = 10000
-1s: Delta ms = 1000, ms = 12421
-11s: Delta ms = 11000, ms = 12421
-1s: Delta ms = 1000, ms = 13421
-2s: Delta ms = 2000, ms = 13421
-3s: Delta ms = 3000, ms = 13421
-4s: Delta ms = 4000, ms = 13421
-6s: Delta ms = 6000, ms = 13421
-12s: Delta ms = 12000, ms = 13421
-1s: Delta ms = 1000, ms = 14421
-13s: Delta ms = 13000, ms = 14421
-1s: Delta ms = 1000, ms = 15421
-2s: Delta ms = 2000, ms = 15421
-7s: Delta ms = 7000, ms = 15421
-14s: Delta ms = 14000, ms = 15421
-1s: Delta ms = 1000, ms = 16421
-3s: Delta ms = 3000, ms = 16421
-5s: Delta ms = 5000, ms = 16421
-15s: Delta ms = 15000, ms = 16421
-1s: Delta ms = 1000, ms = 17421
-2s: Delta ms = 2000, ms = 17421
-4s: Delta ms = 4000, ms = 17421
-8s: Delta ms = 8000, ms = 17421
-16s: Delta ms = 16000, ms = 17421
-1s: Delta ms = 1000, ms = 18421
-1s: Delta ms = 1000, ms = 19421
-2s: Delta ms = 2000, ms = 19421
-3s: Delta ms = 3000, ms = 19421
-6s: Delta ms = 6000, ms = 19421
-9s: Delta ms = 9000, ms = 19421
-1s: Delta ms = 1000, ms = 20421
-1s: Delta ms = 1000, ms = 21421
-2s: Delta ms = 2000, ms = 21421
-4s: Delta ms = 4000, ms = 21421
-5s: Delta ms = 5000, ms = 21421
-10s: Delta ms = 10000, ms = 21421
-simpleTimerDoingSomething2s: Delta programmed ms = 2000, actual = 10000
-1s: Delta ms = 1000, ms = 22421
-3s: Delta ms = 3000, ms = 22421
-7s: Delta ms = 7000, ms = 22421
-1s: Delta ms = 1000, ms = 23421
-2s: Delta ms = 2000, ms = 23421
-11s: Delta ms = 11000, ms = 23421
-1s: Delta ms = 1000, ms = 24421
-1s: Delta ms = 1000, ms = 25421
-2s: Delta ms = 2000, ms = 25421
-3s: Delta ms = 3000, ms = 25421
-4s: Delta ms = 4000, ms = 25421
-6s: Delta ms = 6000, ms = 25421
-8s: Delta ms = 8000, ms = 25421
-12s: Delta ms = 12000, ms = 25421
-1s: Delta ms = 1000, ms = 26421
-5s: Delta ms = 5000, ms = 26421
-1s: Delta ms = 1000, ms = 27421
-2s: Delta ms = 2000, ms = 27421
-13s: Delta ms = 13000, ms = 27421
-1s: Delta ms = 1000, ms = 28421
-3s: Delta ms = 3000, ms = 28421
-9s: Delta ms = 9000, ms = 28421
-1s: Delta ms = 1000, ms = 29421
-2s: Delta ms = 2000, ms = 29421
-4s: Delta ms = 4000, ms = 29421
-7s: Delta ms = 7000, ms = 29421
-14s: Delta ms = 14000, ms = 29421
-1s: Delta ms = 1000, ms = 30421
-1s: Delta ms = 1000, ms = 31421
-2s: Delta ms = 2000, ms = 31421
-3s: Delta ms = 3000, ms = 31421
-5s: Delta ms = 5000, ms = 31421
-6s: Delta ms = 6000, ms = 31421
-10s: Delta ms = 10000, ms = 31421
-15s: Delta ms = 15000, ms = 31421
-simpleTimerDoingSomething2s: Delta programmed ms = 2000, actual = 10000
-1s: Delta ms = 1000, ms = 32421
-1s: Delta ms = 1000, ms = 33421
-2s: Delta ms = 2000, ms = 33421
-4s: Delta ms = 4000, ms = 33421
-8s: Delta ms = 8000, ms = 33421
-16s: Delta ms = 16000, ms = 33421
-1s: Delta ms = 1000, ms = 34421
-3s: Delta ms = 3000, ms = 34421
-11s: Delta ms = 11000, ms = 34421
+Starting ITimer OK, millis() = 1180
+SimpleTimer : 2, ms : 11180, Dms : 10000
+Timer : 0, programmed : 5000, actual : 5000
+Timer : 1, programmed : 10000, actual : 10000
+Timer : 2, programmed : 15000, actual : 0
+Timer : 3, programmed : 20000, actual : 0
+Timer : 4, programmed : 25000, actual : 0
+Timer : 5, programmed : 30000, actual : 0
+Timer : 6, programmed : 35000, actual : 0
+Timer : 7, programmed : 40000, actual : 0
+Timer : 8, programmed : 45000, actual : 0
+Timer : 9, programmed : 50000, actual : 0
+Timer : 10, programmed : 55000, actual : 0
+Timer : 11, programmed : 60000, actual : 0
+Timer : 12, programmed : 65000, actual : 0
+Timer : 13, programmed : 70000, actual : 0
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+SimpleTimer : 2, ms : 21184, Dms : 10004
+Timer : 0, programmed : 5000, actual : 5000
+Timer : 1, programmed : 10000, actual : 10000
+Timer : 2, programmed : 15000, actual : 15000
+Timer : 3, programmed : 20000, actual : 20000
+Timer : 4, programmed : 25000, actual : 0
+Timer : 5, programmed : 30000, actual : 0
+Timer : 6, programmed : 35000, actual : 0
+Timer : 7, programmed : 40000, actual : 0
+Timer : 8, programmed : 45000, actual : 0
+Timer : 9, programmed : 50000, actual : 0
+Timer : 10, programmed : 55000, actual : 0
+Timer : 11, programmed : 60000, actual : 0
+Timer : 12, programmed : 65000, actual : 0
+Timer : 13, programmed : 70000, actual : 0
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+SimpleTimer : 2, ms : 31187, Dms : 10003
+Timer : 0, programmed : 5000, actual : 5000
+Timer : 1, programmed : 10000, actual : 10000
+Timer : 2, programmed : 15000, actual : 15000
+Timer : 3, programmed : 20000, actual : 20000
+Timer : 4, programmed : 25000, actual : 25000
+Timer : 5, programmed : 30000, actual : 30000
+Timer : 6, programmed : 35000, actual : 0
+Timer : 7, programmed : 40000, actual : 0
+Timer : 8, programmed : 45000, actual : 0
+Timer : 9, programmed : 50000, actual : 0
+Timer : 10, programmed : 55000, actual : 0
+Timer : 11, programmed : 60000, actual : 0
+Timer : 12, programmed : 65000, actual : 0
+Timer : 13, programmed : 70000, actual : 0
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+SimpleTimer : 2, ms : 41190, Dms : 10003
+Timer : 0, programmed : 5000, actual : 5000
+Timer : 1, programmed : 10000, actual : 10000
+Timer : 2, programmed : 15000, actual : 15000
+Timer : 3, programmed : 20000, actual : 20000
+Timer : 4, programmed : 25000, actual : 25000
+Timer : 5, programmed : 30000, actual : 30000
+Timer : 6, programmed : 35000, actual : 35000
+Timer : 7, programmed : 40000, actual : 40000
+Timer : 8, programmed : 45000, actual : 0
+Timer : 9, programmed : 50000, actual : 0
+Timer : 10, programmed : 55000, actual : 0
+Timer : 11, programmed : 60000, actual : 0
+Timer : 12, programmed : 65000, actual : 0
+Timer : 13, programmed : 70000, actual : 0
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+SimpleTimer : 2, ms : 51194, Dms : 10004
+Timer : 0, programmed : 5000, actual : 5000
+Timer : 1, programmed : 10000, actual : 10000
+Timer : 2, programmed : 15000, actual : 15000
+Timer : 3, programmed : 20000, actual : 20000
+Timer : 4, programmed : 25000, actual : 25000
+Timer : 5, programmed : 30000, actual : 30000
+Timer : 6, programmed : 35000, actual : 35000
+Timer : 7, programmed : 40000, actual : 40000
+Timer : 8, programmed : 45000, actual : 45000
+Timer : 9, programmed : 50000, actual : 50000
+Timer : 10, programmed : 55000, actual : 0
+Timer : 11, programmed : 60000, actual : 0
+Timer : 12, programmed : 65000, actual : 0
+Timer : 13, programmed : 70000, actual : 0
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+SimpleTimer : 2, ms : 61197, Dms : 10003
+Timer : 0, programmed : 5000, actual : 5000
+Timer : 1, programmed : 10000, actual : 10000
+Timer : 2, programmed : 15000, actual : 15000
+Timer : 3, programmed : 20000, actual : 20000
+Timer : 4, programmed : 25000, actual : 25000
+Timer : 5, programmed : 30000, actual : 30000
+Timer : 6, programmed : 35000, actual : 35000
+Timer : 7, programmed : 40000, actual : 40000
+Timer : 8, programmed : 45000, actual : 45000
+Timer : 9, programmed : 50000, actual : 50000
+Timer : 10, programmed : 55000, actual : 55000
+Timer : 11, programmed : 60000, actual : 60000
+Timer : 12, programmed : 65000, actual : 0
+Timer : 13, programmed : 70000, actual : 0
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+SimpleTimer : 2, ms : 71200, Dms : 10003
+Timer : 0, programmed : 5000, actual : 5000
+Timer : 1, programmed : 10000, actual : 10000
+Timer : 2, programmed : 15000, actual : 15000
+Timer : 3, programmed : 20000, actual : 20000
+Timer : 4, programmed : 25000, actual : 25000
+Timer : 5, programmed : 30000, actual : 30000
+Timer : 6, programmed : 35000, actual : 35000
+Timer : 7, programmed : 40000, actual : 40000
+Timer : 8, programmed : 45000, actual : 45000
+Timer : 9, programmed : 50000, actual : 50000
+Timer : 10, programmed : 55000, actual : 55000
+Timer : 11, programmed : 60000, actual : 60000
+Timer : 12, programmed : 65000, actual : 65000
+Timer : 13, programmed : 70000, actual : 70000
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+SimpleTimer : 2, ms : 81203, Dms : 10003
+Timer : 0, programmed : 5000, actual : 5000
+Timer : 1, programmed : 10000, actual : 10000
+Timer : 2, programmed : 15000, actual : 15000
+Timer : 3, programmed : 20000, actual : 20000
+Timer : 4, programmed : 25000, actual : 25000
+Timer : 5, programmed : 30000, actual : 30000
+Timer : 6, programmed : 35000, actual : 35000
+Timer : 7, programmed : 40000, actual : 40000
+Timer : 8, programmed : 45000, actual : 45000
+Timer : 9, programmed : 50000, actual : 50000
+Timer : 10, programmed : 55000, actual : 55000
+Timer : 11, programmed : 60000, actual : 60000
+Timer : 12, programmed : 65000, actual : 65000
+Timer : 13, programmed : 70000, actual : 70000
+Timer : 14, programmed : 75000, actual : 75000
+Timer : 15, programmed : 80000, actual : 80000
+SimpleTimer : 2, ms : 91206, Dms : 10003
 ```
+
 
 ---
 
@@ -2820,7 +2652,7 @@ The following is the sample terminal output when running example [**TimerInterru
 ```
 Starting TimerInterruptTest on Teensy 4.0/4.1
 Teensy_TimerInterrupt v1.2.0
-TimerInterrupt_Generic v1.7.0
+TimerInterrupt_Generic v1.8.0
 CPU Frequency = 600 MHz
 TEENSY_TIMER_1, F_BUS_ACTUAL (MHz) = 150, request interval = 30000, actual interval (us) = 29999
 Prescale = 7, _timerCount = 17578
@@ -2857,185 +2689,456 @@ TeensyTimerInterrupt:stopTimer TEENSY_TIMER_1
 
 ---
 
-### 5. ISR_Timer_Complex on ESP32_DEV
+### 5. ISR_16_Timers_Array_Complex on ESP32_DEV
 
-The following is the sample terminal output when running example [ISR_Timer_Complex](examples/ESP32/ISR_Timer_Complex) on **ESP32_DEV** to demonstrate the accuracy of ISR Hardware Timer, **especially when system is very busy**.  The ISR timer is **programmed for 2s, is activated exactly after 2.000s !!!**
+The following is the sample terminal output when running example [ISR_16_Timers_Array_Complex](examples/ESP32/ISR_16_Timers_Array_Complex) on **ESP32_DEV** to demonstrate the accuracy of ISR Hardware Timer.
 
-While software timer, **programmed for 2s, is activated after 3.435s !!!**
 
 ```
-
-Starting Argument_None on ESP32_DEV
-ESP32TimerInterrupt v1.4.0
-TimerInterrupt_Generic v1.7.0
+Starting ISR_16_Timers_Array_Complex on ESP32_DEV
+ESP32_New_TimerInterrupt v1.0.1
+TimerInterrupt_Generic v1.8.0
 CPU Frequency = 240 MHz
-ESP32TimerInterrupt: _timerNo = 1, _fre = 1000000.00, _count = 0 - 50000
-Starting  ITimer OK, millis() = 2140
-[2341] 
-    ___  __          __
-   / _ )/ /_ _____  / /__
-  / _  / / // / _ \/  '_/
- /____/_/\_, /_//_/_/\_\
-        /___/ v0.6.1 on ESP32
-
-[2342] Protocol connect: timeout =9000
-[2346] BlynkArduinoClient.connect: Connecting to ****.duckdns.org:8080
-[2506] Ready (ping: 35ms).
-Blynk connected
-2s: D ms = 2000   <=== ISR Timer still very accurate while system busy
-blynkDoingSomething2s: Delta programmed ms = 2000, actual = 3435 <=== Software Timer not accurate when system busy
-2s: D ms = 2000   <=== ISR Timer still very accurate no matter system busy or not
-5s: D ms = 5000
-2s: D ms = 2000
-blynkDoingSomething2s: Delta programmed ms = 2000, actual = 3000
-2s: D ms = 2000
-blynkDoingSomething2s: Delta programmed ms = 2000, actual = 3000
-2s: D ms = 2000
-5s: D ms = 5000
-11s: D ms = 11000
-2s: D ms = 2000
-blynkDoingSomething2s: Delta programmed ms = 2000, actual = 3000
-2s: D ms = 2000
-5s: D ms = 5000
-blynkDoingSomething2s: Delta programmed ms = 2000, actual = 3002
-2s: D ms = 2000
-2s: D ms = 2000
-blynkDoingSomething2s: Delta programmed ms = 2000, actual = 3000
-2s: D ms = 2000
-5s: D ms = 5000
-blynkDoingSomething2s: Delta programmed ms = 2000, actual = 3000
-2s: D ms = 2000
-11s: D ms = 11000
-2s: D ms = 2000
-blynkDoingSomething2s: Delta programmed ms = 2000, actual = 3000
-5s: D ms = 5000
-2s: D ms = 2000
-blynkDoingSomething2s: Delta programmed ms = 2000, actual = 3002
-2s: D ms = 2000
-2s: D ms = 2000
-5s: D ms = 5000
-blynkDoingSomething2s: Delta programmed ms = 2000, actual = 3000
-2s: D ms = 2000
-11s: D ms = 11000
-blynkDoingSomething2s: Delta programmed ms = 2000, actual = 3000
-2s: D ms = 2000
-5s: D ms = 5000
-2s: D ms = 2000
-blynkDoingSomething2s: Delta programmed ms = 2000, actual = 3000
+Starting ITimer OK, millis() = 2045
+SimpleTimer : 2, ms : 12044, Dms : 9999
+Timer : 0, programmed : 5000, actual : 5000
+Timer : 1, programmed : 10000, actual : 0
+Timer : 2, programmed : 15000, actual : 0
+Timer : 3, programmed : 20000, actual : 0
+Timer : 4, programmed : 25000, actual : 0
+Timer : 5, programmed : 30000, actual : 0
+Timer : 6, programmed : 35000, actual : 0
+Timer : 7, programmed : 40000, actual : 0
+Timer : 8, programmed : 45000, actual : 0
+Timer : 9, programmed : 50000, actual : 0
+Timer : 10, programmed : 55000, actual : 0
+Timer : 11, programmed : 60000, actual : 0
+Timer : 12, programmed : 65000, actual : 0
+Timer : 13, programmed : 70000, actual : 0
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+SimpleTimer : 2, ms : 22097, Dms : 10053
+Timer : 0, programmed : 5000, actual : 5000
+Timer : 1, programmed : 10000, actual : 10000
+Timer : 2, programmed : 15000, actual : 15000
+Timer : 3, programmed : 20000, actual : 20000
+Timer : 4, programmed : 25000, actual : 0
+Timer : 5, programmed : 30000, actual : 0
+Timer : 6, programmed : 35000, actual : 0
+Timer : 7, programmed : 40000, actual : 0
+Timer : 8, programmed : 45000, actual : 0
+Timer : 9, programmed : 50000, actual : 0
+Timer : 10, programmed : 55000, actual : 0
+Timer : 11, programmed : 60000, actual : 0
+Timer : 12, programmed : 65000, actual : 0
+Timer : 13, programmed : 70000, actual : 0
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+SimpleTimer : 2, ms : 32160, Dms : 10063
+Timer : 0, programmed : 5000, actual : 5000
+Timer : 1, programmed : 10000, actual : 10000
+Timer : 2, programmed : 15000, actual : 15000
+Timer : 3, programmed : 20000, actual : 20000
+Timer : 4, programmed : 25000, actual : 25000
+Timer : 5, programmed : 30000, actual : 30000
+Timer : 6, programmed : 35000, actual : 0
+Timer : 7, programmed : 40000, actual : 0
+Timer : 8, programmed : 45000, actual : 0
+Timer : 9, programmed : 50000, actual : 0
+Timer : 10, programmed : 55000, actual : 0
+Timer : 11, programmed : 60000, actual : 0
+Timer : 12, programmed : 65000, actual : 0
+Timer : 13, programmed : 70000, actual : 0
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+SimpleTimer : 2, ms : 42223, Dms : 10063
+Timer : 0, programmed : 5000, actual : 5000
+Timer : 1, programmed : 10000, actual : 10000
+Timer : 2, programmed : 15000, actual : 15000
+Timer : 3, programmed : 20000, actual : 20000
+Timer : 4, programmed : 25000, actual : 25000
+Timer : 5, programmed : 30000, actual : 30000
+Timer : 6, programmed : 35000, actual : 35000
+Timer : 7, programmed : 40000, actual : 40000
+Timer : 8, programmed : 45000, actual : 0
+Timer : 9, programmed : 50000, actual : 0
+Timer : 10, programmed : 55000, actual : 0
+Timer : 11, programmed : 60000, actual : 0
+Timer : 12, programmed : 65000, actual : 0
+Timer : 13, programmed : 70000, actual : 0
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+SimpleTimer : 2, ms : 52286, Dms : 10063
+Timer : 0, programmed : 5000, actual : 5000
+Timer : 1, programmed : 10000, actual : 10000
+Timer : 2, programmed : 15000, actual : 15000
+Timer : 3, programmed : 20000, actual : 20000
+Timer : 4, programmed : 25000, actual : 25000
+Timer : 5, programmed : 30000, actual : 30000
+Timer : 6, programmed : 35000, actual : 35000
+Timer : 7, programmed : 40000, actual : 40000
+Timer : 8, programmed : 45000, actual : 45000
+Timer : 9, programmed : 50000, actual : 50000
+Timer : 10, programmed : 55000, actual : 0
+Timer : 11, programmed : 60000, actual : 0
+Timer : 12, programmed : 65000, actual : 0
+Timer : 13, programmed : 70000, actual : 0
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+SimpleTimer : 2, ms : 62349, Dms : 10063
+Timer : 0, programmed : 5000, actual : 5000
+Timer : 1, programmed : 10000, actual : 10000
+Timer : 2, programmed : 15000, actual : 15000
+Timer : 3, programmed : 20000, actual : 20000
+Timer : 4, programmed : 25000, actual : 25000
+Timer : 5, programmed : 30000, actual : 30000
+Timer : 6, programmed : 35000, actual : 35000
+Timer : 7, programmed : 40000, actual : 40000
+Timer : 8, programmed : 45000, actual : 45000
+Timer : 9, programmed : 50000, actual : 50000
+Timer : 10, programmed : 55000, actual : 55000
+Timer : 11, programmed : 60000, actual : 60000
+Timer : 12, programmed : 65000, actual : 0
+Timer : 13, programmed : 70000, actual : 0
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+SimpleTimer : 2, ms : 72412, Dms : 10063
+Timer : 0, programmed : 5000, actual : 5000
+Timer : 1, programmed : 10000, actual : 10000
+Timer : 2, programmed : 15000, actual : 15000
+Timer : 3, programmed : 20000, actual : 20000
+Timer : 4, programmed : 25000, actual : 25000
+Timer : 5, programmed : 30000, actual : 30000
+Timer : 6, programmed : 35000, actual : 35000
+Timer : 7, programmed : 40000, actual : 40000
+Timer : 8, programmed : 45000, actual : 45000
+Timer : 9, programmed : 50000, actual : 50000
+Timer : 10, programmed : 55000, actual : 55000
+Timer : 11, programmed : 60000, actual : 60000
+Timer : 12, programmed : 65000, actual : 65000
+Timer : 13, programmed : 70000, actual : 70000
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+SimpleTimer : 2, ms : 82475, Dms : 10063
+Timer : 0, programmed : 5000, actual : 5000
+Timer : 1, programmed : 10000, actual : 10000
+Timer : 2, programmed : 15000, actual : 15000
+Timer : 3, programmed : 20000, actual : 20000
+Timer : 4, programmed : 25000, actual : 25000
+Timer : 5, programmed : 30000, actual : 30000
+Timer : 6, programmed : 35000, actual : 35000
+Timer : 7, programmed : 40000, actual : 40000
+Timer : 8, programmed : 45000, actual : 45000
+Timer : 9, programmed : 50000, actual : 50000
+Timer : 10, programmed : 55000, actual : 55000
+Timer : 11, programmed : 60000, actual : 60000
+Timer : 12, programmed : 65000, actual : 65000
+Timer : 13, programmed : 70000, actual : 70000
+Timer : 14, programmed : 75000, actual : 75000
+Timer : 15, programmed : 80000, actual : 80000
+SimpleTimer : 2, ms : 92538, Dms : 10063
 ```
 
 ---
 
-### 6. ISR_Timer_Complex on ESP8266_NODEMCU
+### 6. ISR_16_Timers_Array_Complex on ESP8266_NODEMCU_ESP12E
 
-The following is the sample terminal output when running example [ISR_Timer_Complex](examples/ESP8266/ISR_Timer_Complex) on **ESP8266_NODEMCU** to demonstrate the accuracy of ISR Hardware Timer, **especially when system is very busy**.  The ISR timer is **programmed for 2s, is activated exactly after 2.000s !!!**
+The following is the sample terminal output when running example [ISR_16_Timers_Array_Complex](examples/ISR_16_Timers_Array_Complex) on **ESP8266_NODEMCU_ESP12E** to demonstrate of ISR Hardware Timer, especially when system is very busy or blocked. The 16 independent ISR timers are programmed to be activated repetitively after certain intervals, is activated exactly after that programmed interval !!!
 
-While software timer, **programmed for 2s, is activated after 4.258s !!!**
 
 ```
-Starting ISR_Timer_Complex on ESP8266_NODEMCU
-ESP8266TimerInterrupt v1.4.0
-TimerInterrupt_Generic v1.7.0
+Starting ISR_16_Timers_Array_Complex on ESP8266_NODEMCU_ESP12E
+ESP8266TimerInterrupt v1.4.1
+TimerInterrupt_Generic v1.8.0
 CPU Frequency = 160 MHz
-ESP8266TimerInterrupt: _fre = 312500.00, _count = 15625
-Starting  ITimer OK, millis() = 64
-doingSomething2s: Delta ms = 2000   // ISR_Timer, 2000ms interval, still working even if blocked by WiFi/Blynk connecting tasks
-doingSomething2s: Delta ms = 2000
-doingSomething5s: Delta ms = 5000
-Delta ms = 5000                     //ISR_Timer, 5000ms interval, blynking an LED
-doingSomething2s: Delta ms = 2000
-[6159] 
-    ___  __          __
-   / _ )/ /_ _____  / /__
-  / _  / / // / _ \/  '_/
- /____/_/\_, /_//_/_/\_\
-        /___/ v0.6.1 on NodeMCU
-
-[6161] Protocol connect: timeout =9000
-[6164] Connecting to ****.duckdns.org:8080
-[6255] Ready (ping: 5ms).
-Blynk connected
-doingSomething2s: Delta ms = 2000  <=== ISR Timer still very accurate while system busy
-blynkDoingSomething2s: Delta programmed ms = 2000, actual = 4258  //Software Timer, 2000ms interval, blocked by WiFi/Blynk connecting tasks
-doingSomething2s: Delta ms = 2000
-doingSomething5s: Delta ms = 5000
-doingSomething10s: Delta ms = 5000
-Delta ms = 5000
-doingSomething2s: Delta ms = 2000
-blynkDoingSomething2s: Delta programmed ms = 2000, actual = 3000  //Software Timer, 2000ms interval, blocked by delay() in loop() to demonstrate bad task.
-doingSomething2s: Delta ms = 2000
-doingSomething5s: Delta ms = 5000
-Delta ms = 5000
-blynkDoingSomething2s: Delta programmed ms = 2000, actual = 3001 <=== Software Timer not accurate when system busy
-doingSomething2s: Delta ms = 2000
-doingSomething2s: Delta ms = 2000
-blynkDoingSomething2s: Delta programmed ms = 2000, actual = 3000 <=== Software Timer not accurate when system busy
-doingSomething2s: Delta ms = 2000
-doingSomething5s: Delta ms = 5000
-doingSomething10s: Delta ms = 10000
+Starting ITimer OK, millis() = 177
+SimpleTimer : 2, ms : 10179, Dms : 10000
+Timer : 0, programmed : 5000, actual : 5008
+Timer : 1, programmed : 10000, actual : 0
+Timer : 2, programmed : 15000, actual : 0
+Timer : 3, programmed : 20000, actual : 0
+Timer : 4, programmed : 25000, actual : 0
+Timer : 5, programmed : 30000, actual : 0
+Timer : 6, programmed : 35000, actual : 0
+Timer : 7, programmed : 40000, actual : 0
+Timer : 8, programmed : 45000, actual : 0
+Timer : 9, programmed : 50000, actual : 0
+Timer : 10, programmed : 55000, actual : 0
+Timer : 11, programmed : 60000, actual : 0
+Timer : 12, programmed : 65000, actual : 0
+Timer : 13, programmed : 70000, actual : 0
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+SimpleTimer : 2, ms : 20232, Dms : 10053
+Timer : 0, programmed : 5000, actual : 5000
+Timer : 1, programmed : 10000, actual : 10000
+Timer : 2, programmed : 15000, actual : 15008
+Timer : 3, programmed : 20000, actual : 20008
+Timer : 4, programmed : 25000, actual : 0
+Timer : 5, programmed : 30000, actual : 0
+Timer : 6, programmed : 35000, actual : 0
+Timer : 7, programmed : 40000, actual : 0
+Timer : 8, programmed : 45000, actual : 0
+Timer : 9, programmed : 50000, actual : 0
+Timer : 10, programmed : 55000, actual : 0
+Timer : 11, programmed : 60000, actual : 0
+Timer : 12, programmed : 65000, actual : 0
+Timer : 13, programmed : 70000, actual : 0
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+SimpleTimer : 2, ms : 30286, Dms : 10054
+Timer : 0, programmed : 5000, actual : 5000
+Timer : 1, programmed : 10000, actual : 10000
+Timer : 2, programmed : 15000, actual : 15000
+Timer : 3, programmed : 20000, actual : 20008
+Timer : 4, programmed : 25000, actual : 25008
+Timer : 5, programmed : 30000, actual : 30008
+Timer : 6, programmed : 35000, actual : 0
+Timer : 7, programmed : 40000, actual : 0
+Timer : 8, programmed : 45000, actual : 0
+Timer : 9, programmed : 50000, actual : 0
+Timer : 10, programmed : 55000, actual : 0
+Timer : 11, programmed : 60000, actual : 0
+Timer : 12, programmed : 65000, actual : 0
+Timer : 13, programmed : 70000, actual : 0
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+SimpleTimer : 2, ms : 40341, Dms : 10055
+Timer : 0, programmed : 5000, actual : 5000
+Timer : 1, programmed : 10000, actual : 10000
+Timer : 2, programmed : 15000, actual : 15000
+Timer : 3, programmed : 20000, actual : 20000
+Timer : 4, programmed : 25000, actual : 25008
+Timer : 5, programmed : 30000, actual : 30008
+Timer : 6, programmed : 35000, actual : 35008
+Timer : 7, programmed : 40000, actual : 40008
+Timer : 8, programmed : 45000, actual : 0
+Timer : 9, programmed : 50000, actual : 0
+Timer : 10, programmed : 55000, actual : 0
+Timer : 11, programmed : 60000, actual : 0
+Timer : 12, programmed : 65000, actual : 0
+Timer : 13, programmed : 70000, actual : 0
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+SimpleTimer : 2, ms : 50396, Dms : 10055
+Timer : 0, programmed : 5000, actual : 5000
+Timer : 1, programmed : 10000, actual : 10000
+Timer : 2, programmed : 15000, actual : 15000
+Timer : 3, programmed : 20000, actual : 20000
+Timer : 4, programmed : 25000, actual : 25000
+Timer : 5, programmed : 30000, actual : 30008
+Timer : 6, programmed : 35000, actual : 35008
+Timer : 7, programmed : 40000, actual : 40008
+Timer : 8, programmed : 45000, actual : 45008
+Timer : 9, programmed : 50000, actual : 50008
+Timer : 10, programmed : 55000, actual : 0
+Timer : 11, programmed : 60000, actual : 0
+Timer : 12, programmed : 65000, actual : 0
+Timer : 13, programmed : 70000, actual : 0
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+SimpleTimer : 2, ms : 60452, Dms : 10056
+Timer : 0, programmed : 5000, actual : 5000
+Timer : 1, programmed : 10000, actual : 10000
+Timer : 2, programmed : 15000, actual : 15000
+Timer : 3, programmed : 20000, actual : 20000
+Timer : 4, programmed : 25000, actual : 25000
+Timer : 5, programmed : 30000, actual : 30000
+Timer : 6, programmed : 35000, actual : 35008
+Timer : 7, programmed : 40000, actual : 40008
+Timer : 8, programmed : 45000, actual : 45008
+Timer : 9, programmed : 50000, actual : 50008
+Timer : 10, programmed : 55000, actual : 55008
+Timer : 11, programmed : 60000, actual : 60008
+Timer : 12, programmed : 65000, actual : 0
+Timer : 13, programmed : 70000, actual : 0
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+SimpleTimer : 2, ms : 70509, Dms : 10057
+Timer : 0, programmed : 5000, actual : 5000
+Timer : 1, programmed : 10000, actual : 10000
+Timer : 2, programmed : 15000, actual : 15000
+Timer : 3, programmed : 20000, actual : 20000
+Timer : 4, programmed : 25000, actual : 25000
+Timer : 5, programmed : 30000, actual : 30000
+Timer : 6, programmed : 35000, actual : 35000
+Timer : 7, programmed : 40000, actual : 40008
+Timer : 8, programmed : 45000, actual : 45008
+Timer : 9, programmed : 50000, actual : 50008
+Timer : 10, programmed : 55000, actual : 55008
+Timer : 11, programmed : 60000, actual : 60008
+Timer : 12, programmed : 65000, actual : 65008
+Timer : 13, programmed : 70000, actual : 70008
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+SimpleTimer : 2, ms : 80566, Dms : 10057
+Timer : 0, programmed : 5000, actual : 5000
+Timer : 1, programmed : 10000, actual : 10000
+Timer : 2, programmed : 15000, actual : 15000
+Timer : 3, programmed : 20000, actual : 20000
+Timer : 4, programmed : 25000, actual : 25000
+Timer : 5, programmed : 30000, actual : 30000
+Timer : 6, programmed : 35000, actual : 35000
+Timer : 7, programmed : 40000, actual : 40000
+Timer : 8, programmed : 45000, actual : 45008
+Timer : 9, programmed : 50000, actual : 50008
+Timer : 10, programmed : 55000, actual : 55008
+Timer : 11, programmed : 60000, actual : 60008
+Timer : 12, programmed : 65000, actual : 65008
+Timer : 13, programmed : 70000, actual : 70008
+Timer : 14, programmed : 75000, actual : 75008
+Timer : 15, programmed : 80000, actual : 80008
 ```
 
 ---
 
-### 7. ISR_Timer_Complex on STM32F7 Nucleo-144 F767ZI using Built-in LAN8742A Ethernet and STM32Ethernet Library
+### 7. ISR_16_Timers_Array_Complex on STM32F7 Nucleo-144 F767ZI
 
-The following is the sample terminal output when running example [ISR_Timer_Complex](examples/STM32/ISR_Timer_Complex) on **STM32F7 Nucleo-144 F767ZI using Built-in LAN8742A Ethernet and STM32Ethernet Library** to demonstrate the accuracy of ISR Hardware Timer, **especially when system is very busy**.  The ISR timer is **programmed for 2s, is activated exactly after 2.000s !!!**
-
-While software timer, **programmed for 2s, is activated after 9.782s !!!**. Then in loop(), it's also activated **every 3s**.
+The following is the sample terminal output when running example [ISR_16_Timers_Array_Complex](examples/STM32/ISR_16_Timers_Array_Complex) on **STM32F7 Nucleo-144 F767ZI** to demonstrate of ISR Hardware Timer, especially when system is very busy or blocked. The 16 independent ISR timers are programmed to be activated repetitively after certain intervals, is activated exactly after that programmed interval !!!
 
 ```
-Starting ISR_Timer_Complex on NUCLEO_F767ZI
-STM32_TimerInterrupt v1.2.0
-TimerInterrupt_Generic v1.7.0
+Starting ISR_16_Timers_Array_Complex on NUCLEO_F767ZI
+STM32_TimerInterrupt v1.2.1
+TimerInterrupt_Generic v1.8.0
 CPU Frequency = 216 MHz
-STM32TimerInterrupt: Timer Input Freq (Hz) = 216000000, _fre = 1000000.00, _count = 50000
-Starting  ITimer OK, millis() = 6
-[9] MAC:FE-E1-88-EC-DD-95
-2s: Delta ms = 2000
-2s: Delta ms = 2000
-[6626] IP:192.168.2.116
-[6626] 
-    ___  __          __
-   / _ )/ /_ _____  / /__
-  / _  / / // / _ \/  '_/
- /____/_/\_, /_//_/_/\_\
-        /___/ v0.6.1 on STM32 NUCLEO_F767ZI
-
-[6636] BlynkArduinoClient.connect: Connecting to account.duckdns.org:8080
-[6721] Ready (ping: 6ms).
-IP = 192.168.2.116
-2s: Delta ms = 2000
-blynkDoingSomething2s: Delta programmed ms = 2000, actual = 9782
-2s: Delta ms = 2000
-5s: Delta ms = 5000
-2s: Delta ms = 2000
-blynkDoingSomething2s: Delta programmed ms = 2000, actual = 3000
-2s: Delta ms = 2000
-5s: Delta ms = 5000
-blynkDoingSomething2s: Delta programmed ms = 2000, actual = 3000
-2s: Delta ms = 2000
-2s: Delta ms = 2000
-blynkDoingSomething2s: Delta programmed ms = 2000, actual = 3000
-2s: Delta ms = 2000
-5s: Delta ms = 5000
-blynkDoingSomething2s: Delta programmed ms = 2000, actual = 3000
-2s: Delta ms = 2000
-11s: Delta ms = 11000
-2s: Delta ms = 2000
-blynkDoingSomething2s: Delta programmed ms = 2000, actual = 3000
-5s: Delta ms = 5000
-2s: Delta ms = 2000
-blynkDoingSomething2s: Delta programmed ms = 2000, actual = 3000
-2s: Delta ms = 2000
-2s: Delta ms = 2000
-5s: Delta ms = 5000
-blynkDoingSomething2s: Delta programmed ms = 2000, actual = 3000
-2s: Delta ms = 2000
-11s: Delta ms = 11000
-blynkDoingSomething2s: Delta programmed ms = 2000, actual = 3000
-2s: Delta ms = 2000
-5s: Delta ms = 5000
-2s: Delta ms = 2000
+Starting ITimer OK, millis() = 105
+SimpleTimer : 2, ms : 10110, Dms : 10005
+Timer : 0, programmed : 5000, actual : 5010
+Timer : 1, programmed : 10000, actual : 10010
+Timer : 2, programmed : 15000, actual : 0
+Timer : 3, programmed : 20000, actual : 0
+Timer : 4, programmed : 25000, actual : 0
+Timer : 5, programmed : 30000, actual : 0
+Timer : 6, programmed : 35000, actual : 0
+Timer : 7, programmed : 40000, actual : 0
+Timer : 8, programmed : 45000, actual : 0
+Timer : 9, programmed : 50000, actual : 0
+Timer : 10, programmed : 55000, actual : 0
+Timer : 11, programmed : 60000, actual : 0
+Timer : 12, programmed : 65000, actual : 0
+Timer : 13, programmed : 70000, actual : 0
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+SimpleTimer : 2, ms : 20169, Dms : 10059
+Timer : 0, programmed : 5000, actual : 5000
+Timer : 1, programmed : 10000, actual : 10000
+Timer : 2, programmed : 15000, actual : 15010
+Timer : 3, programmed : 20000, actual : 20010
+Timer : 4, programmed : 25000, actual : 0
+Timer : 5, programmed : 30000, actual : 0
+Timer : 6, programmed : 35000, actual : 0
+Timer : 7, programmed : 40000, actual : 0
+Timer : 8, programmed : 45000, actual : 0
+Timer : 9, programmed : 50000, actual : 0
+Timer : 10, programmed : 55000, actual : 0
+Timer : 11, programmed : 60000, actual : 0
+Timer : 12, programmed : 65000, actual : 0
+Timer : 13, programmed : 70000, actual : 0
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+SimpleTimer : 2, ms : 30230, Dms : 10061
+Timer : 0, programmed : 5000, actual : 5000
+Timer : 1, programmed : 10000, actual : 10000
+Timer : 2, programmed : 15000, actual : 15000
+Timer : 3, programmed : 20000, actual : 20010
+Timer : 4, programmed : 25000, actual : 25010
+Timer : 5, programmed : 30000, actual : 30010
+Timer : 6, programmed : 35000, actual : 0
+Timer : 7, programmed : 40000, actual : 0
+Timer : 8, programmed : 45000, actual : 0
+Timer : 9, programmed : 50000, actual : 0
+Timer : 10, programmed : 55000, actual : 0
+Timer : 11, programmed : 60000, actual : 0
+Timer : 12, programmed : 65000, actual : 0
+Timer : 13, programmed : 70000, actual : 0
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+SimpleTimer : 2, ms : 40293, Dms : 10063
+Timer : 0, programmed : 5000, actual : 5000
+Timer : 1, programmed : 10000, actual : 10000
+Timer : 2, programmed : 15000, actual : 15000
+Timer : 3, programmed : 20000, actual : 20000
+Timer : 4, programmed : 25000, actual : 25010
+Timer : 5, programmed : 30000, actual : 30010
+Timer : 6, programmed : 35000, actual : 35010
+Timer : 7, programmed : 40000, actual : 40010
+Timer : 8, programmed : 45000, actual : 0
+Timer : 9, programmed : 50000, actual : 0
+Timer : 10, programmed : 55000, actual : 0
+Timer : 11, programmed : 60000, actual : 0
+Timer : 12, programmed : 65000, actual : 0
+Timer : 13, programmed : 70000, actual : 0
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+SimpleTimer : 2, ms : 50357, Dms : 10064
+Timer : 0, programmed : 5000, actual : 5000
+Timer : 1, programmed : 10000, actual : 10000
+Timer : 2, programmed : 15000, actual : 15000
+Timer : 3, programmed : 20000, actual : 20000
+Timer : 4, programmed : 25000, actual : 25000
+Timer : 5, programmed : 30000, actual : 30010
+Timer : 6, programmed : 35000, actual : 35010
+Timer : 7, programmed : 40000, actual : 40010
+Timer : 8, programmed : 45000, actual : 45010
+Timer : 9, programmed : 50000, actual : 50010
+Timer : 10, programmed : 55000, actual : 0
+Timer : 11, programmed : 60000, actual : 0
+Timer : 12, programmed : 65000, actual : 0
+Timer : 13, programmed : 70000, actual : 0
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+SimpleTimer : 2, ms : 60421, Dms : 10064
+Timer : 0, programmed : 5000, actual : 5000
+Timer : 1, programmed : 10000, actual : 10000
+Timer : 2, programmed : 15000, actual : 15000
+Timer : 3, programmed : 20000, actual : 20000
+Timer : 4, programmed : 25000, actual : 25000
+Timer : 5, programmed : 30000, actual : 30000
+Timer : 6, programmed : 35000, actual : 35010
+Timer : 7, programmed : 40000, actual : 40010
+Timer : 8, programmed : 45000, actual : 45010
+Timer : 9, programmed : 50000, actual : 50010
+Timer : 10, programmed : 55000, actual : 55010
+Timer : 11, programmed : 60000, actual : 60010
+Timer : 12, programmed : 65000, actual : 0
+Timer : 13, programmed : 70000, actual : 0
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+SimpleTimer : 2, ms : 70484, Dms : 10063
+Timer : 0, programmed : 5000, actual : 5000
+Timer : 1, programmed : 10000, actual : 10000
+Timer : 2, programmed : 15000, actual : 15000
+Timer : 3, programmed : 20000, actual : 20000
+Timer : 4, programmed : 25000, actual : 25000
+Timer : 5, programmed : 30000, actual : 30000
+Timer : 6, programmed : 35000, actual : 35000
+Timer : 7, programmed : 40000, actual : 40010
+Timer : 8, programmed : 45000, actual : 45010
+Timer : 9, programmed : 50000, actual : 50010
+Timer : 10, programmed : 55000, actual : 55010
+Timer : 11, programmed : 60000, actual : 60010
+Timer : 12, programmed : 65000, actual : 65010
+Timer : 13, programmed : 70000, actual : 70010
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+SimpleTimer : 2, ms : 80552, Dms : 10068
+Timer : 0, programmed : 5000, actual : 5000
+Timer : 1, programmed : 10000, actual : 10000
+Timer : 2, programmed : 15000, actual : 15000
+Timer : 3, programmed : 20000, actual : 20000
+Timer : 4, programmed : 25000, actual : 25000
+Timer : 5, programmed : 30000, actual : 30000
+Timer : 6, programmed : 35000, actual : 35000
+Timer : 7, programmed : 40000, actual : 40000
+Timer : 8, programmed : 45000, actual : 45010
+Timer : 9, programmed : 50000, actual : 50010
+Timer : 10, programmed : 55000, actual : 55010
+Timer : 11, programmed : 60000, actual : 60010
+Timer : 12, programmed : 65000, actual : 65010
+Timer : 13, programmed : 70000, actual : 70010
+Timer : 14, programmed : 75000, actual : 75010
+Timer : 15, programmed : 80000, actual : 80010
+SimpleTimer : 2, ms : 90618, Dms : 10066
 ```
 
 ---
@@ -3045,10 +3148,9 @@ blynkDoingSomething2s: Delta programmed ms = 2000, actual = 3000
 The following is the sample terminal output when running example [**TimerInterruptTest**](examples/STM32/TimerInterruptTest) on **STM32F7 Nucleo-144 F767ZI** to demonstrate how to start/stop Hardware Timers.
 
 ```
-
 Starting TimerInterruptTest on NUCLEO_F767ZI
-STM32_TimerInterrupt v1.2.0
-TimerInterrupt_Generic v1.7.0
+STM32_TimerInterrupt v1.2.1
+TimerInterrupt_Generic v1.8.0
 CPU Frequency = 216 MHz
 STM32TimerInterrupt: Timer Input Freq (Hz) = 216000000, _fre = 1000000.00, _count = 1000000
 Starting  ITimer0 OK, millis() = 108
@@ -3104,12 +3206,10 @@ While software timer, **programmed for 2s, is activated after more than 3.000s i
 
 ```
 Starting ISR_16_Timers_Array_Complex on Nano 33 BLE
-NRF52_MBED_TimerInterrupt v1.2.1
-TimerInterrupt_Generic v1.7.0
-NRF52_MBED_TimerInterrupt: Timer = NRF_TIMER3
-NRF52_MBED_TimerInterrupt: _fre = 1000000.00, _count = 10000
-Starting  ITimer OK, millis() = 714
-simpleTimer2s, ms=3714, Dms=3000
+NRF52_MBED_TimerInterrupt v1.3.0
+TimerInterrupt_Generic v1.8.0
+Starting ITimer OK, millis() = 810
+SimpleTimer : 2, ms : 3810, Dms : 3000
 Timer : 0, programmed : 5000, actual : 0
 Timer : 1, programmed : 10000, actual : 0
 Timer : 2, programmed : 15000, actual : 0
@@ -3126,8 +3226,8 @@ Timer : 12, programmed : 65000, actual : 0
 Timer : 13, programmed : 70000, actual : 0
 Timer : 14, programmed : 75000, actual : 0
 Timer : 15, programmed : 80000, actual : 0
-simpleTimer2s, ms=6730, Dms=3016
-Timer : 0, programmed : 5000, actual : 5004
+SimpleTimer : 2, ms : 6822, Dms : 3012
+Timer : 0, programmed : 5000, actual : 5006
 Timer : 1, programmed : 10000, actual : 0
 Timer : 2, programmed : 15000, actual : 0
 Timer : 3, programmed : 20000, actual : 0
@@ -3143,8 +3243,8 @@ Timer : 12, programmed : 65000, actual : 0
 Timer : 13, programmed : 70000, actual : 0
 Timer : 14, programmed : 75000, actual : 0
 Timer : 15, programmed : 80000, actual : 0
-simpleTimer2s, ms=9746, Dms=3016
-Timer : 0, programmed : 5000, actual : 5004
+SimpleTimer : 2, ms : 9834, Dms : 3012
+Timer : 0, programmed : 5000, actual : 5006
 Timer : 1, programmed : 10000, actual : 0
 Timer : 2, programmed : 15000, actual : 0
 Timer : 3, programmed : 20000, actual : 0
@@ -3160,9 +3260,9 @@ Timer : 12, programmed : 65000, actual : 0
 Timer : 13, programmed : 70000, actual : 0
 Timer : 14, programmed : 75000, actual : 0
 Timer : 15, programmed : 80000, actual : 0
-simpleTimer2s, ms=12762, Dms=3016
-Timer : 0, programmed : 5000, actual : 5004
-Timer : 1, programmed : 10000, actual : 10008
+SimpleTimer : 2, ms : 12845, Dms : 3011
+Timer : 0, programmed : 5000, actual : 4995
+Timer : 1, programmed : 10000, actual : 10001
 Timer : 2, programmed : 15000, actual : 0
 Timer : 3, programmed : 20000, actual : 0
 Timer : 4, programmed : 25000, actual : 0
@@ -3177,10 +3277,10 @@ Timer : 12, programmed : 65000, actual : 0
 Timer : 13, programmed : 70000, actual : 0
 Timer : 14, programmed : 75000, actual : 0
 Timer : 15, programmed : 80000, actual : 0
-simpleTimer2s, ms=15778, Dms=3016
-Timer : 0, programmed : 5000, actual : 4994
-Timer : 1, programmed : 10000, actual : 10008
-Timer : 2, programmed : 15000, actual : 15002
+SimpleTimer : 2, ms : 15857, Dms : 3012
+Timer : 0, programmed : 5000, actual : 5006
+Timer : 1, programmed : 10000, actual : 10001
+Timer : 2, programmed : 15000, actual : 15007
 Timer : 3, programmed : 20000, actual : 0
 Timer : 4, programmed : 25000, actual : 0
 Timer : 5, programmed : 30000, actual : 0
@@ -3194,10 +3294,10 @@ Timer : 12, programmed : 65000, actual : 0
 Timer : 13, programmed : 70000, actual : 0
 Timer : 14, programmed : 75000, actual : 0
 Timer : 15, programmed : 80000, actual : 0
-simpleTimer2s, ms=18794, Dms=3016
-Timer : 0, programmed : 5000, actual : 4994
-Timer : 1, programmed : 10000, actual : 10008
-Timer : 2, programmed : 15000, actual : 15002
+SimpleTimer : 2, ms : 18868, Dms : 3011
+Timer : 0, programmed : 5000, actual : 5006
+Timer : 1, programmed : 10000, actual : 10001
+Timer : 2, programmed : 15000, actual : 15007
 Timer : 3, programmed : 20000, actual : 0
 Timer : 4, programmed : 25000, actual : 0
 Timer : 5, programmed : 30000, actual : 0
@@ -3211,10 +3311,10 @@ Timer : 12, programmed : 65000, actual : 0
 Timer : 13, programmed : 70000, actual : 0
 Timer : 14, programmed : 75000, actual : 0
 Timer : 15, programmed : 80000, actual : 0
-simpleTimer2s, ms=21810, Dms=3016
-Timer : 0, programmed : 5000, actual : 5002
-Timer : 1, programmed : 10000, actual : 9996
-Timer : 2, programmed : 15000, actual : 15002
+SimpleTimer : 2, ms : 21880, Dms : 3012
+Timer : 0, programmed : 5000, actual : 4997
+Timer : 1, programmed : 10000, actual : 10003
+Timer : 2, programmed : 15000, actual : 15007
 Timer : 3, programmed : 20000, actual : 20004
 Timer : 4, programmed : 25000, actual : 0
 Timer : 5, programmed : 30000, actual : 0
@@ -3228,10 +3328,10 @@ Timer : 12, programmed : 65000, actual : 0
 Timer : 13, programmed : 70000, actual : 0
 Timer : 14, programmed : 75000, actual : 0
 Timer : 15, programmed : 80000, actual : 0
-simpleTimer2s, ms=24826, Dms=3016
-Timer : 0, programmed : 5000, actual : 5002
-Timer : 1, programmed : 10000, actual : 9996
-Timer : 2, programmed : 15000, actual : 15002
+SimpleTimer : 2, ms : 24892, Dms : 3012
+Timer : 0, programmed : 5000, actual : 4997
+Timer : 1, programmed : 10000, actual : 10003
+Timer : 2, programmed : 15000, actual : 15007
 Timer : 3, programmed : 20000, actual : 20004
 Timer : 4, programmed : 25000, actual : 0
 Timer : 5, programmed : 30000, actual : 0
@@ -3245,12 +3345,12 @@ Timer : 12, programmed : 65000, actual : 0
 Timer : 13, programmed : 70000, actual : 0
 Timer : 14, programmed : 75000, actual : 0
 Timer : 15, programmed : 80000, actual : 0
-simpleTimer2s, ms=27842, Dms=3016
-Timer : 0, programmed : 5000, actual : 5002
-Timer : 1, programmed : 10000, actual : 9996
-Timer : 2, programmed : 15000, actual : 15002
+SimpleTimer : 2, ms : 27903, Dms : 3011
+Timer : 0, programmed : 5000, actual : 5006
+Timer : 1, programmed : 10000, actual : 10003
+Timer : 2, programmed : 15000, actual : 15007
 Timer : 3, programmed : 20000, actual : 20004
-Timer : 4, programmed : 25000, actual : 25006
+Timer : 4, programmed : 25000, actual : 25010
 Timer : 5, programmed : 30000, actual : 0
 Timer : 6, programmed : 35000, actual : 0
 Timer : 7, programmed : 40000, actual : 0
@@ -3262,13 +3362,13 @@ Timer : 12, programmed : 65000, actual : 0
 Timer : 13, programmed : 70000, actual : 0
 Timer : 14, programmed : 75000, actual : 0
 Timer : 15, programmed : 80000, actual : 0
-simpleTimer2s, ms=30858, Dms=3016
-Timer : 0, programmed : 5000, actual : 5002
-Timer : 1, programmed : 10000, actual : 10004
-Timer : 2, programmed : 15000, actual : 15006
+SimpleTimer : 2, ms : 30914, Dms : 3011
+Timer : 0, programmed : 5000, actual : 4992
+Timer : 1, programmed : 10000, actual : 9998
+Timer : 2, programmed : 15000, actual : 14995
 Timer : 3, programmed : 20000, actual : 20004
-Timer : 4, programmed : 25000, actual : 25006
-Timer : 5, programmed : 30000, actual : 30008
+Timer : 4, programmed : 25000, actual : 25010
+Timer : 5, programmed : 30000, actual : 30002
 Timer : 6, programmed : 35000, actual : 0
 Timer : 7, programmed : 40000, actual : 0
 Timer : 8, programmed : 45000, actual : 0
@@ -3279,13 +3379,13 @@ Timer : 12, programmed : 65000, actual : 0
 Timer : 13, programmed : 70000, actual : 0
 Timer : 14, programmed : 75000, actual : 0
 Timer : 15, programmed : 80000, actual : 0
-simpleTimer2s, ms=33874, Dms=3016
-Timer : 0, programmed : 5000, actual : 5002
-Timer : 1, programmed : 10000, actual : 10004
-Timer : 2, programmed : 15000, actual : 15006
+SimpleTimer : 2, ms : 33926, Dms : 3012
+Timer : 0, programmed : 5000, actual : 4992
+Timer : 1, programmed : 10000, actual : 9998
+Timer : 2, programmed : 15000, actual : 14995
 Timer : 3, programmed : 20000, actual : 20004
-Timer : 4, programmed : 25000, actual : 25006
-Timer : 5, programmed : 30000, actual : 30008
+Timer : 4, programmed : 25000, actual : 25010
+Timer : 5, programmed : 30000, actual : 30002
 Timer : 6, programmed : 35000, actual : 0
 Timer : 7, programmed : 40000, actual : 0
 Timer : 8, programmed : 45000, actual : 0
@@ -3296,14 +3396,14 @@ Timer : 12, programmed : 65000, actual : 0
 Timer : 13, programmed : 70000, actual : 0
 Timer : 14, programmed : 75000, actual : 0
 Timer : 15, programmed : 80000, actual : 0
-simpleTimer2s, ms=36890, Dms=3016
-Timer : 0, programmed : 5000, actual : 4992
-Timer : 1, programmed : 10000, actual : 10004
-Timer : 2, programmed : 15000, actual : 15006
+SimpleTimer : 2, ms : 36938, Dms : 3012
+Timer : 0, programmed : 5000, actual : 5003
+Timer : 1, programmed : 10000, actual : 9998
+Timer : 2, programmed : 15000, actual : 14995
 Timer : 3, programmed : 20000, actual : 20004
-Timer : 4, programmed : 25000, actual : 25006
-Timer : 5, programmed : 30000, actual : 30008
-Timer : 6, programmed : 35000, actual : 35000
+Timer : 4, programmed : 25000, actual : 25010
+Timer : 5, programmed : 30000, actual : 30002
+Timer : 6, programmed : 35000, actual : 35005
 Timer : 7, programmed : 40000, actual : 0
 Timer : 8, programmed : 45000, actual : 0
 Timer : 9, programmed : 50000, actual : 0
@@ -3313,14 +3413,14 @@ Timer : 12, programmed : 65000, actual : 0
 Timer : 13, programmed : 70000, actual : 0
 Timer : 14, programmed : 75000, actual : 0
 Timer : 15, programmed : 80000, actual : 0
-simpleTimer2s, ms=39906, Dms=3016
-Timer : 0, programmed : 5000, actual : 4992
-Timer : 1, programmed : 10000, actual : 10004
-Timer : 2, programmed : 15000, actual : 15006
+SimpleTimer : 2, ms : 39950, Dms : 3012
+Timer : 0, programmed : 5000, actual : 5003
+Timer : 1, programmed : 10000, actual : 9998
+Timer : 2, programmed : 15000, actual : 14995
 Timer : 3, programmed : 20000, actual : 20004
-Timer : 4, programmed : 25000, actual : 25006
-Timer : 5, programmed : 30000, actual : 30008
-Timer : 6, programmed : 35000, actual : 35000
+Timer : 4, programmed : 25000, actual : 25010
+Timer : 5, programmed : 30000, actual : 30002
+Timer : 6, programmed : 35000, actual : 35005
 Timer : 7, programmed : 40000, actual : 0
 Timer : 8, programmed : 45000, actual : 0
 Timer : 9, programmed : 50000, actual : 0
@@ -3330,244 +3430,245 @@ Timer : 12, programmed : 65000, actual : 0
 Timer : 13, programmed : 70000, actual : 0
 Timer : 14, programmed : 75000, actual : 0
 Timer : 15, programmed : 80000, actual : 0
-simpleTimer2s, ms=42922, Dms=3016
-Timer : 0, programmed : 5000, actual : 5001
-Timer : 1, programmed : 10000, actual : 9993
-Timer : 2, programmed : 15000, actual : 15006
-Timer : 3, programmed : 20000, actual : 19997
-Timer : 4, programmed : 25000, actual : 25006
-Timer : 5, programmed : 30000, actual : 30008
-Timer : 6, programmed : 35000, actual : 35000
-Timer : 7, programmed : 40000, actual : 40001
-Timer : 8, programmed : 45000, actual : 0
-Timer : 9, programmed : 50000, actual : 0
-Timer : 10, programmed : 55000, actual : 0
-Timer : 11, programmed : 60000, actual : 0
-Timer : 12, programmed : 65000, actual : 0
-Timer : 13, programmed : 70000, actual : 0
-Timer : 14, programmed : 75000, actual : 0
-Timer : 15, programmed : 80000, actual : 0
-simpleTimer2s, ms=45938, Dms=3016
-Timer : 0, programmed : 5000, actual : 5001
-Timer : 1, programmed : 10000, actual : 9993
-Timer : 2, programmed : 15000, actual : 14994
-Timer : 3, programmed : 20000, actual : 19997
-Timer : 4, programmed : 25000, actual : 25006
-Timer : 5, programmed : 30000, actual : 30008
-Timer : 6, programmed : 35000, actual : 35000
-Timer : 7, programmed : 40000, actual : 40001
-Timer : 8, programmed : 45000, actual : 45002
-Timer : 9, programmed : 50000, actual : 0
-Timer : 10, programmed : 55000, actual : 0
-Timer : 11, programmed : 60000, actual : 0
-Timer : 12, programmed : 65000, actual : 0
-Timer : 13, programmed : 70000, actual : 0
-Timer : 14, programmed : 75000, actual : 0
-Timer : 15, programmed : 80000, actual : 0
-simpleTimer2s, ms=48954, Dms=3016
-Timer : 0, programmed : 5000, actual : 5001
-Timer : 1, programmed : 10000, actual : 9993
-Timer : 2, programmed : 15000, actual : 14994
-Timer : 3, programmed : 20000, actual : 19997
-Timer : 4, programmed : 25000, actual : 25006
-Timer : 5, programmed : 30000, actual : 30008
-Timer : 6, programmed : 35000, actual : 35000
-Timer : 7, programmed : 40000, actual : 40001
-Timer : 8, programmed : 45000, actual : 45002
-Timer : 9, programmed : 50000, actual : 0
-Timer : 10, programmed : 55000, actual : 0
-Timer : 11, programmed : 60000, actual : 0
-Timer : 12, programmed : 65000, actual : 0
-Timer : 13, programmed : 70000, actual : 0
-Timer : 14, programmed : 75000, actual : 0
-Timer : 15, programmed : 80000, actual : 0
-simpleTimer2s, ms=51970, Dms=3016
-Timer : 0, programmed : 5000, actual : 5001
-Timer : 1, programmed : 10000, actual : 10002
-Timer : 2, programmed : 15000, actual : 14994
-Timer : 3, programmed : 20000, actual : 19997
-Timer : 4, programmed : 25000, actual : 24997
-Timer : 5, programmed : 30000, actual : 30008
-Timer : 6, programmed : 35000, actual : 35000
-Timer : 7, programmed : 40000, actual : 40001
-Timer : 8, programmed : 45000, actual : 45002
-Timer : 9, programmed : 50000, actual : 50003
-Timer : 10, programmed : 55000, actual : 0
-Timer : 11, programmed : 60000, actual : 0
-Timer : 12, programmed : 65000, actual : 0
-Timer : 13, programmed : 70000, actual : 0
-Timer : 14, programmed : 75000, actual : 0
-Timer : 15, programmed : 80000, actual : 0
-simpleTimer2s, ms=54986, Dms=3016
-Timer : 0, programmed : 5000, actual : 5001
-Timer : 1, programmed : 10000, actual : 10002
-Timer : 2, programmed : 15000, actual : 14994
-Timer : 3, programmed : 20000, actual : 19997
-Timer : 4, programmed : 25000, actual : 24997
-Timer : 5, programmed : 30000, actual : 30008
-Timer : 6, programmed : 35000, actual : 35000
-Timer : 7, programmed : 40000, actual : 40001
-Timer : 8, programmed : 45000, actual : 45002
-Timer : 9, programmed : 50000, actual : 50003
-Timer : 10, programmed : 55000, actual : 0
-Timer : 11, programmed : 60000, actual : 0
-Timer : 12, programmed : 65000, actual : 0
-Timer : 13, programmed : 70000, actual : 0
-Timer : 14, programmed : 75000, actual : 0
-Timer : 15, programmed : 80000, actual : 0
-simpleTimer2s, ms=58002, Dms=3016
-Timer : 0, programmed : 5000, actual : 5003
-Timer : 1, programmed : 10000, actual : 10002
-Timer : 2, programmed : 15000, actual : 14994
-Timer : 3, programmed : 20000, actual : 19997
-Timer : 4, programmed : 25000, actual : 24997
-Timer : 5, programmed : 30000, actual : 30008
-Timer : 6, programmed : 35000, actual : 35000
-Timer : 7, programmed : 40000, actual : 40001
-Timer : 8, programmed : 45000, actual : 45002
-Timer : 9, programmed : 50000, actual : 50003
-Timer : 10, programmed : 55000, actual : 55006
-Timer : 11, programmed : 60000, actual : 0
-Timer : 12, programmed : 65000, actual : 0
-Timer : 13, programmed : 70000, actual : 0
-Timer : 14, programmed : 75000, actual : 0
-Timer : 15, programmed : 80000, actual : 0
-simpleTimer2s, ms=61018, Dms=3016
+SimpleTimer : 2, ms : 42961, Dms : 3011
 Timer : 0, programmed : 5000, actual : 5003
 Timer : 1, programmed : 10000, actual : 10006
-Timer : 2, programmed : 15000, actual : 15007
-Timer : 3, programmed : 20000, actual : 20008
-Timer : 4, programmed : 25000, actual : 24997
-Timer : 5, programmed : 30000, actual : 30001
-Timer : 6, programmed : 35000, actual : 35000
-Timer : 7, programmed : 40000, actual : 40001
-Timer : 8, programmed : 45000, actual : 45002
-Timer : 9, programmed : 50000, actual : 50003
-Timer : 10, programmed : 55000, actual : 55006
-Timer : 11, programmed : 60000, actual : 60009
-Timer : 12, programmed : 65000, actual : 0
-Timer : 13, programmed : 70000, actual : 0
-Timer : 14, programmed : 75000, actual : 0
-Timer : 15, programmed : 80000, actual : 0
-simpleTimer2s, ms=64034, Dms=3016
-Timer : 0, programmed : 5000, actual : 5003
-Timer : 1, programmed : 10000, actual : 10006
-Timer : 2, programmed : 15000, actual : 15007
-Timer : 3, programmed : 20000, actual : 20008
-Timer : 4, programmed : 25000, actual : 24997
-Timer : 5, programmed : 30000, actual : 30001
-Timer : 6, programmed : 35000, actual : 35000
-Timer : 7, programmed : 40000, actual : 40001
-Timer : 8, programmed : 45000, actual : 45002
-Timer : 9, programmed : 50000, actual : 50003
-Timer : 10, programmed : 55000, actual : 55006
-Timer : 11, programmed : 60000, actual : 60009
-Timer : 12, programmed : 65000, actual : 0
-Timer : 13, programmed : 70000, actual : 0
-Timer : 14, programmed : 75000, actual : 0
-Timer : 15, programmed : 80000, actual : 0
-simpleTimer2s, ms=67050, Dms=3016
-Timer : 0, programmed : 5000, actual : 4992
-Timer : 1, programmed : 10000, actual : 10006
-Timer : 2, programmed : 15000, actual : 15007
-Timer : 3, programmed : 20000, actual : 20008
-Timer : 4, programmed : 25000, actual : 24997
-Timer : 5, programmed : 30000, actual : 30001
-Timer : 6, programmed : 35000, actual : 35000
-Timer : 7, programmed : 40000, actual : 40001
-Timer : 8, programmed : 45000, actual : 45002
-Timer : 9, programmed : 50000, actual : 50003
-Timer : 10, programmed : 55000, actual : 55006
-Timer : 11, programmed : 60000, actual : 60009
-Timer : 12, programmed : 65000, actual : 65001
-Timer : 13, programmed : 70000, actual : 0
-Timer : 14, programmed : 75000, actual : 0
-Timer : 15, programmed : 80000, actual : 0
-simpleTimer2s, ms=70066, Dms=3016
-Timer : 0, programmed : 5000, actual : 4992
-Timer : 1, programmed : 10000, actual : 10006
-Timer : 2, programmed : 15000, actual : 15007
-Timer : 3, programmed : 20000, actual : 20008
-Timer : 4, programmed : 25000, actual : 24997
-Timer : 5, programmed : 30000, actual : 30001
-Timer : 6, programmed : 35000, actual : 35000
-Timer : 7, programmed : 40000, actual : 40001
-Timer : 8, programmed : 45000, actual : 45002
-Timer : 9, programmed : 50000, actual : 50003
-Timer : 10, programmed : 55000, actual : 55006
-Timer : 11, programmed : 60000, actual : 60009
-Timer : 12, programmed : 65000, actual : 65001
-Timer : 13, programmed : 70000, actual : 0
-Timer : 14, programmed : 75000, actual : 0
-Timer : 15, programmed : 80000, actual : 0
-simpleTimer2s, ms=73082, Dms=3016
-Timer : 0, programmed : 5000, actual : 5003
-Timer : 1, programmed : 10000, actual : 9995
-Timer : 2, programmed : 15000, actual : 15007
-Timer : 3, programmed : 20000, actual : 20008
-Timer : 4, programmed : 25000, actual : 24997
-Timer : 5, programmed : 30000, actual : 30001
-Timer : 6, programmed : 35000, actual : 35004
-Timer : 7, programmed : 40000, actual : 40001
-Timer : 8, programmed : 45000, actual : 45002
-Timer : 9, programmed : 50000, actual : 50003
-Timer : 10, programmed : 55000, actual : 55006
-Timer : 11, programmed : 60000, actual : 60009
-Timer : 12, programmed : 65000, actual : 65001
-Timer : 13, programmed : 70000, actual : 70004
-Timer : 14, programmed : 75000, actual : 0
-Timer : 15, programmed : 80000, actual : 0
-simpleTimer2s, ms=76098, Dms=3016
-Timer : 0, programmed : 5000, actual : 5003
-Timer : 1, programmed : 10000, actual : 9995
-Timer : 2, programmed : 15000, actual : 14998
-Timer : 3, programmed : 20000, actual : 20008
-Timer : 4, programmed : 25000, actual : 25004
-Timer : 5, programmed : 30000, actual : 30001
-Timer : 6, programmed : 35000, actual : 35004
-Timer : 7, programmed : 40000, actual : 40001
-Timer : 8, programmed : 45000, actual : 45002
-Timer : 9, programmed : 50000, actual : 50003
-Timer : 10, programmed : 55000, actual : 55006
-Timer : 11, programmed : 60000, actual : 60009
-Timer : 12, programmed : 65000, actual : 65001
-Timer : 13, programmed : 70000, actual : 70004
-Timer : 14, programmed : 75000, actual : 75007
-Timer : 15, programmed : 80000, actual : 0
-simpleTimer2s, ms=79114, Dms=3016
-Timer : 0, programmed : 5000, actual : 5003
-Timer : 1, programmed : 10000, actual : 9995
-Timer : 2, programmed : 15000, actual : 14998
-Timer : 3, programmed : 20000, actual : 20008
-Timer : 4, programmed : 25000, actual : 25004
-Timer : 5, programmed : 30000, actual : 30001
-Timer : 6, programmed : 35000, actual : 35004
-Timer : 7, programmed : 40000, actual : 40001
-Timer : 8, programmed : 45000, actual : 45002
-Timer : 9, programmed : 50000, actual : 50003
-Timer : 10, programmed : 55000, actual : 55006
-Timer : 11, programmed : 60000, actual : 60009
-Timer : 12, programmed : 65000, actual : 65001
-Timer : 13, programmed : 70000, actual : 70004
-Timer : 14, programmed : 75000, actual : 75007
-Timer : 15, programmed : 80000, actual : 0
-simpleTimer2s, ms=82130, Dms=3016
-Timer : 0, programmed : 5000, actual : 5002
-Timer : 1, programmed : 10000, actual : 10005
-Timer : 2, programmed : 15000, actual : 14998
-Timer : 3, programmed : 20000, actual : 20000
-Timer : 4, programmed : 25000, actual : 25004
-Timer : 5, programmed : 30000, actual : 30001
-Timer : 6, programmed : 35000, actual : 35004
+Timer : 2, programmed : 15000, actual : 14995
+Timer : 3, programmed : 20000, actual : 20004
+Timer : 4, programmed : 25000, actual : 25010
+Timer : 5, programmed : 30000, actual : 30002
+Timer : 6, programmed : 35000, actual : 35005
 Timer : 7, programmed : 40000, actual : 40008
-Timer : 8, programmed : 45000, actual : 45002
-Timer : 9, programmed : 50000, actual : 50003
+Timer : 8, programmed : 45000, actual : 0
+Timer : 9, programmed : 50000, actual : 0
+Timer : 10, programmed : 55000, actual : 0
+Timer : 11, programmed : 60000, actual : 0
+Timer : 12, programmed : 65000, actual : 0
+Timer : 13, programmed : 70000, actual : 0
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+SimpleTimer : 2, ms : 45972, Dms : 3011
+Timer : 0, programmed : 5000, actual : 4993
+Timer : 1, programmed : 10000, actual : 10006
+Timer : 2, programmed : 15000, actual : 14999
+Timer : 3, programmed : 20000, actual : 20004
+Timer : 4, programmed : 25000, actual : 25010
+Timer : 5, programmed : 30000, actual : 30002
+Timer : 6, programmed : 35000, actual : 35005
+Timer : 7, programmed : 40000, actual : 40008
+Timer : 8, programmed : 45000, actual : 45001
+Timer : 9, programmed : 50000, actual : 0
+Timer : 10, programmed : 55000, actual : 0
+Timer : 11, programmed : 60000, actual : 0
+Timer : 12, programmed : 65000, actual : 0
+Timer : 13, programmed : 70000, actual : 0
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+SimpleTimer : 2, ms : 48983, Dms : 3011
+Timer : 0, programmed : 5000, actual : 4993
+Timer : 1, programmed : 10000, actual : 10006
+Timer : 2, programmed : 15000, actual : 14999
+Timer : 3, programmed : 20000, actual : 20004
+Timer : 4, programmed : 25000, actual : 25010
+Timer : 5, programmed : 30000, actual : 30002
+Timer : 6, programmed : 35000, actual : 35005
+Timer : 7, programmed : 40000, actual : 40008
+Timer : 8, programmed : 45000, actual : 45001
+Timer : 9, programmed : 50000, actual : 0
+Timer : 10, programmed : 55000, actual : 0
+Timer : 11, programmed : 60000, actual : 0
+Timer : 12, programmed : 65000, actual : 0
+Timer : 13, programmed : 70000, actual : 0
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+SimpleTimer : 2, ms : 51994, Dms : 3011
+Timer : 0, programmed : 5000, actual : 5003
+Timer : 1, programmed : 10000, actual : 9996
+Timer : 2, programmed : 15000, actual : 14999
+Timer : 3, programmed : 20000, actual : 20004
+Timer : 4, programmed : 25000, actual : 24994
+Timer : 5, programmed : 30000, actual : 30002
+Timer : 6, programmed : 35000, actual : 35005
+Timer : 7, programmed : 40000, actual : 40008
+Timer : 8, programmed : 45000, actual : 45001
+Timer : 9, programmed : 50000, actual : 50004
+Timer : 10, programmed : 55000, actual : 0
+Timer : 11, programmed : 60000, actual : 0
+Timer : 12, programmed : 65000, actual : 0
+Timer : 13, programmed : 70000, actual : 0
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+SimpleTimer : 2, ms : 55006, Dms : 3012
+Timer : 0, programmed : 5000, actual : 5003
+Timer : 1, programmed : 10000, actual : 9996
+Timer : 2, programmed : 15000, actual : 14999
+Timer : 3, programmed : 20000, actual : 20004
+Timer : 4, programmed : 25000, actual : 24994
+Timer : 5, programmed : 30000, actual : 30002
+Timer : 6, programmed : 35000, actual : 35005
+Timer : 7, programmed : 40000, actual : 40008
+Timer : 8, programmed : 45000, actual : 45001
+Timer : 9, programmed : 50000, actual : 50004
+Timer : 10, programmed : 55000, actual : 0
+Timer : 11, programmed : 60000, actual : 0
+Timer : 12, programmed : 65000, actual : 0
+Timer : 13, programmed : 70000, actual : 0
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+SimpleTimer : 2, ms : 58017, Dms : 3011
+Timer : 0, programmed : 5000, actual : 5002
+Timer : 1, programmed : 10000, actual : 9996
+Timer : 2, programmed : 15000, actual : 14999
+Timer : 3, programmed : 20000, actual : 20004
+Timer : 4, programmed : 25000, actual : 24994
+Timer : 5, programmed : 30000, actual : 30002
+Timer : 6, programmed : 35000, actual : 35005
+Timer : 7, programmed : 40000, actual : 40008
+Timer : 8, programmed : 45000, actual : 45001
+Timer : 9, programmed : 50000, actual : 50004
 Timer : 10, programmed : 55000, actual : 55006
-Timer : 11, programmed : 60000, actual : 60009
-Timer : 12, programmed : 65000, actual : 65001
-Timer : 13, programmed : 70000, actual : 70004
-Timer : 14, programmed : 75000, actual : 75007
-Timer : 15, programmed : 80000, actual : 80009
+Timer : 11, programmed : 60000, actual : 0
+Timer : 12, programmed : 65000, actual : 0
+Timer : 13, programmed : 70000, actual : 0
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+SimpleTimer : 2, ms : 61029, Dms : 3012
+Timer : 0, programmed : 5000, actual : 5004
+Timer : 1, programmed : 10000, actual : 10006
+Timer : 2, programmed : 15000, actual : 15009
+Timer : 3, programmed : 20000, actual : 20002
+Timer : 4, programmed : 25000, actual : 24994
+Timer : 5, programmed : 30000, actual : 30008
+Timer : 6, programmed : 35000, actual : 35005
+Timer : 7, programmed : 40000, actual : 40008
+Timer : 8, programmed : 45000, actual : 45001
+Timer : 9, programmed : 50000, actual : 50004
+Timer : 10, programmed : 55000, actual : 55006
+Timer : 11, programmed : 60000, actual : 60010
+Timer : 12, programmed : 65000, actual : 0
+Timer : 13, programmed : 70000, actual : 0
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+SimpleTimer : 2, ms : 64040, Dms : 3011
+Timer : 0, programmed : 5000, actual : 5004
+Timer : 1, programmed : 10000, actual : 10006
+Timer : 2, programmed : 15000, actual : 15009
+Timer : 3, programmed : 20000, actual : 20002
+Timer : 4, programmed : 25000, actual : 24994
+Timer : 5, programmed : 30000, actual : 30008
+Timer : 6, programmed : 35000, actual : 35005
+Timer : 7, programmed : 40000, actual : 40008
+Timer : 8, programmed : 45000, actual : 45001
+Timer : 9, programmed : 50000, actual : 50004
+Timer : 10, programmed : 55000, actual : 55006
+Timer : 11, programmed : 60000, actual : 60010
+Timer : 12, programmed : 65000, actual : 0
+Timer : 13, programmed : 70000, actual : 0
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+SimpleTimer : 2, ms : 67051, Dms : 3011
+Timer : 0, programmed : 5000, actual : 4995
+Timer : 1, programmed : 10000, actual : 10006
+Timer : 2, programmed : 15000, actual : 15009
+Timer : 3, programmed : 20000, actual : 20002
+Timer : 4, programmed : 25000, actual : 24994
+Timer : 5, programmed : 30000, actual : 30008
+Timer : 6, programmed : 35000, actual : 35005
+Timer : 7, programmed : 40000, actual : 40008
+Timer : 8, programmed : 45000, actual : 45001
+Timer : 9, programmed : 50000, actual : 50004
+Timer : 10, programmed : 55000, actual : 55006
+Timer : 11, programmed : 60000, actual : 60010
+Timer : 12, programmed : 65000, actual : 65005
+Timer : 13, programmed : 70000, actual : 0
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+SimpleTimer : 2, ms : 70062, Dms : 3011
+Timer : 0, programmed : 5000, actual : 4995
+Timer : 1, programmed : 10000, actual : 10006
+Timer : 2, programmed : 15000, actual : 15009
+Timer : 3, programmed : 20000, actual : 20002
+Timer : 4, programmed : 25000, actual : 24994
+Timer : 5, programmed : 30000, actual : 30008
+Timer : 6, programmed : 35000, actual : 35005
+Timer : 7, programmed : 40000, actual : 40008
+Timer : 8, programmed : 45000, actual : 45001
+Timer : 9, programmed : 50000, actual : 50004
+Timer : 10, programmed : 55000, actual : 55006
+Timer : 11, programmed : 60000, actual : 60010
+Timer : 12, programmed : 65000, actual : 65005
+Timer : 13, programmed : 70000, actual : 0
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+SimpleTimer : 2, ms : 73073, Dms : 3011
+Timer : 0, programmed : 5000, actual : 5003
+Timer : 1, programmed : 10000, actual : 9998
+Timer : 2, programmed : 15000, actual : 15009
+Timer : 3, programmed : 20000, actual : 20002
+Timer : 4, programmed : 25000, actual : 24994
+Timer : 5, programmed : 30000, actual : 30008
+Timer : 6, programmed : 35000, actual : 35003
+Timer : 7, programmed : 40000, actual : 40008
+Timer : 8, programmed : 45000, actual : 45001
+Timer : 9, programmed : 50000, actual : 50004
+Timer : 10, programmed : 55000, actual : 55006
+Timer : 11, programmed : 60000, actual : 60010
+Timer : 12, programmed : 65000, actual : 65005
+Timer : 13, programmed : 70000, actual : 70008
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+SimpleTimer : 2, ms : 76085, Dms : 3012
+Timer : 0, programmed : 5000, actual : 4994
+Timer : 1, programmed : 10000, actual : 9998
+Timer : 2, programmed : 15000, actual : 14992
+Timer : 3, programmed : 20000, actual : 20002
+Timer : 4, programmed : 25000, actual : 24998
+Timer : 5, programmed : 30000, actual : 30008
+Timer : 6, programmed : 35000, actual : 35003
+Timer : 7, programmed : 40000, actual : 40008
+Timer : 8, programmed : 45000, actual : 45001
+Timer : 9, programmed : 50000, actual : 50004
+Timer : 10, programmed : 55000, actual : 55006
+Timer : 11, programmed : 60000, actual : 60010
+Timer : 12, programmed : 65000, actual : 65005
+Timer : 13, programmed : 70000, actual : 70008
+Timer : 14, programmed : 75000, actual : 75002
+Timer : 15, programmed : 80000, actual : 0
+SimpleTimer : 2, ms : 79096, Dms : 3011
+Timer : 0, programmed : 5000, actual : 4994
+Timer : 1, programmed : 10000, actual : 9998
+Timer : 2, programmed : 15000, actual : 14992
+Timer : 3, programmed : 20000, actual : 20002
+Timer : 4, programmed : 25000, actual : 24998
+Timer : 5, programmed : 30000, actual : 30008
+Timer : 6, programmed : 35000, actual : 35003
+Timer : 7, programmed : 40000, actual : 40008
+Timer : 8, programmed : 45000, actual : 45001
+Timer : 9, programmed : 50000, actual : 50004
+Timer : 10, programmed : 55000, actual : 55006
+Timer : 11, programmed : 60000, actual : 60010
+Timer : 12, programmed : 65000, actual : 65005
+Timer : 13, programmed : 70000, actual : 70008
+Timer : 14, programmed : 75000, actual : 75002
+Timer : 15, programmed : 80000, actual : 0
+SimpleTimer : 2, ms : 82107, Dms : 3011
+Timer : 0, programmed : 5000, actual : 5003
+Timer : 1, programmed : 10000, actual : 9997
+Timer : 2, programmed : 15000, actual : 14992
+Timer : 3, programmed : 20000, actual : 19995
+Timer : 4, programmed : 25000, actual : 24998
+Timer : 5, programmed : 30000, actual : 30008
+Timer : 6, programmed : 35000, actual : 35003
+Timer : 7, programmed : 40000, actual : 39997
+Timer : 8, programmed : 45000, actual : 45001
+Timer : 9, programmed : 50000, actual : 50004
+Timer : 10, programmed : 55000, actual : 55006
+Timer : 11, programmed : 60000, actual : 60010
+Timer : 12, programmed : 65000, actual : 65005
+Timer : 13, programmed : 70000, actual : 70008
+Timer : 14, programmed : 75000, actual : 75002
+Timer : 15, programmed : 80000, actual : 80005
+SimpleTimer : 2, ms : 85118, Dms : 3011
 
 ```
 
@@ -3582,14 +3683,24 @@ Timer : 15, programmed : 80000, actual : 80009
 
 ```
 Starting ISR_16_Timers_Array_Complex on megaAVR Nano Every
-megaAVR_TimerInterrupt v1.3.0
-TimerInterrupt_Generic v1.7.0
+megaAVR_TimerInterrupt v1.4.0
+TimerInterrupt_Generic v1.8.0
 CPU Frequency = 16 MHz
 TCB Clock Frequency = 16MHz for highest accuracy
-Starting  ITimer1 OK, millis() = 6
-SimpleTimer : 2, ms : 10007, Dms : 10007
-Timer : 0, programmed : 5000, actual : 5000
-Timer : 1, programmed : 10000, actual : 10006
+[TISR] TCB 1
+[TISR] ==================
+[TISR] Init, Timer = 1
+[TISR] CTRLB   = 0
+[TISR] CCMP    = 65535
+[TISR] INTCTRL = 0
+[TISR] CTRLA   = 1
+[TISR] ==================
+[TISR] Frequency = 200.00 , CLK_TCB_FREQ = 16000000
+[TISR] setFrequency: _CCMPValueRemaining =  80000
+Starting  ITimer1 OK, millis() = 15
+SimpleTimer : 2, ms : 10016, Dms : 10016
+Timer : 0, programmed : 5000, actual : 5018
+Timer : 1, programmed : 10000, actual : 10018
 Timer : 2, programmed : 15000, actual : 0
 Timer : 3, programmed : 20000, actual : 0
 Timer : 4, programmed : 25000, actual : 0
@@ -3604,11 +3715,11 @@ Timer : 12, programmed : 65000, actual : 0
 Timer : 13, programmed : 70000, actual : 0
 Timer : 14, programmed : 75000, actual : 0
 Timer : 15, programmed : 80000, actual : 0
-SimpleTimer : 2, ms : 20066, Dms : 10059
+SimpleTimer : 2, ms : 20075, Dms : 10059
 Timer : 0, programmed : 5000, actual : 5000
-Timer : 1, programmed : 10000, actual : 10000
-Timer : 2, programmed : 15000, actual : 15006
-Timer : 3, programmed : 20000, actual : 20006
+Timer : 1, programmed : 10000, actual : 10001
+Timer : 2, programmed : 15000, actual : 15019
+Timer : 3, programmed : 20000, actual : 20019
 Timer : 4, programmed : 25000, actual : 0
 Timer : 5, programmed : 30000, actual : 0
 Timer : 6, programmed : 35000, actual : 0
@@ -3621,44 +3732,59 @@ Timer : 12, programmed : 65000, actual : 0
 Timer : 13, programmed : 70000, actual : 0
 Timer : 14, programmed : 75000, actual : 0
 Timer : 15, programmed : 80000, actual : 0
-
-...
-
-
-SimpleTimer : 2, ms : 211269, Dms : 10064
-Timer : 0, programmed : 5000, actual : 5000            <========== Very accurate @ clock 16MHz
+SimpleTimer : 2, ms : 30135, Dms : 10060
+Timer : 0, programmed : 5000, actual : 5000   <========== Very accurate @ clock 16MHz
 Timer : 1, programmed : 10000, actual : 10000
 Timer : 2, programmed : 15000, actual : 15000
-Timer : 3, programmed : 20000, actual : 20000
-Timer : 4, programmed : 25000, actual : 25000
-Timer : 5, programmed : 30000, actual : 30000
-Timer : 6, programmed : 35000, actual : 35000
-Timer : 7, programmed : 40000, actual : 40000
-Timer : 8, programmed : 45000, actual : 45000
-Timer : 9, programmed : 50000, actual : 50000
-Timer : 10, programmed : 55000, actual : 55000
-Timer : 11, programmed : 60000, actual : 60000
-Timer : 12, programmed : 65000, actual : 65000
-Timer : 13, programmed : 70000, actual : 70000
-Timer : 14, programmed : 75000, actual : 75000
-Timer : 15, programmed : 80000, actual : 80000
-SimpleTimer : 2, ms : 221333, Dms : 10064
+Timer : 3, programmed : 20000, actual : 20019
+Timer : 4, programmed : 25000, actual : 25019
+Timer : 5, programmed : 30000, actual : 30019
+Timer : 6, programmed : 35000, actual : 0
+Timer : 7, programmed : 40000, actual : 0
+Timer : 8, programmed : 45000, actual : 0
+Timer : 9, programmed : 50000, actual : 0
+Timer : 10, programmed : 55000, actual : 0
+Timer : 11, programmed : 60000, actual : 0
+Timer : 12, programmed : 65000, actual : 0
+Timer : 13, programmed : 70000, actual : 0
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+SimpleTimer : 2, ms : 40195, Dms : 10060
+...
+Timer : 0, programmed : 5000, actual : 4996
+Timer : 1, programmed : 10000, actual : 9996
+Timer : 2, programmed : 15000, actual : 15000
+Timer : 3, programmed : 20000, actual : 20001
+Timer : 4, programmed : 25000, actual : 25001
+Timer : 5, programmed : 30000, actual : 30001
+Timer : 6, programmed : 35000, actual : 34997
+Timer : 7, programmed : 40000, actual : 40019
+Timer : 8, programmed : 45000, actual : 45020
+Timer : 9, programmed : 50000, actual : 50020
+Timer : 10, programmed : 55000, actual : 55020
+Timer : 11, programmed : 60000, actual : 60020
+Timer : 12, programmed : 65000, actual : 65020
+Timer : 13, programmed : 70000, actual : 70016
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+SimpleTimer : 2, ms : 80442, Dms : 10063
 Timer : 0, programmed : 5000, actual : 5000
 Timer : 1, programmed : 10000, actual : 10000
-Timer : 2, programmed : 15000, actual : 15000
-Timer : 3, programmed : 20000, actual : 20000
-Timer : 4, programmed : 25000, actual : 25000
-Timer : 5, programmed : 30000, actual : 30000
-Timer : 6, programmed : 35000, actual : 35000
-Timer : 7, programmed : 40000, actual : 40000
-Timer : 8, programmed : 45000, actual : 45000
-Timer : 9, programmed : 50000, actual : 50000
-Timer : 10, programmed : 55000, actual : 55000
-Timer : 11, programmed : 60000, actual : 60000
-Timer : 12, programmed : 65000, actual : 65000
-Timer : 13, programmed : 70000, actual : 70000
-Timer : 14, programmed : 75000, actual : 75000
-Timer : 15, programmed : 80000, actual : 80000
+Timer : 2, programmed : 15000, actual : 14996
+Timer : 3, programmed : 20000, actual : 19996
+Timer : 4, programmed : 25000, actual : 24996
+Timer : 5, programmed : 30000, actual : 30001
+Timer : 6, programmed : 35000, actual : 34997
+Timer : 7, programmed : 40000, actual : 39997
+Timer : 8, programmed : 45000, actual : 45020
+Timer : 9, programmed : 50000, actual : 50020
+Timer : 10, programmed : 55000, actual : 55020
+Timer : 11, programmed : 60000, actual : 60020
+Timer : 12, programmed : 65000, actual : 65020
+Timer : 13, programmed : 70000, actual : 70016
+Timer : 14, programmed : 75000, actual : 75016
+Timer : 15, programmed : 80000, actual : 80016
+SimpleTimer : 2, ms : 90506, Dms : 10064
 
 ```
 
@@ -3669,8 +3795,8 @@ Timer : 15, programmed : 80000, actual : 80000
 ```
 
 Starting ISR_16_Timers_Array_Complex on megaAVR Nano Every
-megaAVR_TimerInterrupt v1.3.0
-TimerInterrupt_Generic v1.7.0
+megaAVR_TimerInterrupt v1.4.0
+TimerInterrupt_Generic v1.8.0
 CPU Frequency = 16 MHz
 TCB Clock Frequency = 8MHz for very high accuracy
 Starting  ITimer1 OK, millis() = 10
@@ -3738,8 +3864,8 @@ Timer : 15, programmed : 80000, actual : 80000
 
 ```
 Starting ISR_16_Timers_Array_Complex on megaAVR Nano Every
-megaAVR_TimerInterrupt v1.3.0
-TimerInterrupt_Generic v1.7.0
+megaAVR_TimerInterrupt v1.4.0
+TimerInterrupt_Generic v1.8.0
 CPU Frequency = 16 MHz
 TCB Clock Frequency = 250KHz for lower accuracy but longer time
 Starting  ITimer1 OK, millis() = 11
@@ -3847,115 +3973,6 @@ Sometimes, the library will only work if you update the board core to the latest
 ---
 ---
 
-## Releases
-
-### Releases v1.7.0
-
-1. Add support to Adafruit nRF52 core v0.22.0+
-2. Add support to nRF52 Raytac MDBT50Q_RX Dongle
-
-**Warnings for Releases v1.6.0-** : Use [`Adafruit nRF52 v0.22.0+`](https://github.com/adafruit/Adafruit_nRF52_Arduino/releases/tag/0.22.0) will create **compiler errors**. If so, please use the [`Adafruit nRF52 v0.21.0`](https://github.com/adafruit/Adafruit_nRF52_Arduino/releases/tag/0.21.0). It's advisable to update to Releases v1.7.0+
-
-### Major Releases v1.6.0
-
-1. Add support to **MBED RP2040 boards** such as **Nano_RP2040_Connect, RASPBERRY_PI_PICO**, using [**Arduino-mbed RP2040** core](https://github.com/arduino/ArduinoCore-mbed)
-2. Add support to **RP2040-based boards such as **RASPBERRY_PI_PICO, ADAFRUIT_ITSYBITSY_RP2040, ADAFRUIT_QTPY_RP2040, ADAFRUIT_STEMMAFRIEND_RP2040, ADAFRUIT_TRINKEYQT_RP2040, ADAFRUIT_MACROPAD_RP2040, SPARKFUN_PROMICRO_RP2040, etc.**, using [**Earle Philhower's arduino-pico** core](https://github.com/earlephilhower/arduino-pico)
-3. Add support to **ESP32-S2** such as **Saola, AI-Thinker ESP-12K, etc.**
-4. Update for many other boards
-5. Add and Update examples
-
-### Releases v1.5.0
-
-1. Add support to **ATmega4809-based boards** such as **Arduino UNO WiFi Rev2, AVR_NANO_EVERY, etc.**
-
-### Major Releases v1.4.0
-
-1. Add support to **Generic or Sparkfun AVR ATmega_32U4** such as **AVR_MAKEYMAKEY, AVR_PROMICRO, etc.**
-2. Add support to **Generic or Sparkfun AVR ATmega_328(P)** such as **ARDUINO_REDBOT, ARDUINO_AVR_DIGITAL_SANDBOX, etc.**
-3. Add support to **Generic or Sparkfun AVR ATmega128RFA1** such as **ATMEGA128RFA1_DEV_BOARD, etc.**
-4. Add support to **Adafruit AVR ATMEGA_32U4** such as **AVR_FLORA8, AVR_FEATHER32U4, etc.**
-5. Add support to **Adafruit AVR ATMEGA_328(P)** such as **AVR_FEATHER328P, AVR_METRO, etc.**
-6. Add support to **AVR ATMEGA_16U4, ATMEGA_32U4** such as **Leonardo, YUN, ESPLORA, etc.**
-7. Add support to **Sparkfun SAMD21 boards** such as **SparkFun_RedBoard_Turbo, SparkFun_Qwiic_Micro, etc.**
-8. Add support to **Sparkfun SAMD51 boards** such as **SparkFun_SAMD51_Thing_Plus, SparkFun_SAMD51_MicroMod, etc.**
-9. Update examples
-
-### Releases v1.3.2
-
-1. Clean-up all compiler warnings possible.
-2. Optimize library and examples to reduce memory usage by using Flash String whenever possible.
-3. Add Table of Contents
-4. Add better debug feature
-
-### Releases v1.3.1
-
-1. Add many complex examples.
-2. Add board Version String.
-3. Fix SAMD bug.
-
-### Releases v1.3.0
-
-1. Add [**NRF52_MBED_TimerInterrupt Library**](https://github.com/khoih-prog/NRF52_MBED_TimerInterrupt) to support **NRF52840-based board using mbed-RTOS such as Nano-33-BLE.**
-2. Add support for UNO, Nano, Mini, Arduino Ethernet, Fio, BT, LilyPad, Pro, Pro Mini, NG, UNO WiFi.
-
-
-### Releases v1.2.0
-
-1. Add [**STM32_TimerInterrupt Library**](https://github.com/khoih-prog/STM32_TimerInterrupt)
-
-### Releases v1.1.0
-
-1. Initial Super-Library coding to merge all TimerInterrupt Libraries
-
----
-
-#### Currently Supported Boards
-
-  - **ESP8266**
-  
-  - **ESP32, ESP32-S2**
-  
-  - **AdaFruit Feather nRF52832, nRF52840 Express, BlueFruit Sense, Itsy-Bitsy nRF52840 Express, Metro nRF52840 Express, NINA_B302_ublox, NINA_B112_ublox etc.**.
-  
-  - **Arduino SAMD21 (ZERO, MKR, NANO_33_IOT, etc.)**.
-  - **Adafruit SAM21 (Itsy-Bitsy M0, Metro M0, Feather M0, Gemma M0, etc.)**.
-  - **Adafruit SAM51 (Itsy-Bitsy M4, Metro M4, Grand Central M4, Feather M4 Express, etc.)**.
-  - **Seeeduino SAMD21/SAMD51 boards (SEEED_WIO_TERMINAL, SEEED_FEMTO_M0, SEEED_XIAO_M0, Wio_Lite_MG126, WIO_GPS_BOARD, SEEEDUINO_ZERO, SEEEDUINO_LORAWAN, SEEED_GROVE_UI_WIRELESS, etc.)**
-  - **Sparkfun SAMD21 boards** such as **SparkFun_RedBoard_Turbo, SparkFun_Qwiic_Micro, etc.**
-  - **Sparkfun SAMD51 boards** such as **SparkFun_SAMD51_Thing_Plus, SparkFun_SAMD51_MicroMod, etc.**
-  
-  - **STM32 (Nucleo-144, Nucleo-64, Nucleo-32, Discovery, STM32F1, STM32F3, STM32F4, STM32H7, STM32L0, etc.)**.
-  - **STM32F/L/H/G/WB/MP1 (Nucleo-64 L053R8,Nucleo-144, Nucleo-64, Nucleo-32, Discovery, STM32Fx, STM32H7, STM32Lx, STM32Gx, STM32WB, STM32MP1, etc.) having 64K+ Flash program memory.**
-  
-  - **Teensy boards** such as :
-    - **Teensy 4.1, 4.0**
-    - **Teensy 3.6, 3.5, 3.2/3.1, 3.0**
-    - **Teensy LC**
-    - **Teensy++ 2.0 and Teensy 2.0**
-
-  - **Arduino, Adafruit, Sparkfun, Generic AVR boards** such as :
-    - Arduino Uno / Mega / Duemilanove / Diecimila / LilyPad / Mini / Fio / Nano, etc.
-    - **Arduino ATMega 16U4, 32U4** such as AVR Leonardo, Leonardo ETH, YUN, Esplora, LILYPAD_USB, AVR_ROBOT_CONTROL, AVR_ROBOT_MOTOR, AVR_INDUSTRIAL101, etc.
-    - **Adafruit ATMega 32U4** such as AVR_FLORA8, AVR_FEATHER32U4, AVR_CIRCUITPLAY, AVR_ITSYBITSY32U4_5V, AVR_ITSYBITSY32U4_3V, AVR_BLUEFRUITMICRO, AVR_ADAFRUIT32U4, etc.
-    - **Adafruit ATMega 328(P)** such as AVR_METRO, AVR_FEATHER328P, AVR_PROTRINKET5, AVR_PROTRINKET3, AVR_PROTRINKET5FTDI, AVR_PROTRINKET3FTDI, etc.
-    - **Generic or Sparkfun AVR ATmega_32U4** such as **AVR_MAKEYMAKEY, AVR_PROMICRO, etc.**
-    - **Generic or Sparkfun AVR ATmega_328(P)** such as **ARDUINO_REDBOT, ARDUINO_AVR_DIGITAL_SANDBOX, etc.**
-    - **Generic or Sparkfun AVR ATmega128RFA1** such as **ATMEGA128RFA1_DEV_BOARD, etc.**
-    
-  - **Arduino Nano-33-BLE**
-  
-  - **Arduino SAM DUE**.
-  
-  - **ATmega4809-based boards** such as :
-    - **Arduino UNO WiFi Rev2, AVR_NANO_EVERY, etc.**
-
-  - RP2040-based boards such as **RASPBERRY_PI_PICO, ADAFRUIT_FEATHER_RP2040 and GENERIC_RP2040**, etc. using [**Earle Philhower's arduino-pico** core](https://github.com/earlephilhower/arduino-pico)
-
-  - RP2040-based boards such as **Nano_RP2040_Connect, RASPBERRY_PI_PICO, ADAFRUIT_FEATHER_RP2040 and GENERIC_RP2040**, etc. using [**Arduino-mbed RP2040** core](https://github.com/arduino/ArduinoCore-mbed)
-
----
----
-
 ### Issues
 
 Submit issues to: [TimerInterrupt_Generic issues](https://github.com/khoih-prog/TimerInterrupt_Generic/issues)
@@ -3985,12 +4002,14 @@ Submit issues to: [TimerInterrupt_Generic issues](https://github.com/khoih-prog/
 - [x] Raspberry Pi pico
 - [x] MBED Raspberry Pi pico
 - [ ] Portenta H7
+- [ ] RTL8720DN
 
 2. More hardware-initiated software-enabled timers
 3. Longer time interval
 4. Clean-up all compiler warnings possible.
 5. Add Table of Contents
 6. Add Version String
+7. Add `changelog.md`
 
 ---
 ---

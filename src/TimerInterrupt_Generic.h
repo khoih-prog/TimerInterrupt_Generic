@@ -19,7 +19,7 @@
   Built by Khoi Hoang https://github.com/khoih-prog/TimerInterrupt_Generic
   Licensed under MIT license
 
-  Version: 1.7.0
+  Version: 1.8.0
 
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
@@ -32,6 +32,7 @@
   1.5.0   K.Hoang      17/04/2021 Add support to Arduino megaAVR ATmega4809-based boards (Nano Every, UNO WiFi Rev2, etc.)
   1.6.0   K.Hoang      15/06/2021 Add T3/T4 support to 32u4. Add support to RP2040, ESP32-S2
   1.7.0   K.Hoang      13/08/2021 Add support to Adafruit nRF52 core v0.22.0+
+  1.8.0   K.Hoang      24/11/2021 Update to use latest TimerInterrupt Libraries' versions
 ********************************************************************************************************************************/
 
 #pragma once
@@ -40,7 +41,7 @@
 #define TIMERINTERRUPT_GENERIC_H
 
 #if !defined(TIMER_INTERRUPT_GENERIC_VERSION)
-  #define TIMER_INTERRUPT_GENERIC_VERSION       "TimerInterrupt_Generic v1.6.0"
+  #define TIMER_INTERRUPT_GENERIC_VERSION       "TimerInterrupt_Generic v1.8.0"
 #endif
 
 #include "TimerInterrupt_Generic_Debug.h"
@@ -140,20 +141,10 @@
   #define TIMER_INTERRUPT_USING_ESP8266           true
 
 /////////////////////////////// ESP32 ///////////////////////////////
-
-#elif ( ARDUINO_ESP32S2_DEV || ARDUINO_FEATHERS2 || ARDUINO_ESP32S2_THING_PLUS || ARDUINO_MICROS2 || \
-        ARDUINO_METRO_ESP32S2 || ARDUINO_MAGTAG29_ESP32S2 || ARDUINO_FUNHOUSE_ESP32S2 || \
-        ARDUINO_ADAFRUIT_FEATHER_ESP32S2_NOPSRAM )
-        
-  #define TIMER_INTERRUPT_USING_ESP32_S2          true
-  #define TIMER_INTERRUPT_USING_ESP32             false
-          
-/////////////////////////////// ESP32 ///////////////////////////////
-        
+       
 #elif ( defined(ESP32) || ESP32 )
 
   #define TIMER_INTERRUPT_USING_ESP32             true
-  #define TIMER_INTERRUPT_USING_ESP32_S2          false
 
 /////////////////////////////// Nano-33-BLE ///////////////////////////////
 
@@ -226,8 +217,6 @@
   #include "AVRTimerInterrupt_Generic.h"
 #elif TIMER_INTERRUPT_USING_ESP8266
   #include "ESP8266TimerInterrupt_Generic.h"  
-#elif TIMER_INTERRUPT_USING_ESP32_S2
-  #include "ESP32_S2_TimerInterrupt_Generic.h"  
 #elif TIMER_INTERRUPT_USING_ESP32
   #include "ESP32TimerInterrupt_Generic.h"  
 #elif TIMER_INTERRUPT_USING_NANO33BLE

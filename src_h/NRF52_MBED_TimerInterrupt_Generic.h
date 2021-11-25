@@ -19,7 +19,7 @@
   Based on BlynkTimer.h
   Author: Volodymyr Shymanskyy
 
-  Version: 1.7.0
+  Version: 1.8.0
 
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
@@ -32,6 +32,7 @@
   1.5.0   K.Hoang      17/04/2021 Add support to Arduino megaAVR ATmega4809-based boards (Nano Every, UNO WiFi Rev2, etc.)
   1.6.0   K.Hoang      15/06/2021 Add T3/T4 support to 32u4. Add support to RP2040, ESP32-S2
   1.7.0   K.Hoang      13/08/2021 Add support to Adafruit nRF52 core v0.22.0+
+  1.8.0   K.Hoang      24/11/2021 Update to use latest TimerInterrupt Libraries' versions
 *****************************************************************************************************************************/
 /*
   nRF52 has 5 Hardware TIMERs: NRF_TIMER0-NRF_TIMER4
@@ -86,11 +87,11 @@
 // It's better to replace with the new one later. But be careful not to chain break anything
 #include "hal/nrf_timer.h"
 
-#define NRF52_MBED_TIMER_INTERRUPT_VERSION       "NRF52_MBED_TimerInterrupt v1.2.1"
-
-#ifndef TIMER_INTERRUPT_DEBUG
-  #define TIMER_INTERRUPT_DEBUG       0
+#ifndef NRF52_MBED_TIMER_INTERRUPT_VERSION
+  #define NRF52_MBED_TIMER_INTERRUPT_VERSION       "NRF52_MBED_TimerInterrupt v1.3.0"
 #endif
+
+#include "TimerInterrupt_Generic_Debug.h"
 
 class NRF52_MBED_TimerInterrupt;
 
@@ -168,9 +169,9 @@ NRF52_MBED_TimerInterrupt*  nRF52Timers [NRF_MAX_TIMER] = { NULL, NULL, NULL, NU
 class NRF52_MBED_TimerInterrupt
 {
   private:
-    uint8_t               _timer       = NRF_TIMER_1;
+    uint8_t               _timer       = NRF_TIMER_3;
     
-    NRF_TIMER_Type*        nrf_timer  = NRF_TIMER1;
+    NRF_TIMER_Type*        nrf_timer  = NRF_TIMER3;
     nrf_timer_cc_channel_t cc_channel = NRF_TIMER_CC_CHANNEL0;
     
     IRQn_Type              _timer_IRQ;
@@ -184,14 +185,14 @@ class NRF52_MBED_TimerInterrupt
 
   public:
 
-    NRF52_MBED_TimerInterrupt(uint8_t timer = NRF_TIMER_1)
+    NRF52_MBED_TimerInterrupt(uint8_t timer = NRF_TIMER_3)
     {
-      // KH, force to use NRF_TIMER1 if accidentally select already used
+      // KH, force to use NRF_TIMER3 if accidentally select already used
       // NRF_TIMER0
       // NRF_TIMER2 (reserved by mbed RTOS)
       // To store to know which to delete in destructor
-      if ( (timer == NRF_TIMER_0) || (timer == NRF_TIMER_2) )
-        _timer = NRF_TIMER_1;
+      if ( (timer == NRF_TIMER_0) || (timer == NRF_TIMER_1) || (timer == NRF_TIMER_2) )
+        _timer = NRF_TIMER_3;
       else
         _timer = timer;
       
@@ -270,7 +271,7 @@ class NRF52_MBED_TimerInterrupt
       // select timer frequency is 1MHz for better accuracy. We don't use 16-bit prescaler for now.
       // Will use later if very low frequency is needed.
       _timerCount = (uint32_t) _frequency / frequency;
-
+      
       TISR_LOGWARN1(F("NRF52_MBED_TimerInterrupt: Timer ="), NRF52_MBED_TimerName[_timer]);
       TISR_LOGWARN3(F("Frequency ="), _frequency, F(", _count ="), (uint32_t) (_timerCount));
 

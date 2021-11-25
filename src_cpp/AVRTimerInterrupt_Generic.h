@@ -26,7 +26,7 @@
   Built by Khoi Hoang https://github.com/khoih-prog/TimerInterrupt_Generic
   Licensed under MIT license
 
-  Version: 1.7.0
+  Version: 1.8.0
 
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
@@ -39,6 +39,7 @@
   1.5.0   K.Hoang      17/04/2021 Add support to Arduino megaAVR ATmega4809-based boards (Nano Every, UNO WiFi Rev2, etc.)
   1.6.0   K.Hoang      15/06/2021 Add T3/T4 support to 32u4. Add support to RP2040, ESP32-S2
   1.7.0   K.Hoang      13/08/2021 Add support to Adafruit nRF52 core v0.22.0+
+  1.8.0   K.Hoang      24/11/2021 Update to use latest TimerInterrupt Libraries' versions
 *****************************************************************************************************************************/
 
 
@@ -52,7 +53,7 @@
 #endif
 
 #ifndef TIMER_INTERRUPT_VERSION
-  #define TIMER_INTERRUPT_VERSION       "TimerInterrupt v1.5.0"
+  #define TIMER_INTERRUPT_VERSION       "TimerInterrupt v1.7.0"
 #endif
 
 #include <avr/interrupt.h>
@@ -919,20 +920,42 @@ class TimerInterrupt
 #if TIMER_INTERRUPT_USING_ATMEGA_32U4
       if (_timer == 4)
       {
+        if (_OCRValueRemaining < MAX_COUNT_8BIT)
+        {
+          set_OCR();
+        }
+        
         _OCRValueRemaining -= min(MAX_COUNT_8BIT, _OCRValueRemaining);
       }
       else
       {
+        if (_OCRValueRemaining < MAX_COUNT_16BIT)
+        {
+          set_OCR();
+        }
+      
         _OCRValueRemaining -= min(MAX_COUNT_16BIT, _OCRValueRemaining);
       }
 #else
+      if (_OCRValueRemaining < MAX_COUNT_16BIT)
+      {
+        set_OCR();
+      }
+        
       _OCRValueRemaining -= min(MAX_COUNT_16BIT, _OCRValueRemaining);
 #endif      
     }
     else
+    {
+      if (_OCRValueRemaining < MAX_COUNT_8BIT)
+      {
+        set_OCR();
+      }
+        
       _OCRValueRemaining -= min(MAX_COUNT_8BIT, _OCRValueRemaining);
+    }
 
-    if (_OCRValueRemaining == 0)
+    if (_OCRValueRemaining <= 0)
     {
       // Reset value for next cycle
       _OCRValueRemaining = _OCRValue;
@@ -951,24 +974,9 @@ class TimerInterrupt
     noInterrupts();
 
     // Reset value for next cycle, have to deduct the value already loaded to OCR register
-
-    if (_timer != 2)
-    {
-#if TIMER_INTERRUPT_USING_ATMEGA_32U4
-      if (_timer == 4)
-      {
-        _OCRValueRemaining = _OCRValue - min(MAX_COUNT_8BIT, _OCRValueRemaining);
-      }
-      else
-      {
-        _OCRValueRemaining = _OCRValue - min(MAX_COUNT_16BIT, _OCRValueRemaining);
-      }
-#else      
-      _OCRValueRemaining = _OCRValue - min(MAX_COUNT_16BIT, _OCRValueRemaining);
-#endif        
-    }  
-    else
-      _OCRValueRemaining = _OCRValue - min(MAX_COUNT_8BIT, _OCRValueRemaining);
+    
+    _OCRValueRemaining = _OCRValue;
+    set_OCR();
 
     _timerDone = false;
 
@@ -1046,7 +1054,10 @@ class TimerInterrupt
             ITimer1.callback();
             
             // To reload _OCRValueRemaining as well as _OCR register to MAX_COUNT_16BIT if _OCRValueRemaining > MAX_COUNT_16BIT
-            ITimer1.reload_OCRValue();
+            if (ITimer1.get_OCRValue() > MAX_COUNT_16BIT)
+            {
+              ITimer1.reload_OCRValue();
+            }
                  
             if (countLocal > 0)                  
               ITimer1.setCount(countLocal - 1);
@@ -1089,8 +1100,12 @@ class TimerInterrupt
             TISR_LOGDEBUG3(("T2 callback, _OCRValueRemaining ="), ITimer2.get_OCRValueRemaining(), (", millis ="), millis());
              
             ITimer2.callback();
+            
             // To reload _OCRValue
-            ITimer2.reload_OCRValue();
+            if (ITimer2.get_OCRValue() > MAX_COUNT_8BIT)
+            {
+              ITimer2.reload_OCRValue();
+            }
 
             if (countLocal > 0)
              ITimer2.setCount(countLocal - 1);
@@ -1138,7 +1153,10 @@ class TimerInterrupt
               ITimer3.callback();
               
               // To reload _OCRValueRemaining as well as _OCR register to MAX_COUNT_16BIT
-              ITimer3.reload_OCRValue();
+              if (ITimer3.get_OCRValue() > MAX_COUNT_16BIT)
+              {
+                ITimer3.reload_OCRValue();
+              }
               
               if (countLocal > 0)
                 ITimer3.setCount(countLocal - 1);     
@@ -1191,7 +1209,10 @@ class TimerInterrupt
               ITimer4.callback();
               
               // To reload _OCRValueRemaining as well as _OCR register to MAX_COUNT_16BIT (Mega2560) or MAX_COUNT_8BIT (32u4)
-              ITimer4.reload_OCRValue();
+              if (ITimer4.get_OCRValue() > MAX_COUNT_16BIT)
+              {
+                ITimer4.reload_OCRValue();
+              }
               
               if (countLocal > 0)
                 ITimer4.setCount(countLocal - 1);       
@@ -1242,7 +1263,10 @@ class TimerInterrupt
               ITimer5.callback();
               
               // To reload _OCRValueRemaining as well as _OCR register to MAX_COUNT_16BIT
-              ITimer5.reload_OCRValue();
+              if (ITimer5.get_OCRValue() > MAX_COUNT_16BIT)
+              {
+                ITimer5.reload_OCRValue();
+              }
               
               if (countLocal > 0)
                 ITimer5.setCount(countLocal - 1);

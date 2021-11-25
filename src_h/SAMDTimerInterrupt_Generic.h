@@ -110,11 +110,11 @@
 
 #include "Arduino.h"
 
-#define SAMD_TIMER_INTERRUPT_VERSION       "SAMDTimerInterrupt v1.4.0"
-
-#ifndef TIMER_INTERRUPT_DEBUG
-  #define TIMER_INTERRUPT_DEBUG       0
+#ifndef SAMD_TIMER_INTERRUPT_VERSION
+  #define SAMD_TIMER_INTERRUPT_VERSION       "SAMDTimerInterrupt v1.5.0"
 #endif
+
+#include "TimerInterrupt_Generic_Debug.h"
 
 #define TIMER_HZ      48000000L
 
@@ -162,10 +162,10 @@ class SAMDTimerInterrupt
     // point to timer struct, (TcCount16*) TC3 for SAMD51
     void*           _SAMDTimer = NULL;
     
-    timerCallback  _callback;        // pointer to the callback function
+    timerCallback   _callback;        // pointer to the callback function
     float           _frequency;       // Timer frequency
     
-    unsigned long   _period;
+    float           _period;
     int             _prescaler;
     int             _compareValue;
 
@@ -191,7 +191,7 @@ class SAMDTimerInterrupt
     // No params and duration now. To be addes in the future by adding similar functions here or to SAMD-hal-timer.c
     bool setFrequency(float frequency, timerCallback callback)
     {
-      _period = (unsigned long) (1000000.0f / frequency);
+      _period =  (1000000.0f / frequency);
       
       if (_timerNumber == TIMER_TC3)
       {    
@@ -305,9 +305,9 @@ class SAMDTimerInterrupt
     
     private:
     
-    void setPeriod_TIMER_TC3(unsigned long period)
+    void setPeriod_TIMER_TC3(float period)
     {
-      uint32_t TC_CTRLA_PRESCALER_DIVN;
+      uint32_t TC_CTRLA_PRESCALER_DIVN = 1;
 
       TC3->COUNT16.CTRLA.reg &= ~TC_CTRLA_ENABLE;
       TC3_wait_for_sync();
@@ -369,7 +369,7 @@ class SAMDTimerInterrupt
       TC3->COUNT16.CTRLA.reg |= TC_CTRLA_PRESCALER_DIVN;
       TC3_wait_for_sync();
 
-      _compareValue = (int)(TIMER_HZ / (_prescaler/((float)period / 1000000))) - 1;
+      _compareValue = (int)(TIMER_HZ / (_prescaler/(period / 1000000.0))) - 1;
 
       // Make sure the count is in a proportional position to where it was
       // to prevent any jitter or disconnect when changing the compare value.
@@ -456,11 +456,11 @@ class SAMDTimerInterrupt
     // point to timer struct, (TcCount16*) TC3 or (Tcc*) TCC0 for SAMD21
     void*           _SAMDTimer = NULL;
     
-    timerCallback  _callback;        // pointer to the callback function
+    timerCallback   _callback;        // pointer to the callback function
     float           _frequency;       // Timer frequency
     //uint32_t        _timerCount;      // count to activate timer
     
-    unsigned long   _period;
+    float   _period;
     int             _prescaler;
     int             _compareValue;
 
@@ -490,7 +490,7 @@ class SAMDTimerInterrupt
     // No params and duration now. To be addes in the future by adding similar functions here or to SAMD-hal-timer.c
     bool setFrequency(float frequency, timerCallback callback)
     {
-      _period = (unsigned long) (1000000.0f / frequency);
+      _period =  (1000000.0f / frequency);
       
       TISR_LOGDEBUG3(F("_period ="), _period, F(", frequency ="), frequency);
       
@@ -661,12 +661,10 @@ class SAMDTimerInterrupt
     
     private:
     
-    void setPeriod_TIMER_TC3(unsigned long period)
+    void setPeriod_TIMER_TC3(float period)
     {
       TcCount16* _Timer = (TcCount16*) _SAMDTimer;
       
-      //uint32_t TC_CTRLA_PRESCALER_DIVN;
-
       _Timer->CTRLA.reg &= ~TC_CTRLA_ENABLE;
       while (_Timer->STATUS.bit.SYNCBUSY == 1);
       _Timer->CTRLA.reg &= ~TC_CTRLA_PRESCALER_DIV1024;
@@ -735,7 +733,7 @@ class SAMDTimerInterrupt
 	    
 	    while (_Timer->STATUS.bit.SYNCBUSY == 1);
 
-	    _compareValue = (int)(TIMER_HZ / (_prescaler / ((float)period / 1000000))) - 1;
+	    _compareValue = (int)(TIMER_HZ / (_prescaler / (period / 1000000.0))) - 1;
 
       
       // Make sure the count is in a proportional position to where it was
@@ -749,7 +747,7 @@ class SAMDTimerInterrupt
       TISR_LOGDEBUG1(F("_compareValue ="), _compareValue);
     }
     
-    void setPeriod_TIMER_TCC(unsigned long period)
+    void setPeriod_TIMER_TCC(float period)
     {
       Tcc* _Timer = (Tcc*) _SAMDTimer;
       
@@ -819,7 +817,7 @@ class SAMDTimerInterrupt
 		    _prescaler = 1;
 	    }
 	    
-	    _compareValue = (int)(TIMER_HZ / (_prescaler / ((float)period / 1000000))) - 1;
+	    _compareValue = (int)(TIMER_HZ / (_prescaler / (period / 1000000))) - 1;
 
 	    _Timer->PER.reg = _compareValue; 
 	    
