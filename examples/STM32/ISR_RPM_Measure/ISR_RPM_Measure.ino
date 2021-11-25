@@ -3,21 +3,14 @@
   For STM32 boards
   Written by Khoi Hoang
   
+  Built by Khoi Hoang https://github.com/khoih-prog/TimerInterrupt_Generic
+  Licensed under MIT license
+  
   Now even you use all these new 16 ISR-based timers,with their maximum interval practically unlimited (limited only by
-  unsigned long miliseconds), you just consume only one Hardware timer and avoid conflicting with other cores' tasks.
+  unsigned long miliseconds), you just consume only one STM32 timer and avoid conflicting with other cores' tasks.
   The accuracy is nearly perfect compared to software timers. The most important feature is they're ISR-based timers
   Therefore, their executions are not blocked by bad-behaving functions / tasks.
   This important feature is absolutely necessary for mission-critical tasks.
-  
-  Based on SimpleTimer - A timer library for Arduino.
-  Author: mromani@ottotecnica.com
-  Copyright (c) 2010 OTTOTECNICA Italy
-  
-  Based on BlynkTimer.h
-  Author: Volodymyr Shymanskyy
-  
-  Built by Khoi Hoang https://github.com/khoih-prog/TimerInterrupt_Generic
-  Licensed under MIT license
 *****************************************************************************************************************************/
 /*
    Notes:
@@ -43,7 +36,7 @@
 
 #if !( defined(STM32F0) || defined(STM32F1) || defined(STM32F2) || defined(STM32F3)  ||defined(STM32F4) || defined(STM32F7) || \
        defined(STM32L0) || defined(STM32L1) || defined(STM32L4) || defined(STM32H7)  ||defined(STM32G0) || defined(STM32G4) || \
-       defined(STM32WB) || defined(STM32MP1) )
+       defined(STM32WB) || defined(STM32MP1) || defined(STM32L5) )
   #error This code is designed to run on STM32F/L/H/G/WB/MP1 platform! Please check your Tools->Board setting.
 #endif
 
@@ -91,7 +84,7 @@ volatile int debounceCounter;
 
 volatile bool activeState = false;
 
-void detectRotation()
+void detectRotation(void)
 {
   activeState = true;
 }
@@ -152,12 +145,14 @@ void setup()
   
   Serial.begin(115200);
   while (!Serial);
-  
+
+  delay(100);
+
   Serial.print(F("\nStarting ISR_RPM_Measure on ")); Serial.println(BOARD_NAME);
   Serial.println(STM32_TIMER_INTERRUPT_VERSION);
   Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
   Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
-
+  
   // Interval in microsecs, must multiply to 1000 here or crash
   if (ITimer1.attachInterruptInterval(TIMER1_INTERVAL_MS * 1000, TimerHandler1))
   {

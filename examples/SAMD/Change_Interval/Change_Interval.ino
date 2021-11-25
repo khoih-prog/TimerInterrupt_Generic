@@ -3,21 +3,14 @@
   For SAMD boards
   Written by Khoi Hoang
   
+  Built by Khoi Hoang https://github.com/khoih-prog/TimerInterrupt_Generic
+  Licensed under MIT license
+  
   Now even you use all these new 16 ISR-based timers,with their maximum interval practically unlimited (limited only by
-  unsigned long miliseconds), you just consume only one Hardware timer and avoid conflicting with other cores' tasks.
+  unsigned long miliseconds), you just consume only one SAMD timer and avoid conflicting with other cores' tasks.
   The accuracy is nearly perfect compared to software timers. The most important feature is they're ISR-based timers
   Therefore, their executions are not blocked by bad-behaving functions / tasks.
   This important feature is absolutely necessary for mission-critical tasks.
-  
-  Based on SimpleTimer - A timer library for Arduino.
-  Author: mromani@ottotecnica.com
-  Copyright (c) 2010 OTTOTECNICA Italy
-  
-  Based on BlynkTimer.h
-  Author: Volodymyr Shymanskyy
-  
-  Built by Khoi Hoang https://github.com/khoih-prog/TimerInterrupt_Generic
-  Licensed under MIT license
 *****************************************************************************************************************************/
 
 /*
@@ -70,7 +63,6 @@ void printResult(uint32_t currTime)
   Serial.print(F(", TimerCount = ")); Serial.println(TimerCount);
 }
 
-
 void TimerHandler()
 {
   static bool toggle = false;
@@ -100,7 +92,7 @@ void setup()
   // Interval in microsecs
   if (ITimer.attachInterruptInterval(TIMER_INTERVAL_MS * 1000, TimerHandler))
   {
-    Serial.print(F("Starting  ITimer OK, millis() = ")); Serial.println(millis());
+    Serial.print(F("Starting ITimer OK, millis() = ")); Serial.println(millis());
   }
   else
     Serial.println(F("Can't set ITimer. Select another freq. or timer"));

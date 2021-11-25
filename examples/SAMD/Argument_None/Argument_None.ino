@@ -8,16 +8,6 @@
   The accuracy is nearly perfect compared to software timers. The most important feature is they're ISR-based timers
   Therefore, their executions are not blocked by bad-behaving functions / tasks.
   This important feature is absolutely necessary for mission-critical tasks.
-  
-  Based on SimpleTimer - A timer library for Arduino.
-  Author: mromani@ottotecnica.com
-  Copyright (c) 2010 OTTOTECNICA Italy
-  
-  Based on BlynkTimer.h
-  Author: Volodymyr Shymanskyy
-  
-  Built by Khoi Hoang https://github.com/khoih-prog/TimerInterrupt_Generic
-  Licensed under MIT license
 *****************************************************************************************************************************/
 
 /*
@@ -49,9 +39,9 @@
 
 #include "TimerInterrupt_Generic.h"
 
-//#ifndef LED_BUILTIN
-//  #define LED_BUILTIN       13
-//#endif
+#ifndef LED_BUILTIN
+  #define LED_BUILTIN       13
+#endif
 
 #ifndef LED_BLUE
   #define LED_BLUE          2
@@ -155,7 +145,7 @@ void setup()
   Serial.println(SAMD_TIMER_INTERRUPT_VERSION);
   Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
   Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
-
+  
   // Interval in microsecs
   if (ITimer0.attachInterruptInterval(TIMER0_INTERVAL_MS * 1000, TimerHandler0))
   {

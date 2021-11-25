@@ -3,21 +3,14 @@
   For SAMD boards
   Written by Khoi Hoang
   
+  Built by Khoi Hoang https://github.com/khoih-prog/TimerInterrupt_Generic
+  Licensed under MIT license
+  
   Now even you use all these new 16 ISR-based timers,with their maximum interval practically unlimited (limited only by
-  unsigned long miliseconds), you just consume only one Hardware timer and avoid conflicting with other cores' tasks.
+  unsigned long miliseconds), you just consume only one SAMD timer and avoid conflicting with other cores' tasks.
   The accuracy is nearly perfect compared to software timers. The most important feature is they're ISR-based timers
   Therefore, their executions are not blocked by bad-behaving functions / tasks.
   This important feature is absolutely necessary for mission-critical tasks.
-  
-  Based on SimpleTimer - A timer library for Arduino.
-  Author: mromani@ottotecnica.com
-  Copyright (c) 2010 OTTOTECNICA Italy
-  
-  Based on BlynkTimer.h
-  Author: Volodymyr Shymanskyy
-  
-  Built by Khoi Hoang https://github.com/khoih-prog/TimerInterrupt_Generic
-  Licensed under MIT license
 *****************************************************************************************************************************/
 
 /*
@@ -40,7 +33,7 @@
   #error This code is designed to run on SAMD21/SAMD51 platform! Please check your Tools->Board setting.
 #endif
 
-// These define's must be placed at the beginning before #include "TimerInterrupt_Generic.h"
+// These define's must be placed at the beginning before #include "SAMDTimerInterrupt.h"
 // _TIMERINTERRUPT_LOGLEVEL_ from 0 to 4
 // Don't define _TIMERINTERRUPT_LOGLEVEL_ > 0. Only for special ISR debugging only. Can hang the system.
 // Don't define TIMER_INTERRUPT_DEBUG > 2. Only for special ISR debugging only. Can hang the system.
@@ -84,7 +77,7 @@ ISR_Timer SAMD_ISR_Timer;
 #define TIMER_INTERVAL_2S             2000L
 #define TIMER_INTERVAL_5S             5000L
 
-void TimerHandler()
+void TimerHandler(void)
 {
   SAMD_ISR_Timer.run();
 }
@@ -114,7 +107,9 @@ void setup()
   Serial.begin(115200);
   while (!Serial);
 
-  Serial.print(F("\nTimerInterruptLEDDemo on ")); Serial.println(BOARD_NAME);
+  delay(100);
+
+  Serial.print(F("\nStarting TimerInterruptLEDDemo on ")); Serial.println(BOARD_NAME);
   Serial.println(SAMD_TIMER_INTERRUPT_VERSION);
   Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
   Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
