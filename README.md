@@ -142,7 +142,7 @@
   * [ 3. ISR_16_Timers_Array_Complex on Arduino SAMD21 SAMD_NANO_33_IOT](#3-ISR_16_Timers_Array_Complex-on-arduino-samd21-samd_nano_33_iot)
   * [ 4. TimerInterruptTest on Teensy 4.1](#4-timerinterrupttest-on-teensy-41)
   * [ 5. ISR_16_Timers_Array_Complex on ESP32_DEV](#5-ISR_16_Timers_Array_Complex-on-esp32_dev)
-  * [ 6. ISR_16_Timers_Array_Complex on ESP8266_NODEMCU](#6-ISR_16_Timers_Array_Complex-on-esp8266_nodemcu)
+  * [ 6. ISR_16_Timers_Array_Complex on ESP8266_NODEMCU_ESP12E](#6-ISR_16_Timers_Array_Complex-on-ESP8266_NODEMCU_ESP12E)
   * [ 7. ISR_16_Timers_Array_Complex on STM32F7 Nucleo-144 F767ZI](#7-ISR_16_Timers_Array_Complex-on-stm32f7-nucleo-144-f767zi)
   * [ 8. TimerInterruptTest on STM32F7 Nucleo-144 F767ZI](#8-timerinterrupttest-on-stm32f7-nucleo-144-f767zi)
   * [ 9. ISR_16_Timers_Array_Complex on Nano 33 BLE](#9-isr_16_timers_array_complex-on-nano-33-ble)
