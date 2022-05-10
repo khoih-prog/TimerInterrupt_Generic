@@ -3,7 +3,7 @@
   For SAMD boards
   Written by Khoi Hoang
   
-  Built by Khoi Hoang https://github.com/khoih-prog/TimerInterrupt_Generic
+  Built by Khoi Hoang https://github.com/khoih-prog/SAMD_TimerInterrupt
   Licensed under MIT license
   
   Now even you use all these new 16 ISR-based timers,with their maximum interval practically unlimited (limited only by
@@ -26,10 +26,13 @@
 */
 
 #if !( defined(ARDUINO_SAMD_ZERO) || defined(ARDUINO_SAMD_MKR1000) || defined(ARDUINO_SAMD_MKRWIFI1010) \
-    || defined(ARDUINO_SAMD_NANO_33_IOT) || defined(ARDUINO_SAMD_MKRFox1200) || defined(ARDUINO_SAMD_MKRWAN1300) || defined(ARDUINO_SAMD_MKRWAN1310) \
-    || defined(ARDUINO_SAMD_MKRGSM1400) || defined(ARDUINO_SAMD_MKRNB1500) || defined(ARDUINO_SAMD_MKRVIDOR4000) || defined(__SAMD21G18A__) \
-    || defined(ARDUINO_SAMD_CIRCUITPLAYGROUND_EXPRESS) || defined(__SAMD21E18A__) || defined(__SAMD51__) || defined(__SAMD51J20A__) || defined(__SAMD51J19A__) \
-    || defined(__SAMD51G19A__) || defined(__SAMD51P19A__) || defined(__SAMD21G18A__) )
+      || defined(ARDUINO_SAMD_NANO_33_IOT) || defined(ARDUINO_SAMD_MKRFox1200) || defined(ARDUINO_SAMD_MKRWAN1300) || defined(ARDUINO_SAMD_MKRWAN1310) \
+      || defined(ARDUINO_SAMD_MKRGSM1400) || defined(ARDUINO_SAMD_MKRNB1500) || defined(ARDUINO_SAMD_MKRVIDOR4000) \
+      || defined(ARDUINO_SAMD_CIRCUITPLAYGROUND_EXPRESS) || defined(__SAMD51__) || defined(__SAMD51J20A__) \
+      || defined(__SAMD51J19A__) || defined(__SAMD51G19A__) || defined(__SAMD51P19A__)  \
+      || defined(__SAMD21E15A__) || defined(__SAMD21E16A__) || defined(__SAMD21E17A__) || defined(__SAMD21E18A__) \
+      || defined(__SAMD21G15A__) || defined(__SAMD21G16A__) || defined(__SAMD21G17A__) || defined(__SAMD21G18A__) \
+      || defined(__SAMD21J15A__) || defined(__SAMD21J16A__) || defined(__SAMD21J17A__) || defined(__SAMD21J18A__) )
   #error This code is designed to run on SAMD21/SAMD51 platform! Please check your Tools->Board setting.
 #endif
 
@@ -52,26 +55,29 @@
   #define LED_RED           8
 #endif
    
-#include "TimerInterrupt_Generic.h"
-#include "ISR_Timer_Generic.h"
+#include "SAMDTimerInterrupt.h"
+#include "SAMD_ISR_Timer.h"
 
 #define HW_TIMER_INTERVAL_MS      10
 
-// Depending on the board, you can select SAMD21 Hardware Timer from TC3-TCC
-// SAMD21 Hardware Timer from TC3 or TCC
+// Depending on the board, you can select SAMD21 Hardware Timer from TC3, TC4, TC5, TCC, TCC1 or TCC2
 // SAMD51 Hardware Timer only TC3
 
 // Init SAMD timer TIMER_TC3
 SAMDTimer ITimer(TIMER_TC3);
 
 #if (TIMER_INTERRUPT_USING_SAMD21)
-  // Init SAMD timer TIMER_TCC
-  //SAMDTimer ITimer(TIMER_TCC);
+// Init SAMD timer TIMER_TCC
+//SAMDTimer ITimer(TIMER_TC4);
+//SAMDTimer ITimer(TIMER_TC5);
+//SAMDTimer ITimer(TIMER_TCC);
+//SAMDTimer ITimer(TIMER_TCC1);
+//SAMDTimer ITimer(TIMER_TCC2);
 #endif
 
 // Init SAMD_ISR_Timer
 // Each SAMD_ISR_Timer can service 16 different ISR-based timers
-ISR_Timer SAMD_ISR_Timer;
+SAMD_ISR_Timer ISR_Timer;
 
 #define TIMER_INTERVAL_1S             1000L
 #define TIMER_INTERVAL_2S             2000L
@@ -79,7 +85,7 @@ ISR_Timer SAMD_ISR_Timer;
 
 void TimerHandler(void)
 {
-  SAMD_ISR_Timer.run();
+  ISR_Timer.run();
 }
 
 // In SAMD, avoid doing something fancy in ISR, for example complex Serial.print with String() argument
@@ -105,13 +111,12 @@ void doingSomething3()
 void setup()
 {
   Serial.begin(115200);
-  while (!Serial);
+  while (!Serial && millis() < 5000);
 
   delay(100);
 
   Serial.print(F("\nStarting TimerInterruptLEDDemo on ")); Serial.println(BOARD_NAME);
   Serial.println(SAMD_TIMER_INTERRUPT_VERSION);
-  Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
   Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
 
   // Instantiate HardwareTimer object. Thanks to 'new' instanciation, HardwareTimer is not destructed when setup() function is finished.
@@ -122,8 +127,8 @@ void setup()
   pinMode(LED_BLUE,     OUTPUT);
   pinMode(LED_RED,      OUTPUT);
 
-  // Interval in microsecs
-  if (ITimer.attachInterruptInterval(HW_TIMER_INTERVAL_MS * 1000, TimerHandler))
+  // Interval in millisecs
+  if (ITimer.attachInterruptInterval_MS(HW_TIMER_INTERVAL_MS, TimerHandler))
   {
     Serial.print(F("Starting ITimer OK, millis() = ")); Serial.println(millis());
   }
@@ -131,10 +136,10 @@ void setup()
     Serial.println(F("Can't set ITimer. Select another freq. or timer"));
 
   // Just to demonstrate, don't use too many ISR Timers if not absolutely necessary
-  // You can use up to 16 timer for each SAMD_ISR_Timer
-  SAMD_ISR_Timer.setInterval(TIMER_INTERVAL_1S,  doingSomething1);
-  SAMD_ISR_Timer.setInterval(TIMER_INTERVAL_2S,  doingSomething2);
-  SAMD_ISR_Timer.setInterval(TIMER_INTERVAL_5S,  doingSomething3);
+  // You can use up to 16 timer for each ISR_Timer
+  ISR_Timer.setInterval(TIMER_INTERVAL_1S,  doingSomething1);
+  ISR_Timer.setInterval(TIMER_INTERVAL_2S,  doingSomething2);
+  ISR_Timer.setInterval(TIMER_INTERVAL_5S,  doingSomething3);
 }
 
 
