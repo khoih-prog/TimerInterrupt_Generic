@@ -19,7 +19,7 @@
   Built by Khoi Hoang https://github.com/khoih-prog/TimerInterrupt_Generic
   Licensed under MIT license
 
-  Version: 1.8.0
+  Version: 1.9.0
 
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
@@ -33,6 +33,7 @@
   1.6.0   K.Hoang      15/06/2021 Add T3/T4 support to 32u4. Add support to RP2040, ESP32-S2
   1.7.0   K.Hoang      13/08/2021 Add support to Adafruit nRF52 core v0.22.0+
   1.8.0   K.Hoang      24/11/2021 Update to use latest TimerInterrupt Libraries' versions
+  1.9.0   K.Hoang      09/05/2022 Update to use latest TimerInterrupt Libraries' versions
 *****************************************************************************************************************************/
 
 #pragma once
@@ -44,11 +45,21 @@
   #error This code is designed to run on Teensy platform! Please check your Tools->Board setting.
 #endif
 
-#define TEENSY_TIMER_INTERRUPT_VERSION       "Teensy_TimerInterrupt v1.2.0"
+#ifndef TEENSY_TIMER_INTERRUPT_VERSION
+  #define TEENSY_TIMER_INTERRUPT_VERSION       "TeensyTimerInterrupt v1.3.0"
+  
+  #define TEENSY_TIMER_INTERRUPT_VERSION_MAJOR      1
+  #define TEENSY_TIMER_INTERRUPT_VERSION_MINOR      3
+  #define TEENSY_TIMER_INTERRUPT_VERSION_PATCH      0
+
+  #define TEENSY_TIMER_INTERRUPT_VERSION_INT        1003000  
+#endif
 
 #ifndef TIMER_INTERRUPT_DEBUG
   #define TIMER_INTERRUPT_DEBUG       0
 #endif
+
+//////////////////////////////////////////////////////////
 
 class TeensyTimerInterrupt;
 
@@ -61,25 +72,36 @@ typedef enum
   
 typedef TeensyTimerInterrupt TeensyTimer;
 
-typedef void (*timerCallback)  (void);
+typedef void (*timerCallback)  ();
 
+//////////////////////////////////////////////////////////
 
 #if ( defined(__arm__) && defined(TEENSYDUINO) && defined(__IMXRT1062__) )
 
   // For Teensy 4.0/4.1
-  #warning Using Teensy 4.0/4.1
-  
-  #ifndef BOARD_NAME
-    #define BOARD_NAME          "Teensy 4.0/4.1"
+  #if defined(ARDUINO_TEENSY41)
+    #warning Using Teensy 4.1
+    
+    #ifndef BOARD_NAME
+      #define BOARD_NAME          "Teensy 4.1"
+    #endif
+  #else
+    #warning Using Teensy 4.0
+    
+    #ifndef BOARD_NAME
+      #define BOARD_NAME          "Teensy 4.0"
+    #endif
   #endif
   
 class TeensyTimerInterrupt;
-void ext_isr(void);
+static void ext_isr();
 
 // Ony for Teensy 4.0/4.1
-IRQ_NUMBER_t            teensy_timers_irq [TEENSY_MAX_TIMER] = { IRQ_FLEXPWM1_3, IRQ_FLEXPWM2_2 };
+static IRQ_NUMBER_t            teensy_timers_irq [TEENSY_MAX_TIMER] = { IRQ_FLEXPWM1_3, IRQ_FLEXPWM2_2 };
 
-TeensyTimerInterrupt*   TeensyTimers      [TEENSY_MAX_TIMER] = { NULL, NULL };
+static TeensyTimerInterrupt*   TeensyTimers      [TEENSY_MAX_TIMER] = { NULL, NULL };
+
+//////////////////////////////////////////////////////////
 
 class TeensyTimerInterrupt
 {
@@ -119,22 +141,28 @@ class TeensyTimerInterrupt
       
       _callback = NULL;
     }
+
+    //////////////////////////////////////////////////////////
     
     ~TeensyTimerInterrupt() __attribute__((always_inline))
     {
       TeensyTimers[_timer] = NULL;
     }
+
+    //////////////////////////////////////////////////////////
     
     // frequency (in hertz) and duration (in milliseconds). Duration = 0 or not specified => run indefinitely
     // No params and duration now. To be addes in the future by adding similar functions here or to NRF52-hal-timer.c
-    bool setFrequency(float frequency, timerCallback callback) __attribute__((always_inline))
+    bool setFrequency(const float& frequency, timerCallback callback) __attribute__((always_inline))
     {
       return setInterval((float) (1000000.0f / frequency), callback);
     }
+
+    //////////////////////////////////////////////////////////
     
     // Interval (in microseconds)
     // For Teensy 4.0/4.1, F_BUS_ACTUAL = 150 MHz => max interval/period is only 55922 us (~17.9 Hz)
-    bool setInterval(unsigned long interval, timerCallback callback) __attribute__((always_inline))
+    bool setInterval(const unsigned long& interval, timerCallback callback) __attribute__((always_inline))
     {     
       // This function will be called when time out interrupt will occur
       if (callback) 
@@ -235,20 +263,26 @@ class TeensyTimerInterrupt
       
       return true;
     }
+
+    //////////////////////////////////////////////////////////
   
-    bool attachInterrupt(float frequency, timerCallback callback) __attribute__((always_inline))
+    bool attachInterrupt(const float& frequency, timerCallback callback) __attribute__((always_inline))
     {
       return setInterval((float) (1000000.0f / frequency), callback);
     }
 
+    //////////////////////////////////////////////////////////
+
     // interval (in microseconds) and duration (in milliseconds). Duration = 0 or not specified => run indefinitely
     // No params and duration now. To be addes in the future by adding similar functions here or to NRF52-hal-timer.c
-    bool attachInterruptInterval(unsigned long interval, timerCallback callback) __attribute__((always_inline))
+    bool attachInterruptInterval(const unsigned long& interval, timerCallback callback) __attribute__((always_inline))
     {
       return setInterval(interval, callback);
     }
+
+    //////////////////////////////////////////////////////////
     
-    void detachInterrupt(void) __attribute__((always_inline))
+    void detachInterrupt() __attribute__((always_inline))
     {     
       NVIC_DISABLE_IRQ(_timer_IRQ);
           
@@ -264,10 +298,14 @@ class TeensyTimerInterrupt
       }   
     }
 
-    void disableTimer(void) __attribute__((always_inline))
+    //////////////////////////////////////////////////////////
+
+    void disableTimer() __attribute__((always_inline))
     {
       detachInterrupt();
     }
+
+    //////////////////////////////////////////////////////////
     
     //****************************
     //  Run Control
@@ -277,6 +315,8 @@ class TeensyTimerInterrupt
       stopTimer();
       resumeTimer();
     }
+
+    //////////////////////////////////////////////////////////
 
     void stopTimer() __attribute__((always_inline))
     {
@@ -296,10 +336,14 @@ class TeensyTimerInterrupt
       }
     }
 
+    //////////////////////////////////////////////////////////
+
     void restartTimer() __attribute__((always_inline))
     {
       startTimer();
     }
+
+    //////////////////////////////////////////////////////////
 
     void resumeTimer() __attribute__((always_inline))
     {
@@ -320,34 +364,46 @@ class TeensyTimerInterrupt
       }
     }
 
+    //////////////////////////////////////////////////////////
+
     uint32_t getPeriod() __attribute__((always_inline))
     {
       return _timerCount;
     }
+
+    //////////////////////////////////////////////////////////
     
     uint32_t getPrescale() __attribute__((always_inline))
     {
       return _prescale;
     }
+
+    //////////////////////////////////////////////////////////
     
     // Real (actual) period in us
     uint32_t getRealPeriod() __attribute__((always_inline))
     {
       return _realPeriod;
     }
+
+    //////////////////////////////////////////////////////////
   
-    timerCallback getCallback(void) __attribute__((always_inline))
+    timerCallback getCallback() __attribute__((always_inline))
     {
       return _callback;
     }
+
+    //////////////////////////////////////////////////////////
     
-    IRQ_NUMBER_t getTimerIRQn(void) __attribute__((always_inline))
+    IRQ_NUMBER_t getTimerIRQn() __attribute__((always_inline))
     {
       return _timer_IRQ;
     }
 };
 
-void ext_isr(void)
+//////////////////////////////////////////////////////////
+
+static void ext_isr()
 {
   if (TeensyTimers[TEENSY_TIMER_1])
   {
@@ -365,6 +421,7 @@ void ext_isr(void)
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
+
 // For Teensy 3.x and LC
 #elif defined(__arm__) && defined(TEENSYDUINO) && (defined(KINETISK) || defined(KINETISL))
 
@@ -402,12 +459,14 @@ void ext_isr(void)
 
   // Teensy 3.0 has only TEENSY_TIMER_1 and IRQ_FTM1, So force to use TEENSY_TIMER_1 and IRQ_FTM1
   #if defined(IRQ_FTM2)
-    IRQ_NUMBER_t          teensy_timers_irq [TEENSY_MAX_TIMER] = { IRQ_FTM1, IRQ_FTM2 };
+    static IRQ_NUMBER_t          teensy_timers_irq [TEENSY_MAX_TIMER] = { IRQ_FTM1, IRQ_FTM2 };
   #else
-    IRQ_NUMBER_t          teensy_timers_irq [TEENSY_MAX_TIMER] = { IRQ_FTM1, IRQ_FTM1 };
+    static IRQ_NUMBER_t          teensy_timers_irq [TEENSY_MAX_TIMER] = { IRQ_FTM1, IRQ_FTM1 };
   #endif  
 
-  TeensyTimerInterrupt*   TeensyTimers      [TEENSY_MAX_TIMER] = { NULL, NULL };
+  static TeensyTimerInterrupt*   TeensyTimers      [TEENSY_MAX_TIMER] = { NULL, NULL };
+
+//////////////////////////////////////////////////////////
 
 class TeensyTimerInterrupt
 {
@@ -460,21 +519,27 @@ class TeensyTimerInterrupt
       
       _callback = NULL;
     }
+
+    //////////////////////////////////////////////////////////
     
     ~TeensyTimerInterrupt() __attribute__((always_inline))
     {
       TeensyTimers[_timer] = NULL;
     }
+
+    //////////////////////////////////////////////////////////
     
     // frequency (in hertz) and duration (in milliseconds). Duration = 0 or not specified => run indefinitely
     // No params and duration now. To be addes in the future by adding similar functions here or to NRF52-hal-timer.c
-    bool setFrequency(float frequency, timerCallback callback) __attribute__((always_inline))
+    bool setFrequency(const float& frequency, timerCallback callback) __attribute__((always_inline))
     {
       return setInterval((float) (1000000.0f / frequency), callback);
     }
+
+    //////////////////////////////////////////////////////////
     
     // Interval (in microseconds)
-    bool setInterval(unsigned long interval, timerCallback callback) __attribute__((always_inline))
+    bool setInterval(const unsigned long& interval, timerCallback callback) __attribute__((always_inline))
     {     
       // This function will be called when time out interrupt will occur
       if (callback) 
@@ -604,20 +669,26 @@ class TeensyTimerInterrupt
       
       return true;
     }
+
+    //////////////////////////////////////////////////////////
        
-    bool attachInterrupt(float frequency, timerCallback callback) __attribute__((always_inline))
+    bool attachInterrupt(const float& frequency, timerCallback callback) __attribute__((always_inline))
     {
       return setInterval((float) (1000000.0f / frequency), callback);
     }
 
+    //////////////////////////////////////////////////////////
+
     // interval (in microseconds) and duration (in milliseconds). Duration = 0 or not specified => run indefinitely
-    // No params and duration now. To be addes in the future by adding similar functions here or to NRF52-hal-timer.c
-    bool attachInterruptInterval(unsigned long interval, timerCallback callback) __attribute__((always_inline))
+    // No params and duration now. To be added in the future by adding similar functions here or to NRF52-hal-timer.c
+    bool attachInterruptInterval(const unsigned long& interval, timerCallback callback) __attribute__((always_inline))
     {
       return setInterval(interval, callback);
     }
+
+    //////////////////////////////////////////////////////////
     
-    void detachInterrupt(void) __attribute__((always_inline))
+    void detachInterrupt() __attribute__((always_inline))
     {     
       NVIC_DISABLE_IRQ(_timer_IRQ);
           
@@ -635,10 +706,14 @@ class TeensyTimerInterrupt
       NVIC_DISABLE_IRQ(_timer_IRQ);
     }
 
-    void disableTimer(void) __attribute__((always_inline))
+    //////////////////////////////////////////////////////////
+
+    void disableTimer() __attribute__((always_inline))
     {
       detachInterrupt();
     }
+
+    //////////////////////////////////////////////////////////
     
     //****************************
     //  Run Control
@@ -665,6 +740,8 @@ class TeensyTimerInterrupt
       resumeTimer();
     }
 
+    //////////////////////////////////////////////////////////
+
     void stopTimer() __attribute__((always_inline))
     {
       if (_timer == TEENSY_TIMER_1)
@@ -683,10 +760,14 @@ class TeensyTimerInterrupt
       }
     }
 
+    //////////////////////////////////////////////////////////
+
     void restartTimer() __attribute__((always_inline))
     {
       startTimer();
     }
+
+    //////////////////////////////////////////////////////////
 
     void resumeTimer() __attribute__((always_inline))
     {
@@ -707,35 +788,50 @@ class TeensyTimerInterrupt
       }
     }
 
+    //////////////////////////////////////////////////////////
+
     uint32_t getPeriod() __attribute__((always_inline))
     {
       return _timerCount;
     }
+
+    //////////////////////////////////////////////////////////
     
     uint32_t getPrescale() __attribute__((always_inline))
     {
       return _prescale;
     }
+
+    //////////////////////////////////////////////////////////
     
     // Real (actual) period in us
     uint32_t getRealPeriod() __attribute__((always_inline))
     {
       return _realPeriod;
     }
+
+    //////////////////////////////////////////////////////////
    
-    timerCallback getCallback(void) __attribute__((always_inline))
+    timerCallback getCallback() __attribute__((always_inline))
     {
       return _callback;
     }
+
+    //////////////////////////////////////////////////////////
     
-    IRQ_NUMBER_t getTimerIRQn(void) __attribute__((always_inline))
+    IRQ_NUMBER_t getTimerIRQn() __attribute__((always_inline))
     {
       return _timer_IRQ;
     }
+
+    //////////////////////////////////////////////////////////
+    
 };
 
 
-void ftm1_isr(void)
+//////////////////////////////////////////////////////////
+
+void ftm1_isr()
 {
   uint32_t sc = FTM1_SC;
   
@@ -750,8 +846,9 @@ void ftm1_isr(void)
   (*(TeensyTimers[TEENSY_TIMER_1]->getCallback()))();
 }
 
+//////////////////////////////////////////////////////////
 
-void ftm2_isr(void)
+void ftm2_isr()
 {
   uint32_t sc = FTM2_SC;
   
@@ -766,9 +863,9 @@ void ftm2_isr(void)
   (*(TeensyTimers[TEENSY_TIMER_3]->getCallback()))();
 }
 
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
 // For Teensy 2.0 and Teensy++ 2.0
 
 #elif ( defined(ARDUINO_ARCH_AVR) || defined(__AVR__) )
@@ -789,7 +886,9 @@ void ftm2_isr(void)
   
   #define TIMER_RESOLUTION    65536UL  // Timer1 and Timer 3 are 16 bit timers
 
-  TeensyTimerInterrupt*   TeensyTimers      [TEENSY_MAX_TIMER] = { NULL, NULL };
+  static TeensyTimerInterrupt*   TeensyTimers      [TEENSY_MAX_TIMER] = { NULL, NULL };
+
+//////////////////////////////////////////////////////////
 
 class TeensyTimerInterrupt
 {
@@ -830,21 +929,27 @@ class TeensyTimerInterrupt
       
       _callback = NULL;
     }
+
+    //////////////////////////////////////////////////////////
     
     ~TeensyTimerInterrupt() __attribute__((always_inline))
     {
       TeensyTimers[_timer] = NULL;
     }
+
+    //////////////////////////////////////////////////////////
     
     // frequency (in hertz) and duration (in milliseconds). Duration = 0 or not specified => run indefinitely
-    // No params and duration now. To be addes in the future by adding similar functions here or to NRF52-hal-timer.c
-    bool setFrequency(float frequency, timerCallback callback) __attribute__((always_inline))
+    // No params and duration now. To be added in the future by adding similar functions here or to NRF52-hal-timer.c
+    bool setFrequency(const float& frequency, timerCallback callback) __attribute__((always_inline))
     {
       return setInterval((float) (1000000.0f / frequency), callback);
     }
+
+    //////////////////////////////////////////////////////////
     
     // Interval (in microseconds)
-    bool setInterval(unsigned long interval, timerCallback callback) __attribute__((always_inline))
+    bool setInterval(const unsigned long& interval, timerCallback callback) __attribute__((always_inline))
     {     
       // This function will be called when time out interrupt will occur
       if (callback) 
@@ -964,20 +1069,26 @@ class TeensyTimerInterrupt
                 
       return true;
     }
+
+    //////////////////////////////////////////////////////////
        
-    bool attachInterrupt(float frequency, timerCallback callback) __attribute__((always_inline))
+    bool attachInterrupt(const float& frequency, timerCallback callback) __attribute__((always_inline))
     {
       return setInterval((float) (1000000.0f / frequency), callback);
     }
 
+    //////////////////////////////////////////////////////////
+
     // interval (in microseconds) and duration (in milliseconds). Duration = 0 or not specified => run indefinitely
-    // No params and duration now. To be addes in the future by adding similar functions here or to NRF52-hal-timer.c
-    bool attachInterruptInterval(unsigned long interval, timerCallback callback) __attribute__((always_inline))
+    // No params and duration now. To be added in the future by adding similar functions here or to NRF52-hal-timer.c
+    bool attachInterruptInterval(const unsigned long& interval, timerCallback callback) __attribute__((always_inline))
     {
       return setInterval(interval, callback);
     }
+
+    //////////////////////////////////////////////////////////
     
-    void detachInterrupt(void) __attribute__((always_inline))
+    void detachInterrupt() __attribute__((always_inline))
     {              
       if (_timer == TEENSY_TIMER_1)
       {
@@ -991,10 +1102,14 @@ class TeensyTimerInterrupt
       }
     }
 
-    void disableTimer(void) __attribute__((always_inline))
+    //////////////////////////////////////////////////////////
+
+    void disableTimer() __attribute__((always_inline))
     {
       detachInterrupt();
     }
+
+    //////////////////////////////////////////////////////////
     
     //****************************
     //  Run Control
@@ -1021,6 +1136,8 @@ class TeensyTimerInterrupt
       resumeTimer();
     }
 
+    //////////////////////////////////////////////////////////
+
     void stopTimer() __attribute__((always_inline))
     {
       if (_timer == TEENSY_TIMER_1)
@@ -1039,10 +1156,14 @@ class TeensyTimerInterrupt
       }
     }
 
+    //////////////////////////////////////////////////////////
+
     void restartTimer() __attribute__((always_inline))
     {
       startTimer();
     }
+
+    //////////////////////////////////////////////////////////
 
     void resumeTimer() __attribute__((always_inline))
     {
@@ -1063,32 +1184,47 @@ class TeensyTimerInterrupt
       }
     }
 
+    //////////////////////////////////////////////////////////
+
     uint32_t getPeriod() __attribute__((always_inline))
     {
       return _timerCount;
     }
+
+    //////////////////////////////////////////////////////////
     
     uint32_t getPrescale() __attribute__((always_inline))
     {
       return _prescale;
     }
+
+    //////////////////////////////////////////////////////////
     
     // Real (actual) period in us
     uint32_t getRealPeriod() __attribute__((always_inline))
     {
       return _realPeriod;
     }
+
+    //////////////////////////////////////////////////////////
    
-    timerCallback getCallback(void) __attribute__((always_inline))
+    timerCallback getCallback() __attribute__((always_inline))
     {
       return _callback;
     }
+
+    //////////////////////////////////////////////////////////
+    
 };
+
+//////////////////////////////////////////////////////////
 
 ISR(TIMER1_OVF_vect)
 {
   (*(TeensyTimers[TEENSY_TIMER_1]->getCallback()))();
 }
+
+//////////////////////////////////////////////////////////
 
 ISR(TIMER3_OVF_vect)
 {

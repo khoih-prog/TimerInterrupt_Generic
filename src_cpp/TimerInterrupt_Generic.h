@@ -19,7 +19,7 @@
   Built by Khoi Hoang https://github.com/khoih-prog/TimerInterrupt_Generic
   Licensed under MIT license
 
-  Version: 1.8.0
+  Version: 1.9.0
 
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
@@ -33,6 +33,7 @@
   1.6.0   K.Hoang      15/06/2021 Add T3/T4 support to 32u4. Add support to RP2040, ESP32-S2
   1.7.0   K.Hoang      13/08/2021 Add support to Adafruit nRF52 core v0.22.0+
   1.8.0   K.Hoang      24/11/2021 Update to use latest TimerInterrupt Libraries' versions
+  1.9.0   K.Hoang      09/05/2022 Update to use latest TimerInterrupt Libraries' versions
 ********************************************************************************************************************************/
 
 #pragma once
@@ -40,8 +41,14 @@
 #ifndef TIMERINTERRUPT_GENERIC_H
 #define TIMERINTERRUPT_GENERIC_H
 
-#if !defined(TIMER_INTERRUPT_GENERIC_VERSION)
-  #define TIMER_INTERRUPT_GENERIC_VERSION       "TimerInterrupt_Generic v1.8.0"
+#ifndef TIMER_INTERRUPT_GENERIC_VERSION
+  #define TIMER_INTERRUPT_GENERIC_VERSION          "TimerInterrupt_Generic v1.9.0"
+  
+  #define TIMER_INTERRUPT_GENERIC_VERSION_MAJOR     1
+  #define TIMER_INTERRUPT_GENERIC_VERSION_MINOR     9
+  #define TIMER_INTERRUPT_GENERIC_VERSION_PATCH     0
+
+  #define TIMER_INTERRUPT_GENERIC_VERSION_INT      1009000
 #endif
 
 #include "TimerInterrupt_Generic_Debug.h"
@@ -107,7 +114,7 @@
   #warning Using Adafruit ATMega32U4, such as Feather_32u4, AVR_CIRCUITPLAY, etc.. Only Timer1,3,4 available
   
 #elif ( defined(__AVR_ATmega32U4__) || defined(ARDUINO_AVR_MAKEYMAKEY ) || defined(ARDUINO_AVR_PROMICRO) || defined(ARDUINO_AVR_FIOV3) || \
-        defined(ARDUINO_AVR_QDUINOMINI) || defined(ARDUINO_AVR_LILYPAD_ARDUINO_USB_PLUS_BOARD ) )
+        defined(ARDUINO_AVR_QDUINOMINI) || defined(ARDUINO_AVR_LILYPAD_ARDUINO_USB_PLUS_BOARD ) ) && !defined(TEENSYDUINO)
   #if defined(TIMER_INTERRUPT_USING_ATMEGA_32U4)
     #undef TIMER_INTERRUPT_USING_ATMEGA_32U4
   #endif
@@ -192,7 +199,10 @@
         
   #define TIMER_INTERRUPT_USING_STM32             true
 
-#elif ( defined(__AVR_ATmega4809__) || defined(ARDUINO_AVR_UNO_WIFI_REV2) || defined(ARDUINO_AVR_NANO_EVERY) )
+#elif ( defined(__AVR_ATmega4809__) || defined(ARDUINO_AVR_UNO_WIFI_REV2) || defined(ARDUINO_AVR_NANO_EVERY) || \
+        defined(ARDUINO_AVR_ATmega4809) || defined(ARDUINO_AVR_ATmega4808) || defined(ARDUINO_AVR_ATmega3209) || \
+        defined(ARDUINO_AVR_ATmega3208) || defined(ARDUINO_AVR_ATmega1609) || defined(ARDUINO_AVR_ATmega1608) || \
+        defined(ARDUINO_AVR_ATmega809) || defined(ARDUINO_AVR_ATmega808) )
        
   #define TIMER_INTERRUPT_USING_MEGA_AVR          true
 

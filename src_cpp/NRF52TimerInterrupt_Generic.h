@@ -19,7 +19,7 @@
   Built by Khoi Hoang https://github.com/khoih-prog/TimerInterrupt_Generic
   Licensed under MIT license
 
-  Version: 1.8.0
+  Version: 1.9.0
 
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
@@ -33,6 +33,7 @@
   1.6.0   K.Hoang      15/06/2021 Add T3/T4 support to 32u4. Add support to RP2040, ESP32-S2
   1.7.0   K.Hoang      13/08/2021 Add support to Adafruit nRF52 core v0.22.0+
   1.8.0   K.Hoang      24/11/2021 Update to use latest TimerInterrupt Libraries' versions
+  1.9.0   K.Hoang      09/05/2022 Update to use latest TimerInterrupt Libraries' versions
 *****************************************************************************************************************************/
 /*
   nRF52 has 5 Hardware TIMERs: NRF_TIMER0-NRF_TIMER4
@@ -80,8 +81,8 @@
 #if !(defined(NRF52840_FEATHER) || defined(NRF52832_FEATHER) || defined(NRF52_SERIES) || defined(ARDUINO_NRF52_ADAFRUIT) || \
       defined(NRF52840_FEATHER_SENSE) || defined(NRF52840_ITSYBITSY) || defined(NRF52840_CIRCUITPLAY) || \
       defined(NRF52840_CLUE) || defined(NRF52840_METRO) || defined(NRF52840_PCA10056) || defined(PARTICLE_XENON) || \
-      defined(MDBT50Q_RX) || defined(NINA_B302_ublox) || defined(NINA_B112_ublox) )
-  #error This code is designed to run on nRF52 platform! Please check your Tools->Board setting.
+      defined(NRF52840_LED_GLASSES) || defined(MDBT50Q_RX) || defined(NINA_B302_ublox) || defined(NINA_B112_ublox) )
+  #error This code is designed to run on Adafruit nRF52 platform! Please check your Tools->Board setting.
 #endif
 
 #include <Arduino.h>
@@ -89,7 +90,15 @@
 
 #include <Adafruit_TinyUSB.h>
 
-#define NRF52_TIMER_INTERRUPT_VERSION       "NRF52TimerInterrupt v1.3.0"
+#ifndef NRF52_TIMER_INTERRUPT_VERSION
+  #define NRF52_TIMER_INTERRUPT_VERSION       "NRF52TimerInterrupt v1.4.1"
+  
+  #define NRF52_TIMER_INTERRUPT_VERSION_MAJOR      1
+  #define NRF52_TIMER_INTERRUPT_VERSION_MINOR      4
+  #define NRF52_TIMER_INTERRUPT_VERSION_PATCH      1
+
+  #define NRF52_TIMER_INTERRUPT_VERSION_INT        1004001
+#endif
 
 #ifndef TIMER_INTERRUPT_DEBUG
   #define TIMER_INTERRUPT_DEBUG       0
@@ -99,7 +108,7 @@ class NRF52TimerInterrupt;
 
 typedef NRF52TimerInterrupt NRF52Timer;
 
-typedef void (*timerCallback)  (void);
+typedef void (*timerCallback)  ();
 
 typedef enum
 {
@@ -134,14 +143,20 @@ typedef enum
 } nrf_timer_cc_channel_t;
 */
 
+
 class NRF52TimerInterrupt;
 
-NRF_TIMER_Type* nrf_timers    [NRF_MAX_TIMER] = { NRF_TIMER0, NRF_TIMER1, NRF_TIMER2, NRF_TIMER3, NRF_TIMER4 };
+//NRF_TIMER_Type* nrf_timers    [NRF_MAX_TIMER] = { NRF_TIMER0, NRF_TIMER1, NRF_TIMER2, NRF_TIMER3, NRF_TIMER4 };
 
-IRQn_Type       nrf_timers_irq[NRF_MAX_TIMER] = { TIMER0_IRQn, TIMER1_IRQn, TIMER2_IRQn, TIMER3_IRQn, TIMER4_IRQn };
+//IRQn_Type       nrf_timers_irq[NRF_MAX_TIMER] = { TIMER0_IRQn, TIMER1_IRQn, TIMER2_IRQn, TIMER3_IRQn, TIMER4_IRQn };
 
-NRF52TimerInterrupt*  nRF52Timers [NRF_MAX_TIMER] = { NULL, NULL, NULL, NULL, NULL };
+//NRF52TimerInterrupt*  nRF52Timers [NRF_MAX_TIMER] = { NULL, NULL, NULL, NULL, NULL };
 
+static NRF_TIMER_Type* nrf_timers    [NRF_MAX_TIMER] = { NRF_TIMER0, NRF_TIMER1, NRF_TIMER2, NRF_TIMER3, NRF_TIMER4 };
+
+static IRQn_Type       nrf_timers_irq[NRF_MAX_TIMER] = { TIMER0_IRQn, TIMER1_IRQn, TIMER2_IRQn, TIMER3_IRQn, TIMER4_IRQn };
+
+static NRF52TimerInterrupt*  nRF52Timers [NRF_MAX_TIMER] = { NULL, NULL, NULL, NULL, NULL };
 
 class NRF52TimerInterrupt
 {
@@ -157,6 +172,8 @@ class NRF52TimerInterrupt
     
     // NRF_TIMER_FREQ_16MHz,NRF_TIMER_FREQ_8MHz,...,NRF_TIMER_FREQ_31250Hz
     nrf_timer_frequency_t _frequency_t = NRF_TIMER_FREQ_1MHz;
+    
+    float                 TIM_CLOCK_FREQ;   // Timer Clock frequency
     float                 _frequency;       // Timer frequency
     uint32_t              _timerCount;      // count to activate timer
 
@@ -190,27 +207,27 @@ class NRF52TimerInterrupt
       switch (_frequency_t)
       {
       case NRF_TIMER_FREQ_16MHz:
-        _frequency = 16000000.0f;
+        TIM_CLOCK_FREQ = 16000000.0f;
         
         break;
       case NRF_TIMER_FREQ_8MHz:
-        _frequency = 8000000.0f;
+        TIM_CLOCK_FREQ = 8000000.0f;
         
         break;
         case NRF_TIMER_FREQ_4MHz:
-        _frequency = 4000000.0f;
+        TIM_CLOCK_FREQ = 4000000.0f;
         
         break;
       case NRF_TIMER_FREQ_2MHz:
-        _frequency = 2000000.0f;
+        TIM_CLOCK_FREQ = 2000000.0f;
         
         break;
       case NRF_TIMER_FREQ_1MHz:
-        _frequency = 1000000.0f;
+        TIM_CLOCK_FREQ = 1000000.0f;
         
         break;
       default:
-        _frequency = 1000000.0f;
+        TIM_CLOCK_FREQ = 1000000.0f;
         break;            
       } 
     };
@@ -222,7 +239,7 @@ class NRF52TimerInterrupt
 
     // frequency (in hertz) and duration (in milliseconds). Duration = 0 or not specified => run indefinitely
     // No params and duration now. To be addes in the future by adding similar functions here or to NRF52-hal-timer.c
-    bool setFrequency(float frequency, timerCallback callback)
+    bool setFrequency(const float& frequency, timerCallback callback)
     {
       // This function will be called when time out interrupt will occur
       if (callback) 
@@ -236,19 +253,20 @@ class NRF52TimerInterrupt
           return false;
       }
       
-      if ( (frequency <= 0) || (frequency > _frequency / 10.0f) )
+      if ( (frequency <= 0) || (frequency > TIM_CLOCK_FREQ / 10.0f) )     
       {
-        TISR_LOGERROR1(F("NRF52TimerInterrupt: ERROR: Negative or Too high frequency. Must be <="), _frequency/10.0f);
+        TISR_LOGERROR1(F("NRF52TimerInterrupt: ERROR: Negative or Too high frequency. Must be <="), TIM_CLOCK_FREQ/10.0f);
         
         return false;
       }
       
-      // select timer frequency is 1MHz for better accuracy. We don't use 16-bit prescaler for now.
+      // select timer frequency is 1MHz for better accuracy as well as longer timer. We don't use 16-bit prescaler for now.
       // Will use later if very low frequency is needed.
-      _timerCount = (uint32_t) _frequency / frequency;
-
-      TISR_LOGWARN3(F("NRF52TimerInterrupt: F_CPU (MHz) ="), F_CPU/1000000, F(", Timer = "), NRF52TimerName[_timer]);
-      TISR_LOGWARN3(F("Frequency ="), _frequency, F(", _count ="), (uint32_t) (_timerCount));
+      _frequency  = frequency;      
+      _timerCount = (uint32_t) TIM_CLOCK_FREQ / frequency;
+      
+      TISR_LOGWARN5(F("F_CPU (MHz) = "), F_CPU/1000000, F(", Timer = "), NRF52TimerName[_timer], F(", Timer Clock (Hz) = "), TIM_CLOCK_FREQ);
+      TISR_LOGWARN3(F("Frequency = "), frequency, F(", _count = "), (uint32_t) (_timerCount));
 
       // Start if not already running (and reset?)
       nrf_timer_task_trigger(nrf_timer, NRF_TIMER_TASK_START);
@@ -269,24 +287,24 @@ class NRF52TimerInterrupt
 
     // interval (in microseconds) and duration (in milliseconds). Duration = 0 or not specified => run indefinitely
     // No params and duration now. To be addes in the future by adding similar functions here or to NRF52-hal-timer.c
-    bool setInterval(unsigned long interval, timerCallback callback)
+    bool setInterval(const unsigned long& interval, timerCallback callback)
     {
       return setFrequency((float) (1000000.0f / interval), callback);
     }
 
-    bool attachInterrupt(float frequency, timerCallback callback)
+    bool attachInterrupt(const float& frequency, timerCallback callback)
     {
       return setFrequency(frequency, callback);
     }
 
     // interval (in microseconds) and duration (in milliseconds). Duration = 0 or not specified => run indefinitely
     // No params and duration now. To be addes in the future by adding similar functions here or to NRF52-hal-timer.c
-    bool attachInterruptInterval(unsigned long interval, timerCallback callback)
+    bool attachInterruptInterval(const unsigned long& interval, timerCallback callback)
     {
       return setFrequency( (float) ( 1000000.0f / interval), callback);
     }
 
-    void detachInterrupt(void)
+    void detachInterrupt()
     {
       NVIC_DisableIRQ(_timer_IRQ);
       
@@ -302,7 +320,7 @@ class NRF52TimerInterrupt
       nrf_timer_event_clear(nrf_timer, event);
     }
 
-    void disableTimer(void)
+    void disableTimer()
     {
       detachInterrupt();
     }
@@ -314,7 +332,7 @@ class NRF52TimerInterrupt
     }
 
     // Duration (in milliseconds). Duration = 0 or not specified => run indefinitely
-    void enableTimer(void)
+    void enableTimer()
     {
       // Start if not already running (and reset?)
       nrf_timer_task_trigger(nrf_timer, NRF_TIMER_TASK_START);
@@ -332,30 +350,30 @@ class NRF52TimerInterrupt
     }
 
     // Just stop clock source, clear the count
-    void stopTimer(void)
+    void stopTimer()
     {
       disableTimer();
     }
 
     // Just reconnect clock source, start current count from 0
-    void restartTimer(void)
+    void restartTimer()
     {
       enableTimer();
     }
     
-    timerCallback getCallback(void)
+    timerCallback getCallback()
     {
       return _callback;
     }
     
-    IRQn_Type getTimerIRQn(void)
+    IRQn_Type getTimerIRQn()
     {
       return _timer_IRQ;
     }
 }; // class NRF52TimerInterrupt
 
 // Timer 0 is used by the soft device but Timer 1, 2, 3 and 4 are available
-extern "C" void TIMER1_IRQHandler(void) 
+extern "C" void TIMER1_IRQHandler() 
 {
   if (nRF52Timers[1]) 
   {
@@ -367,7 +385,7 @@ extern "C" void TIMER1_IRQHandler(void)
   }
 }
 
-extern "C" void TIMER2_IRQHandler(void) 
+extern "C" void TIMER2_IRQHandler() 
 {
   if (nRF52Timers[2]) 
   {
@@ -379,7 +397,7 @@ extern "C" void TIMER2_IRQHandler(void)
   }
 }
 
-extern "C" void TIMER3_IRQHandler(void) 
+extern "C" void TIMER3_IRQHandler() 
 {
   if (nRF52Timers[3]) 
   {
@@ -391,7 +409,7 @@ extern "C" void TIMER3_IRQHandler(void)
   }
 }
 
-extern "C" void TIMER4_IRQHandler(void) 
+extern "C" void TIMER4_IRQHandler() 
 {
   if (nRF52Timers[4]) 
   {

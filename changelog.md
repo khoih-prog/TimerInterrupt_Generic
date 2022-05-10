@@ -12,6 +12,7 @@
 ## Table of Contents
 
 * [Changelog](#changelog)
+  * [Major Releases v1.9.0](#major-releases-v190)
   * [Major Releases v1.8.0](#major-releases-v180)
   * [Releases v1.7.0](#releases-v170)
   * [Major Releases v1.6.0](#major-releases-v160)
@@ -28,6 +29,24 @@
 ---
 
 ## Changelog
+
+### Major Releases v1.9.0
+
+1. Update to use latest versions of these TimerInterrupt Libraries
+
+  - [ESP32_New_TimerInterrupt v1.2.0](https://github.com/khoih-prog/ESP32_New_TimerInterrupt)
+  - [ESP8266TimerInterrupt v1.6.0](https://github.com/khoih-prog/ESP8266TimerInterrupt)
+  - [TimerInterrupt v1.8.0](https://github.com/khoih-prog/TimerInterrupt)
+  - [megaAVR_TimerInterrupt v1.6.1](https://github.com/khoih-prog/megaAVR_TimerInterrupt)
+  - [STM32_TimerInterrupt v1.3.0](https://github.com/khoih-prog/STM32_TimerInterrupt)
+  - [SAMD_TimerInterrupt v1.9.0](https://github.com/khoih-prog/SAMD_TimerInterrupt)
+  - [NRF52_MBED_TimerInterrupt v1.4.0](https://github.com/khoih-prog/NRF52_MBED_TimerInterrupt)
+  - [RPI_PICO_TimerInterrupt v1.2.0](https://github.com/khoih-prog/RPI_PICO_TimerInterrupt)
+  - [MBED_RPI_PICO_TimerInterrupt v1.1.0](https://github.com/khoih-prog/MBED_RPI_PICO_TimerInterrupt)
+  - [SAMDUE_TimerInterrupt v1.3.0](https://github.com/khoih-prog/SAMDUE_TimerInterrupt)
+  - [NRF52_TimerInterrupt v1.4.1](https://github.com/khoih-prog/NRF52_TimerInterrupt)
+  - [Teensy_TimerInterrupt v1.3.0](https://github.com/khoih-prog/Teensy_TimerInterrupt)
+2. Update `Packages_Patches`
 
 ### Major Releases v1.8.0
 

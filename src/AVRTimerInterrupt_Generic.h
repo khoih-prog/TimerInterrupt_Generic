@@ -26,7 +26,7 @@
   Built by Khoi Hoang https://github.com/khoih-prog/TimerInterrupt_Generic
   Licensed under MIT license
 
-  Version: 1.8.0
+  Version: 1.9.0
 
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
@@ -40,6 +40,7 @@
   1.6.0   K.Hoang      15/06/2021 Add T3/T4 support to 32u4. Add support to RP2040, ESP32-S2
   1.7.0   K.Hoang      13/08/2021 Add support to Adafruit nRF52 core v0.22.0+
   1.8.0   K.Hoang      24/11/2021 Update to use latest TimerInterrupt Libraries' versions
+  1.9.0   K.Hoang      09/05/2022 Update to use latest TimerInterrupt Libraries' versions
 *****************************************************************************************************************************/
 
 
@@ -53,7 +54,13 @@
 #endif
 
 #ifndef TIMER_INTERRUPT_VERSION
-  #define TIMER_INTERRUPT_VERSION       "TimerInterrupt v1.7.0"
+  #define TIMER_INTERRUPT_VERSION           "TimerInterrupt v1.8.0"
+  
+  #define TIMER_INTERRUPT_VERSION_MAJOR     1
+  #define TIMER_INTERRUPT_VERSION_MINOR     8
+  #define TIMER_INTERRUPT_VERSION_PATCH     0
+
+  #define TIMER_INTERRUPT_VERSION_INT      1008000
 #endif
 
 #include <avr/interrupt.h>
@@ -77,7 +84,7 @@
   #define TIMSK1 TIMSK
 #endif
 
-typedef void (*timer_callback)(void);
+typedef void (*timer_callback)();
 typedef void (*timer_callback_p)(void *);
 
 enum 
@@ -625,7 +632,7 @@ class TimerInterrupt
   
   // void detachInterrupt();
   
-  void detachInterrupt(void)
+  void detachInterrupt()
   {
     //cli();//stop interrupts
     noInterrupts();
@@ -752,7 +759,7 @@ class TimerInterrupt
 
   ///////////////////////////////////////////
 
-  void disableTimer(void)
+  void disableTimer()
   {
     detachInterrupt();
   }
@@ -766,10 +773,10 @@ class TimerInterrupt
   ///////////////////////////////////////////
   
   // Just stop clock source, still keep the count
-  // void pauseTimer(void);
+  // void pauseTimer();
   
   // Just stop clock source, still keep the count
-  void pauseTimer(void)
+  void pauseTimer()
   {
     uint8_t andMask = 0b11111000;
     
@@ -816,10 +823,10 @@ class TimerInterrupt
   }
 
   // Just reconnect clock source, continue from the current count
-  // void resumeTimer(void);
+  // void resumeTimer();
   
   // Just reconnect clock source, continue from the current count
-  void resumeTimer(void)
+  void resumeTimer()
   {
     uint8_t andMask = 0b11111000;
     
@@ -868,7 +875,7 @@ class TimerInterrupt
  
 
   // Just stop clock source, clear the count
-  void stopTimer(void)
+  void stopTimer()
   {
     detachInterrupt();
   }
@@ -984,7 +991,7 @@ class TimerInterrupt
     interrupts();
   };
   
-  bool checkTimerDone(void) //__attribute__((always_inline))
+  bool checkTimerDone() //__attribute__((always_inline))
   {
     return _timerDone;
   };

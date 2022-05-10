@@ -19,7 +19,7 @@
   Based on BlynkTimer.h
   Author: Volodymyr Shymanskyy
 
-  Version: 1.8.0
+  Version: 1.9.0
 
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
@@ -33,6 +33,7 @@
   1.6.0   K.Hoang      15/06/2021 Add T3/T4 support to 32u4. Add support to RP2040, ESP32-S2
   1.7.0   K.Hoang      13/08/2021 Add support to Adafruit nRF52 core v0.22.0+
   1.8.0   K.Hoang      24/11/2021 Update to use latest TimerInterrupt Libraries' versions
+  1.9.0   K.Hoang      09/05/2022 Update to use latest TimerInterrupt Libraries' versions
 *****************************************************************************************************************************/
 /*
   nRF52 has 5 Hardware TIMERs: NRF_TIMER0-NRF_TIMER4
@@ -82,13 +83,20 @@
 #endif
 
 #include <Arduino.h>
+
 // File ~/.arduino15/packages/arduino/hardware/mbed/1.3.0/cores/arduino/mbed/targets/TARGET_NORDIC/TARGET_NRF5x/TARGET_SDK_15_0/modules/nrfx/hal/nrf_timer.h
 // This mbed-RTOS file is very old, compared to the Adafruit's nrf_timer.h
 // It's better to replace with the new one later. But be careful not to chain break anything
 #include "hal/nrf_timer.h"
 
 #ifndef NRF52_MBED_TIMER_INTERRUPT_VERSION
-  #define NRF52_MBED_TIMER_INTERRUPT_VERSION       "NRF52_MBED_TimerInterrupt v1.3.0"
+  #define NRF52_MBED_TIMER_INTERRUPT_VERSION       "NRF52_MBED_TimerInterrupt v1.4.0"
+  
+  #define NRF52_MBED_TIMER_INTERRUPT_VERSION_MAJOR      1
+  #define NRF52_MBED_TIMER_INTERRUPT_VERSION_MINOR      4
+  #define NRF52_MBED_TIMER_INTERRUPT_VERSION_PATCH      0
+
+  #define NRF52_MBED_TIMER_INTERRUPT_VERSION_INT        1004000  
 #endif
 
 #include "TimerInterrupt_Generic_Debug.h"
@@ -97,7 +105,7 @@ class NRF52_MBED_TimerInterrupt;
 
 typedef NRF52_MBED_TimerInterrupt NRF52_MBED_Timer;
 
-typedef void (*timerCallback)  (void);
+typedef void (*timerCallback)  ();
 
 typedef enum
 {
@@ -159,11 +167,11 @@ NRF_STATIC_INLINE uint32_t nrf_timer_cc_get(NRF_TIMER_Type const * p_reg,
 
 class NRF52_MBED_TimerInterrupt;
 
-NRF_TIMER_Type* nrf_timers    [NRF_MAX_TIMER] = { NRF_TIMER0, NRF_TIMER1, NRF_TIMER2, NRF_TIMER3, NRF_TIMER4 };
+static NRF_TIMER_Type* nrf_timers    [NRF_MAX_TIMER] = { NRF_TIMER0, NRF_TIMER1, NRF_TIMER2, NRF_TIMER3, NRF_TIMER4 };
 
-IRQn_Type       nrf_timers_irq[NRF_MAX_TIMER] = { TIMER0_IRQn, TIMER1_IRQn, TIMER2_IRQn, TIMER3_IRQn, TIMER4_IRQn };
+static IRQn_Type       nrf_timers_irq[NRF_MAX_TIMER] = { TIMER0_IRQn, TIMER1_IRQn, TIMER2_IRQn, TIMER3_IRQn, TIMER4_IRQn };
 
-NRF52_MBED_TimerInterrupt*  nRF52Timers [NRF_MAX_TIMER] = { NULL, NULL, NULL, NULL, NULL };
+static NRF52_MBED_TimerInterrupt*  nRF52Timers [NRF_MAX_TIMER] = { NULL, NULL, NULL, NULL, NULL };
 
 
 class NRF52_MBED_TimerInterrupt
@@ -180,6 +188,8 @@ class NRF52_MBED_TimerInterrupt
     
     // NRF_TIMER_FREQ_16MHz,NRF_TIMER_FREQ_8MHz,...,NRF_TIMER_FREQ_31250Hz
     nrf_timer_frequency_t _frequency_t = NRF_TIMER_FREQ_1MHz;
+    
+    float                 TIM_CLOCK_FREQ;   // Timer Clock frequency
     float                 _frequency;       // Timer frequency
     uint32_t              _timerCount;      // count to activate timer
 
@@ -215,27 +225,27 @@ class NRF52_MBED_TimerInterrupt
       switch (_frequency_t)
       {
       case NRF_TIMER_FREQ_16MHz:
-        _frequency = 16000000.0f;
+        TIM_CLOCK_FREQ = 16000000.0f;
         
         break;
       case NRF_TIMER_FREQ_8MHz:
-        _frequency = 8000000.0f;
+        TIM_CLOCK_FREQ = 8000000.0f;
         
         break;
         case NRF_TIMER_FREQ_4MHz:
-        _frequency = 4000000.0f;
+        TIM_CLOCK_FREQ = 4000000.0f;
         
         break;
       case NRF_TIMER_FREQ_2MHz:
-        _frequency = 2000000.0f;
+        TIM_CLOCK_FREQ = 2000000.0f;
         
         break;
       case NRF_TIMER_FREQ_1MHz:
-        _frequency = 1000000.0f;
+        TIM_CLOCK_FREQ = 1000000.0f;
         
         break;
       default:
-        _frequency = 1000000.0f;
+        TIM_CLOCK_FREQ = 1000000.0f;
         break;            
       } 
     };
@@ -247,7 +257,7 @@ class NRF52_MBED_TimerInterrupt
 
     // frequency (in hertz) and duration (in milliseconds). Duration = 0 or not specified => run indefinitely
     // No params and duration now. To be addes in the future by adding similar functions here or to NRF52-hal-timer.c
-    bool setFrequency(float frequency, timerCallback callback)
+    bool setFrequency(const float& frequency, timerCallback callback)
     {
       // This function will be called when time out interrupt will occur
       if (callback) 
@@ -261,19 +271,20 @@ class NRF52_MBED_TimerInterrupt
           return false;
       }
       
-      if ( (frequency <= 0) || (frequency > _frequency / 10.0f) )
+      if ( (frequency <= 0) || (frequency > TIM_CLOCK_FREQ / 10.0f) )     
       {
-        TISR_LOGERROR1(F("NRF52_MBED_TimerInterrupt: ERROR: Negative or Too high frequency. Must be <="), _frequency/10.0f);
+        TISR_LOGERROR1(F("NRF52TimerInterrupt: ERROR: Negative or Too high frequency. Must be <="), TIM_CLOCK_FREQ/10.0f);
         
         return false;
       }
       
       // select timer frequency is 1MHz for better accuracy. We don't use 16-bit prescaler for now.
-      // Will use later if very low frequency is needed.
-      _timerCount = (uint32_t) _frequency / frequency;
+      // Will use later if very low frequency is needed.     
+      _frequency  = frequency;      
+      _timerCount = (uint32_t) TIM_CLOCK_FREQ / frequency;
       
-      TISR_LOGWARN1(F("NRF52_MBED_TimerInterrupt: Timer ="), NRF52_MBED_TimerName[_timer]);
-      TISR_LOGWARN3(F("Frequency ="), _frequency, F(", _count ="), (uint32_t) (_timerCount));
+      TISR_LOGWARN3(F("Timer = "), NRF52_MBED_TimerName[_timer], F(", Timer Clock (Hz) = "), TIM_CLOCK_FREQ);
+      TISR_LOGWARN3(F("Frequency = "), frequency, F(", _count = "), (uint32_t) (_timerCount));
 
       // Start if not already running (and reset?)
       nrf_timer_task_trigger(nrf_timer, NRF_TIMER_TASK_START);
@@ -294,24 +305,24 @@ class NRF52_MBED_TimerInterrupt
 
     // interval (in microseconds) and duration (in milliseconds). Duration = 0 or not specified => run indefinitely
     // No params and duration now. To be addes in the future by adding similar functions here or to NRF52-hal-timer.c
-    bool setInterval(unsigned long interval, timerCallback callback)
+    bool setInterval(const unsigned long& interval, timerCallback callback)
     {
       return setFrequency((float) (1000000.0f / interval), callback);
     }
 
-    bool attachInterrupt(float frequency, timerCallback callback)
+    bool attachInterrupt(const float& frequency, timerCallback callback)
     {
       return setFrequency(frequency, callback);
     }
 
     // interval (in microseconds) and duration (in milliseconds). Duration = 0 or not specified => run indefinitely
     // No params and duration now. To be addes in the future by adding similar functions here or to NRF52-hal-timer.c
-    bool attachInterruptInterval(unsigned long interval, timerCallback callback)
+    bool attachInterruptInterval(const unsigned long& interval, timerCallback callback)
     {
       return setFrequency( (float) ( 1000000.0f / interval), callback);
     }
 
-    void detachInterrupt(void)
+    void detachInterrupt()
     {
       NVIC_DisableIRQ(_timer_IRQ);
       
@@ -327,7 +338,7 @@ class NRF52_MBED_TimerInterrupt
       nrf_timer_event_clear(nrf_timer, event);
     }
 
-    void disableTimer(void)
+    void disableTimer()
     {
       detachInterrupt();
     }
@@ -339,7 +350,7 @@ class NRF52_MBED_TimerInterrupt
     }
 
     // Duration (in milliseconds). Duration = 0 or not specified => run indefinitely
-    void enableTimer(void)
+    void enableTimer()
     {
       // Start if not already running (and reset?)
       nrf_timer_task_trigger(nrf_timer, NRF_TIMER_TASK_START);
@@ -357,23 +368,23 @@ class NRF52_MBED_TimerInterrupt
     }
 
     // Just stop clock source, clear the count
-    void stopTimer(void)
+    void stopTimer()
     {
       disableTimer();
     }
 
     // Just reconnect clock source, start current count from 0
-    void restartTimer(void)
+    void restartTimer()
     {
       enableTimer();
     }
     
-    timerCallback getCallback(void)
+    timerCallback getCallback()
     {
       return _callback;
     }
     
-    IRQn_Type getTimerIRQn(void)
+    IRQn_Type getTimerIRQn()
     {
       return _timer_IRQ;
     }
@@ -382,7 +393,7 @@ class NRF52_MBED_TimerInterrupt
 // Timer 0 is used by the soft device
 // Timer 2 is used by the mbed-RTOS
 // only Timer 1, 3 and 4 are available
-extern "C" void TIMER1_IRQHandler_v(void)
+extern "C" void TIMER1_IRQHandler_v()
 {
   if (nRF52Timers[1]) 
   {
@@ -394,7 +405,7 @@ extern "C" void TIMER1_IRQHandler_v(void)
   }
 }
 
-extern "C" void TIMER3_IRQHandler_v(void) 
+extern "C" void TIMER3_IRQHandler_v() 
 {
   if (nRF52Timers[3]) 
   {
@@ -406,7 +417,7 @@ extern "C" void TIMER3_IRQHandler_v(void)
   }
 }
 
-extern "C" void TIMER4_IRQHandler_v(void) 
+extern "C" void TIMER4_IRQHandler_v() 
 {
   if (nRF52Timers[4]) 
   {

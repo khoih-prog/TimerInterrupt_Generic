@@ -19,7 +19,7 @@
   Built by Khoi Hoang https://github.com/khoih-prog/TimerInterrupt_Generic
   Licensed under MIT license
 
-  Version: 1.8.0
+  Version: 1.9.0
 
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
@@ -33,6 +33,7 @@
   1.6.0   K.Hoang      15/06/2021 Add T3/T4 support to 32u4. Add support to RP2040, ESP32-S2
   1.7.0   K.Hoang      13/08/2021 Add support to Adafruit nRF52 core v0.22.0+
   1.8.0   K.Hoang      24/11/2021 Update to use latest TimerInterrupt Libraries' versions
+  1.9.0   K.Hoang      09/05/2022 Update to use latest TimerInterrupt Libraries' versions
 *****************************************************************************************************************************/
 
 #pragma once
@@ -40,8 +41,14 @@
 #ifndef ISR_TIMER_GENERIC_H
 #define ISR_TIMER_GENERIC_H
 
-#if !defined(TIMER_INTERRUPT_GENERIC_VERSION)
-  #define TIMER_INTERRUPT_GENERIC_VERSION       "TimerInterrupt_Generic v1.7.0"
+#ifndef TIMER_INTERRUPT_GENERIC_VERSION
+  #define TIMER_INTERRUPT_GENERIC_VERSION          "TimerInterrupt_Generic v1.9.0"
+  
+  #define TIMER_INTERRUPT_GENERIC_VERSION_MAJOR     1
+  #define TIMER_INTERRUPT_GENERIC_VERSION_MINOR     9
+  #define TIMER_INTERRUPT_GENERIC_VERSION_PATCH     0
+
+  #define TIMER_INTERRUPT_GENERIC_VERSION_INT      1009000
 #endif
 
 #include <stddef.h>

@@ -25,7 +25,7 @@
   Based on BlynkTimer.h
   Author: Volodymyr Shymanskyy
 
-  Version: 1.8.0
+  Version: 1.9.0
 
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
@@ -39,6 +39,7 @@
   1.6.0   K.Hoang      15/06/2021 Add T3/T4 support to 32u4. Add support to RP2040, ESP32-S2
   1.7.0   K.Hoang      13/08/2021 Add support to Adafruit nRF52 core v0.22.0+
   1.8.0   K.Hoang      24/11/2021 Update to use latest TimerInterrupt Libraries' versions
+  1.9.0   K.Hoang      09/05/2022 Update to use latest TimerInterrupt Libraries' versions
 *****************************************************************************************************************************/
 
 #pragma once
@@ -56,7 +57,13 @@
 #endif
 
 #ifndef RPI_PICO_TIMER_INTERRUPT_VERSION
-  #define RPI_PICO_TIMER_INTERRUPT_VERSION       "RPi_Pico_TimerInterrupt v1.1.1"
+  #define RPI_PICO_TIMER_INTERRUPT_VERSION       "RPi_Pico_TimerInterrupt v1.2.0"
+  
+  #define RPI_PICO_TIMER_INTERRUPT_VERSION_MAJOR      1
+  #define RPI_PICO_TIMER_INTERRUPT_VERSION_MINOR      2
+  #define RPI_PICO_TIMER_INTERRUPT_VERSION_PATCH      0
+
+  #define RPI_PICO_TIMER_INTERRUPT_VERSION_INT        1002000  
 #endif
 
 #ifndef TIMER_INTERRUPT_DEBUG
@@ -124,19 +131,28 @@ class RPI_PICO_TimerInterrupt
       _callback = NULL;
     };
 
+    #define TIM_CLOCK_FREQ      ( (float) 1000000.0f )
+
     // frequency (in hertz) and duration (in milliseconds). Duration = 0 or not specified => run indefinitely
     // No params and duration now. To be added in the future by adding similar functions here
-    bool setFrequency(float frequency, pico_timer_callback callback)
+    bool setFrequency(const float& frequency, pico_timer_callback callback)
     {
       if (_timerNo < MAX_RPI_PICO_NUM_TIMERS)
-      {             
-        // select timer frequency is 1MHz for better accuracy. We don't use 16-bit prescaler for now.
-        // Will use later if very low frequency is needed.
-        _frequency  = (float) 1000000;
-        _timerCount = (uint64_t) _frequency / frequency;
+      {            
+        if ( (frequency == 0.0f) || (frequency > 100000.0f) || (callback == NULL) )
+        {
+          TISR_LOGERROR(F("Error. frequency == 0, higher than 100KHz or callback == NULL "));
         
-        TISR_LOGWARN3(F("RPI_PICO_TimerInterrupt: _timerNo ="), _timerNo, F(", _fre ="), _frequency);
-        TISR_LOGWARN3(F("_count ="), (uint32_t) (_timerCount >> 32) , F("-"), (uint32_t) (_timerCount));
+          return false;
+        }
+        
+        // select timer frequency is 1MHz for better accuracy. We don't use 16-bit prescaler for now.
+        // Will use later if very low frequency is needed.       
+        _frequency  = frequency;
+        _timerCount = (uint64_t) TIM_CLOCK_FREQ / frequency;
+        
+        TISR_LOGWARN5(F("_timerNo = "), _timerNo, F(", Clock (Hz) = "), TIM_CLOCK_FREQ, F(", _fre (Hz) = "), _frequency);
+        TISR_LOGWARN3(F("_count = "), (uint32_t) (_timerCount >> 32) , F("-"), (uint32_t) (_timerCount));
         
         _callback = callback;
   
@@ -146,7 +162,7 @@ class RPI_PICO_TimerInterrupt
         cancel_repeating_timer(&_timer);
         add_repeating_timer_us(_timerCount, _callback, NULL, &_timer);
                
-        TISR_LOGWARN1(F("add_repeating_timer_us ="), _timerCount);
+        TISR_LOGWARN1(F("add_repeating_timer_us = "), _timerCount);
 
         return true;
       }
@@ -160,19 +176,19 @@ class RPI_PICO_TimerInterrupt
 
     // interval (in microseconds) and duration (in milliseconds). Duration = 0 or not specified => run indefinitely
     // No params and duration now. To be added in the future by adding similar functions here
-    bool setInterval(unsigned long interval, pico_timer_callback callback)
+    bool setInterval(const unsigned long& interval, pico_timer_callback callback)
     {
       return setFrequency((float) (1000000.0f / interval), callback);
     }
 
-    bool attachInterrupt(float frequency, pico_timer_callback callback)
+    bool attachInterrupt(const float& frequency, pico_timer_callback callback)
     {
       return setFrequency(frequency, callback);
     }
 
     // interval (in microseconds) and duration (in milliseconds). Duration = 0 or not specified => run indefinitely
     // No params and duration now. To be added in the future by adding similar functions here
-    bool attachInterruptInterval(unsigned long interval, pico_timer_callback callback)
+    bool attachInterruptInterval(const unsigned long& interval, pico_timer_callback callback)
     {
       return setFrequency( (float) ( 1000000.0f / interval), callback);
     }
