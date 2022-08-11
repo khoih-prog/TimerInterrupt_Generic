@@ -28,7 +28,7 @@
   Based on BlynkTimer.h
   Author: Volodymyr Shymanskyy
 
-  Version: 1.9.0
+  Version: 1.10.0
 
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
@@ -43,6 +43,7 @@
   1.7.0   K.Hoang      13/08/2021 Add support to Adafruit nRF52 core v0.22.0+
   1.8.0   K.Hoang      24/11/2021 Update to use latest TimerInterrupt Libraries' versions
   1.9.0   K.Hoang      09/05/2022 Update to use latest TimerInterrupt Libraries' versions
+  1.10.0  K.Hoang      10/08/2022 Update to use latest ESP32_New_TimerInterrupt Library version
 *****************************************************************************************************************************/
 
 #pragma once
@@ -51,11 +52,12 @@
 #define ESP32_NEW_TIMERINTERRUPT_H
 
 #if ( ARDUINO_ESP32S2_DEV || ARDUINO_FEATHERS2 || ARDUINO_ESP32S2_THING_PLUS || ARDUINO_MICROS2 || \
-        ARDUINO_METRO_ESP32S2 || ARDUINO_MAGTAG29_ESP32S2 || ARDUINO_FUNHOUSE_ESP32S2 || \
-        ARDUINO_ADAFRUIT_FEATHER_ESP32S2_NOPSRAM )
+      ARDUINO_METRO_ESP32S2 || ARDUINO_MAGTAG29_ESP32S2 || ARDUINO_FUNHOUSE_ESP32S2 || \
+      ARDUINO_ADAFRUIT_FEATHER_ESP32S2_NOPSRAM || ARDUINO_ADAFRUIT_QTPY_ESP32S2)
   #define USING_ESP32_S2_NEW_TIMERINTERRUPT         true
 #elif ( defined(ARDUINO_ESP32S3_DEV) || defined(ARDUINO_ESP32_S3_BOX) || defined(ARDUINO_TINYS3) || \
-        defined(ARDUINO_PROS3) || defined(ARDUINO_FEATHERS3) )
+        defined(ARDUINO_PROS3) || defined(ARDUINO_FEATHERS3) || defined(ARDUINO_ADAFRUIT_FEATHER_ESP32S3_NOPSRAM) || \
+        defined(ARDUINO_ADAFRUIT_QTPY_ESP32S3_NOPSRAM))
   #define USING_ESP32_S3_NEW_TIMERINTERRUPT         true
 #elif ( ARDUINO_ESP32C3_DEV )
   #define USING_ESP32_C3_NEW_TIMERINTERRUPT         true  
@@ -66,13 +68,13 @@
 #endif
 
 #ifndef ESP32_TIMER_INTERRUPT_VERSION
-  #define ESP32_TIMER_INTERRUPT_VERSION          "ESP32_New_TimerInterrupt v1.2.0"
+  #define ESP32_TIMER_INTERRUPT_VERSION          "ESP32_New_TimerInterrupt v1.3.0"
   
   #define ESP32_TIMER_INTERRUPT_VERSION_MAJOR     1
-  #define ESP32_TIMER_INTERRUPT_VERSION_MINOR     2
+  #define ESP32_TIMER_INTERRUPT_VERSION_MINOR     3
   #define ESP32_TIMER_INTERRUPT_VERSION_PATCH     0
 
-  #define ESP32_TIMER_INTERRUPT_VERSION_INT      1002000
+  #define ESP32_TIMER_INTERRUPT_VERSION_INT      1003000
 #endif
 
 #ifndef TIMER_INTERRUPT_DEBUG
@@ -93,8 +95,8 @@
  
 typedef enum
 {
-  TIMER_GROUP_0 = 0, /*!<Hw timer group 0
-  TIMER_GROUP_1 = 1, /*!<Hw timer group 1
+  TIMER_GROUP_0 = 0, // Hw timer group 0
+  TIMER_GROUP_1 = 1, // Hw timer group 1
   TIMER_GROUP_MAX,
 } timer_group_t;
 
@@ -103,8 +105,8 @@ typedef enum
  
 typedef enum 
 {
-  TIMER_0 = 0, /*!<Select timer0 of GROUPx
-  TIMER_1 = 1, /*!<Select timer1 of GROUPx
+  TIMER_0 = 0, // Select timer0 of GROUPx
+  TIMER_1 = 1, // Select timer1 of GROUPx
   TIMER_MAX,
 } timer_idx_t;
 
@@ -172,6 +174,28 @@ typedef struct
 
 */
 
+/*
+  //ESP32 core v2.0.4, timer_config_t defined in tools/sdk/esp32/include/hal/include/hal/timer_types.h:
+  #if SOC_TIMER_GROUP_SUPPORT_XTAL
+  typedef enum {
+    TIMER_SRC_CLK_APB = 0,  // Select APB as the source clock
+    TIMER_SRC_CLK_XTAL = 1, // Select XTAL as the source clock
+  } timer_src_clk_t;
+  #endif
+  typedef struct {
+    timer_alarm_t alarm_en;           // Timer alarm enable
+    timer_start_t counter_en;         // Counter enable
+    timer_intr_mode_t intr_type;      // Interrupt mode
+    timer_count_dir_t counter_dir;    // Counter direction
+    timer_autoreload_t auto_reload;   // Timer auto-reload
+    uint32_t divider;                 // Counter clock divider. The divider's range is from from 2 to 65536
+  #if SOC_TIMER_GROUP_SUPPORT_XTAL
+    timer_src_clk_t clk_src;          // Use XTAL as source clock
+  #endif
+  } timer_config_t;
+
+*/
+
 class ESP32TimerInterrupt;
 
 typedef ESP32TimerInterrupt ESP32Timer;
@@ -220,8 +244,11 @@ class ESP32TimerInterrupt
       .counter_en   = TIMER_START,          //starts counting counter once timer_init called
       .intr_type    = TIMER_INTR_MAX,
       .counter_dir  = TIMER_COUNT_UP,       //counts from 0 to counter value
-      .auto_reload  = TIMER_AUTORELOAD_EN,  // reloads counter automatically
-      .divider      = TIMER_DIVIDER
+      .auto_reload  = TIMER_AUTORELOAD_EN,  //reloads counter automatically
+      .divider      = TIMER_DIVIDER,
+#if SOC_TIMER_GROUP_SUPPORT_XTAL
+      .clk_src      = TIMER_SRC_CLK_XTAL    //Use XTAL as source clock
+#endif      
     };
 
     timer_idx_t       _timerIndex;

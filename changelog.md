@@ -12,6 +12,7 @@
 ## Table of Contents
 
 * [Changelog](#changelog)
+  * [Major Releases v1.10.0](#major-releases-v1100)
   * [Major Releases v1.9.0](#major-releases-v190)
   * [Major Releases v1.8.0](#major-releases-v180)
   * [Releases v1.7.0](#releases-v170)
@@ -29,6 +30,15 @@
 ---
 
 ## Changelog
+
+### Major Releases v1.10.0
+
+1. Update to use latest versions of ESP32_New_TimerInterrupt Library
+
+  - [ESP32_New_TimerInterrupt v1.3.0](https://github.com/khoih-prog/ESP32_New_TimerInterrupt)
+
+2. Update `Packages_Patches`
+
 
 ### Major Releases v1.9.0
 
