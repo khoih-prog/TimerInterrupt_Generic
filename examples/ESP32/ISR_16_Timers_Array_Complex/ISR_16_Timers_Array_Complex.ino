@@ -1,6 +1,6 @@
 /****************************************************************************************************************************
   ISR_16_Timers_Array_Complex.ino
-  For ESP32, ESP32_S2, ESP32_C3 boards with ESP32 core v2.0.0+
+  For ESP32, ESP32_S2, ESP32_S3, ESP32_C3 boards with ESP32 core v2.0.0+
   Written by Khoi Hoang
 
   Built by Khoi Hoang https://github.com/khoih-prog/ESP32_New_TimerInterrupt
