@@ -793,7 +793,12 @@ Please have a look at [ESP8266TimerInterrupt Issue 8: **ESP8266Timer and PWM -->
 
 ### 1. For ESP32
 
-The ESP32 has two timer groups, each one with two general purpose hardware timers.  All the timers are based on 64 bits counters and 16 bit prescalers. 
+The ESP32, ESP32_S2, ESP32_S3, ESP32_C3 have two timer groups, TIMER_GROUP_0 and TIMER_GROUP_1 (for ESP32 core v2.0.0+)
+
+  1) each group of ESP32, ESP32_S2, ESP32_S3 has two general purpose hardware timers, TIMER_0 and TIMER_1
+  2) each group of ESP32_C3 has ony one general purpose hardware timer, TIMER_0
+
+All the timers are based on 64 bits counters and 16 bit prescalers. 
 
 The timer counters can be configured to count up or down and support automatic reload and software reload.
 
@@ -2047,7 +2052,7 @@ While software timer, **programmed for 2s, is activated after 10.917s !!!**. The
 ```
 Starting ISR_Timer_Complex_Ethernet on SAM DUE
 SAMDUETimerInterrupt v1.3.0
-TimerInterrupt_Generic v1.10.0
+TimerInterrupt_Generic v1.11.0
 Using Timer(0) = TC0, channel = 0, IRQ = TC0_IRQn
 Timer(0), us = 50000.00
 ITimer attached to Timer(0)
@@ -2140,7 +2145,7 @@ While software timer, **programmed for 2s, is activated after 4.867s !!!**. Then
 ```
 Starting ISR_Timer_Complex_Ethernet on NRF52840_FEATHER
 NRF52TimerInterrupt v1.4.1
-TimerInterrupt_Generic v1.10.0
+TimerInterrupt_Generic v1.11.0
 NRF52TimerInterrupt: F_CPU (MHz) = 64, Timer = NRF_TIMER2
 NRF52TimerInterrupt: _fre = 1000000.00, _count = 50000
 Starting  ITimer OK, millis() = 1419
@@ -2233,7 +2238,7 @@ In this example, 16 independent ISR Timers are used, yet utilized just one Hardw
 ```
 Starting ISR_16_Timers_Array_Complex on SAMD_NANO_33_IOT
 SAMDTimerInterrupt v1.9.0
-TimerInterrupt_Generic v1.10.0
+TimerInterrupt_Generic v1.11.0
 CPU Frequency = 48 MHz
 Starting ITimer OK, millis() = 1180
 SimpleTimer : 2, ms : 11180, Dms : 10000
@@ -2385,7 +2390,7 @@ The following is the sample terminal output when running example [**TimerInterru
 ```
 Starting TimerInterruptTest on Teensy 4.0
 Teensy_TimerInterrupt v1.3.0
-TimerInterrupt_Generic v1.10.0
+TimerInterrupt_Generic v1.11.0
 CPU Frequency = 600 MHz
 TEENSY_TIMER_1, F_BUS_ACTUAL (MHz) = 150, request interval = 30000, actual interval (us) = 29999
 Prescale = 7, _timerCount = 17578
@@ -2429,8 +2434,8 @@ The following is the sample terminal output when running example [ISR_16_Timers_
 
 ```
 Starting ISR_16_Timers_Array_Complex on ESP32_DEV
-ESP32_New_TimerInterrupt v1.3.0
-TimerInterrupt_Generic v1.10.0
+ESP32_New_TimerInterrupt v1.4.0
+TimerInterrupt_Generic v1.11.0
 CPU Frequency = 240 MHz
 Starting ITimer OK, millis() = 2045
 SimpleTimer : 2, ms : 12044, Dms : 9999
@@ -2582,7 +2587,7 @@ The following is the sample terminal output when running example [ISR_16_Timers_
 ```
 Starting ISR_16_Timers_Array_Complex on ESP8266_NODEMCU_ESP12E
 ESP8266TimerInterrupt v1.6.0
-TimerInterrupt_Generic v1.10.0
+TimerInterrupt_Generic v1.11.0
 CPU Frequency = 160 MHz
 Starting ITimer OK, millis() = 177
 SimpleTimer : 2, ms : 10179, Dms : 10000
@@ -2732,7 +2737,7 @@ The following is the sample terminal output when running example [ISR_16_Timers_
 ```
 Starting ISR_16_Timers_Array_Complex on NUCLEO_F767ZI
 STM32_TimerInterrupt v1.3.0
-TimerInterrupt_Generic v1.10.0
+TimerInterrupt_Generic v1.11.0
 CPU Frequency = 216 MHz
 Starting ITimer OK, millis() = 105
 SimpleTimer : 2, ms : 10110, Dms : 10005
@@ -2883,7 +2888,7 @@ The following is the sample terminal output when running example [**TimerInterru
 ```
 Starting TimerInterruptTest on NUCLEO_F767ZI
 STM32_TimerInterrupt v1.3.0
-TimerInterrupt_Generic v1.10.0
+TimerInterrupt_Generic v1.11.0
 CPU Frequency = 216 MHz
 STM32TimerInterrupt: Timer Input Freq (Hz) = 216000000, _fre = 1000000.00, _count = 1000000
 Starting  ITimer0 OK, millis() = 108
@@ -2940,7 +2945,7 @@ While software timer, **programmed for 2s, is activated after more than 3.000s i
 ```
 Starting ISR_16_Timers_Array_Complex on Nano 33 BLE
 NRF52_MBED_TimerInterrupt v1.4.0
-TimerInterrupt_Generic v1.10.0
+TimerInterrupt_Generic v1.11.0
 Starting ITimer OK, millis() = 810
 SimpleTimer : 2, ms : 3810, Dms : 3000
 Timer : 0, programmed : 5000, actual : 0
@@ -3417,7 +3422,7 @@ SimpleTimer : 2, ms : 85118, Dms : 3011
 ```
 Starting ISR_16_Timers_Array_Complex on megaAVR Nano Every
 megaAVR_TimerInterrupt v1.6.1
-TimerInterrupt_Generic v1.10.0
+TimerInterrupt_Generic v1.11.0
 CPU Frequency = 16 MHz
 TCB Clock Frequency = 16MHz for highest accuracy
 [TISR] TCB 1
@@ -3529,7 +3534,7 @@ SimpleTimer : 2, ms : 90506, Dms : 10064
 
 Starting ISR_16_Timers_Array_Complex on megaAVR Nano Every
 megaAVR_TimerInterrupt v1.6.1
-TimerInterrupt_Generic v1.10.0
+TimerInterrupt_Generic v1.11.0
 CPU Frequency = 16 MHz
 TCB Clock Frequency = 8MHz for very high accuracy
 Starting  ITimer1 OK, millis() = 10
@@ -3598,7 +3603,7 @@ Timer : 15, programmed : 80000, actual : 80000
 ```
 Starting ISR_16_Timers_Array_Complex on megaAVR Nano Every
 megaAVR_TimerInterrupt v1.6.1
-TimerInterrupt_Generic v1.10.0
+TimerInterrupt_Generic v1.11.0
 CPU Frequency = 16 MHz
 TCB Clock Frequency = 250KHz for lower accuracy but longer time
 Starting  ITimer1 OK, millis() = 11
@@ -3748,7 +3753,10 @@ Submit issues to: [TimerInterrupt_Generic issues](https://github.com/khoih-prog/
 10. Add support to `MegaCoreX` core, including ATmega4809, ATmega4808, ATmega3209, ATmega3208, ATmega1609, ATmega1608, ATmega809 and ATmega808
 11. Add TC4, TC5, TCC1 and TCC2 Timers to SAMD21
 12. Add support to new boards (**ADAFRUIT_ITSYBITSY_RP2040, ADAFRUIT_QTPY_RP2040, ADAFRUIT_STEMMAFRIEND_RP2040, ADAFRUIT_TRINKEYQT_RP2040, ADAFRUIT_MACROPAD_RP2040, SPARKFUN_PROMICRO_RP2040, Nano_RP2040_Connect, etc.**) using the `arduino-pico` core
-
+13. Add support to many more ESP32 boards, such as
+  - ESP32_S2 : ESP32S2 Native USB, UM FeatherS2 Neo, UM TinyS2, UM RMP, microS2, LOLIN_S2_MINI, LOLIN_S2_PICO, ADAFRUIT_FEATHER_ESP32S2, ADAFRUIT_FEATHER_ESP32S2_TFT, ATMegaZero ESP32-S2, Deneyap Mini, FRANZININHO_WIFI, FRANZININHO_WIFI_MSC
+  - ESP32_S3 : UM TinyS3, UM PROS3, UM FeatherS3, ESP32_S3_USB_OTG, ESP32S3_CAM_LCD, DFROBOT_FIREBEETLE_2_ESP32S3, ADAFRUIT_FEATHER_ESP32S3_TFT
+  - ESP32_C3 : LOLIN_C3_MINI, DFROBOT_BEETLE_ESP32_C3, ADAFRUIT_QTPY_ESP32C3, AirM2M_CORE_ESP32C3, XIAO_ESP32C3
 
 ---
 ---

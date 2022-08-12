@@ -28,7 +28,7 @@
   Based on BlynkTimer.h
   Author: Volodymyr Shymanskyy
 
-  Version: 1.10.0
+  Version: 1.11.0
 
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
@@ -44,6 +44,7 @@
   1.8.0   K.Hoang      24/11/2021 Update to use latest TimerInterrupt Libraries' versions
   1.9.0   K.Hoang      09/05/2022 Update to use latest TimerInterrupt Libraries' versions
   1.10.0  K.Hoang      10/08/2022 Update to use latest ESP32_New_TimerInterrupt Library version
+  1.11.0  K.Hoang      12/08/2022 Add support to new ESP32_C3, ESP32_S2 and ESP32_S3 boards
 *****************************************************************************************************************************/
 
 #pragma once
@@ -53,28 +54,50 @@
 
 #if ( ARDUINO_ESP32S2_DEV || ARDUINO_FEATHERS2 || ARDUINO_ESP32S2_THING_PLUS || ARDUINO_MICROS2 || \
       ARDUINO_METRO_ESP32S2 || ARDUINO_MAGTAG29_ESP32S2 || ARDUINO_FUNHOUSE_ESP32S2 || \
-      ARDUINO_ADAFRUIT_FEATHER_ESP32S2_NOPSRAM || ARDUINO_ADAFRUIT_QTPY_ESP32S2)
+      ARDUINO_ADAFRUIT_FEATHER_ESP32S2_NOPSRAM || ARDUINO_ADAFRUIT_QTPY_ESP32S2 || ARDUINO_ESP32S2_USB || \
+      ARDUINO_FEATHERS2NEO || ARDUINO_TINYS2 || ARDUINO_RMP || ARDUINO_LOLIN_S2_MINI || ARDUINO_LOLIN_S2_PICO || \
+      ARDUINO_ADAFRUIT_FEATHER_ESP32S2 || ARDUINO_ADAFRUIT_FEATHER_ESP32S2_TFT  || ARDUINO_atmegazero_esp32s2 || \
+      ARDUINO_DYM || ARDUINO_FRANZININHO_WIFI  || ARDUINO_FRANZININHO_WIFI_MSC )
   #define USING_ESP32_S2_NEW_TIMERINTERRUPT         true
+  
+  #if (_TIMERINTERRUPT_LOGLEVEL_ > 3)
+    #warning USING_ESP32_S2_NEW_TIMERINTERRUPT
+  #endif
 #elif ( defined(ARDUINO_ESP32S3_DEV) || defined(ARDUINO_ESP32_S3_BOX) || defined(ARDUINO_TINYS3) || \
         defined(ARDUINO_PROS3) || defined(ARDUINO_FEATHERS3) || defined(ARDUINO_ADAFRUIT_FEATHER_ESP32S3_NOPSRAM) || \
-        defined(ARDUINO_ADAFRUIT_QTPY_ESP32S3_NOPSRAM))
+        defined(ARDUINO_ADAFRUIT_QTPY_ESP32S3_NOPSRAM) || defined(ARDUINO_ESP32S3_CAM_LCD) || \
+        defined(ARDUINO_ADAFRUIT_FEATHER_ESP32S3) || defined(ARDUINO_ADAFRUIT_FEATHER_ESP32S3_TFT) || \
+        defined(ARDUINO_ESP32_S3_USB_OTG) )
   #define USING_ESP32_S3_NEW_TIMERINTERRUPT         true
-#elif ( ARDUINO_ESP32C3_DEV )
-  #define USING_ESP32_C3_NEW_TIMERINTERRUPT         true  
+  
+  #if (_TIMERINTERRUPT_LOGLEVEL_ > 3)
+    #warning USING_ESP32_S3_NEW_TIMERINTERRUPT
+  #endif
+#elif ( defined(ARDUINO_ESP32C3_DEV) || defined(ARDUINO_LOLIN_C3_MINI) || defined(ARDUINO_ADAFRUIT_QTPY_ESP32C3) || \
+        defined(ARDUINO_AirM2M_CORE_ESP32C3) || defined(ARDUINO_XIAO_ESP32C3) )
+  #define USING_ESP32_C3_NEW_TIMERINTERRUPT         true
+  
+  #if (_TIMERINTERRUPT_LOGLEVEL_ > 3)
+    #warning USING_ESP32_C3_NEW_TIMERINTERRUPT
+  #endif
 #elif defined(ESP32)
-  #define USING_ESP32_NEW_TIMERINTERRUPT            true  
+  #define USING_ESP32_NEW_TIMERINTERRUPT            true 
+  
+  #if (_TIMERINTERRUPT_LOGLEVEL_ > 3)
+    #warning USING_ESP32_NEW_TIMERINTERRUPT
+  #endif 
 #else
   #error This code is intended to run on the ESP32 platform! Please check your Tools->Board setting.  
 #endif
 
 #ifndef ESP32_TIMER_INTERRUPT_VERSION
-  #define ESP32_TIMER_INTERRUPT_VERSION          "ESP32_New_TimerInterrupt v1.3.0"
+  #define ESP32_TIMER_INTERRUPT_VERSION          "ESP32_New_TimerInterrupt v1.4.0"
   
   #define ESP32_TIMER_INTERRUPT_VERSION_MAJOR     1
-  #define ESP32_TIMER_INTERRUPT_VERSION_MINOR     3
+  #define ESP32_TIMER_INTERRUPT_VERSION_MINOR     4
   #define ESP32_TIMER_INTERRUPT_VERSION_PATCH     0
 
-  #define ESP32_TIMER_INTERRUPT_VERSION_INT      1003000
+  #define ESP32_TIMER_INTERRUPT_VERSION_INT      1004000
 #endif
 
 #ifndef TIMER_INTERRUPT_DEBUG

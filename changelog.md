@@ -12,6 +12,7 @@
 ## Table of Contents
 
 * [Changelog](#changelog)
+  * [Major Releases v1.11.0](#major-releases-v1110)
   * [Major Releases v1.10.0](#major-releases-v1100)
   * [Major Releases v1.9.0](#major-releases-v190)
   * [Major Releases v1.8.0](#major-releases-v180)
@@ -30,6 +31,17 @@
 ---
 
 ## Changelog
+
+### Major Releases v1.11.0
+
+1. Update to use latest versions of ESP32_New_TimerInterrupt Library
+
+  - [ESP32_New_TimerInterrupt v1.4.0](https://github.com/khoih-prog/ESP32_New_TimerInterrupt)
+  
+  to add support to 
+  - ESP32_S2 : ESP32S2 Native USB, UM FeatherS2 Neo, UM TinyS2, UM RMP, microS2, LOLIN_S2_MINI, LOLIN_S2_PICO, ADAFRUIT_FEATHER_ESP32S2, ADAFRUIT_FEATHER_ESP32S2_TFT, ATMegaZero ESP32-S2, Deneyap Mini, FRANZININHO_WIFI, FRANZININHO_WIFI_MSC
+  - ESP32_S3 : UM TinyS3, UM PROS3, UM FeatherS3, ESP32_S3_USB_OTG, ESP32S3_CAM_LCD, DFROBOT_FIREBEETLE_2_ESP32S3, ADAFRUIT_FEATHER_ESP32S3_TFT
+  - ESP32_C3 : LOLIN_C3_MINI, DFROBOT_BEETLE_ESP32_C3, ADAFRUIT_QTPY_ESP32C3, AirM2M_CORE_ESP32C3, XIAO_ESP32C3
 
 ### Major Releases v1.10.0
 

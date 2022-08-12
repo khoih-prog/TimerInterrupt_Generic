@@ -19,7 +19,7 @@
   Built by Khoi Hoang https://github.com/khoih-prog/TimerInterrupt_Generic
   Licensed under MIT license
 
-  Version: 1.10.0
+  Version: 1.11.0
 
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
@@ -35,6 +35,7 @@
   1.8.0   K.Hoang      24/11/2021 Update to use latest TimerInterrupt Libraries' versions
   1.9.0   K.Hoang      09/05/2022 Update to use latest TimerInterrupt Libraries' versions
   1.10.0  K.Hoang      10/08/2022 Update to use latest ESP32_New_TimerInterrupt Library version
+  1.11.0  K.Hoang      12/08/2022 Add support to new ESP32_C3, ESP32_S2 and ESP32_S3 boards
 ********************************************************************************************************************************/
 
 #pragma once
@@ -43,13 +44,13 @@
 #define TIMERINTERRUPT_GENERIC_H
 
 #ifndef TIMER_INTERRUPT_GENERIC_VERSION
-  #define TIMER_INTERRUPT_GENERIC_VERSION          "TimerInterrupt_Generic v1.10.0"
+  #define TIMER_INTERRUPT_GENERIC_VERSION          "TimerInterrupt_Generic v1.11.0"
   
   #define TIMER_INTERRUPT_GENERIC_VERSION_MAJOR     1
-  #define TIMER_INTERRUPT_GENERIC_VERSION_MINOR     10
+  #define TIMER_INTERRUPT_GENERIC_VERSION_MINOR     11
   #define TIMER_INTERRUPT_GENERIC_VERSION_PATCH     0
 
-  #define TIMER_INTERRUPT_GENERIC_VERSION_INT      1010000
+  #define TIMER_INTERRUPT_GENERIC_VERSION_INT      1011000
 #endif
 
 #include "TimerInterrupt_Generic_Debug.h"
