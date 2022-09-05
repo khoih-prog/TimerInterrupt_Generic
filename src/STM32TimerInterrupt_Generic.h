@@ -63,6 +63,8 @@
   #define TIMER_INTERRUPT_DEBUG       0
 #endif
 
+#include "TimerInterrupt_Generic_Debug.h"
+
 class STM32TimerInterrupt;
 
 typedef STM32TimerInterrupt STM32Timer;

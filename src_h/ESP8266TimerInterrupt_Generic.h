@@ -68,6 +68,7 @@
   #define TIMER_INTERRUPT_DEBUG      0
 #endif
 
+#include "TimerInterrupt_Generic_Debug.h"
 
 /* From /arduino-1.8.10/hardware/esp8266com/esp8266/cores/esp8266/esp8266_peri.h
 

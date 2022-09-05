@@ -70,6 +70,8 @@
 #include "Arduino.h"
 #include "pins_arduino.h"
 
+#include "TimerInterrupt_Generic_Debug.h"
+
 #define MAX_COUNT_8BIT            255
 #define MAX_COUNT_10BIT           1023
 #define MAX_COUNT_16BIT           65535

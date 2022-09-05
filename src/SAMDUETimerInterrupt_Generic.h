@@ -64,6 +64,8 @@
   #define TIMER_INTERRUPT_DEBUG       0
 #endif
 
+#include "TimerInterrupt_Generic_Debug.h"
+
 #ifdef BOARD_NAME
   #undef BOARD_NAME
 #endif
