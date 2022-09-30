@@ -31,7 +31,7 @@
 // _TIMERINTERRUPT_LOGLEVEL_ from 0 to 4
 // Don't define _TIMERINTERRUPT_LOGLEVEL_ > 0. Only for special ISR debugging only. Can hang the system.
 #define TIMER_INTERRUPT_DEBUG         1
-#define _TIMERINTERRUPT_LOGLEVEL_     4
+#define _TIMERINTERRUPT_LOGLEVEL_     1
 
 #include "TimerInterrupt_Generic.h"
 
@@ -50,6 +50,8 @@ RPI_PICO_Timer ITimer2(2);
 
 bool TimerHandler1(struct repeating_timer *t)
 {
+  (void) t;
+  
   static bool toggle1 = false;
 
 #if (TIMER_INTERRUPT_DEBUG > 0)
@@ -67,6 +69,8 @@ bool TimerHandler1(struct repeating_timer *t)
 
 bool TimerHandler2(struct repeating_timer *t)
 {
+  (void) t;
+  
   static bool toggle2 = false;
 
 #if (TIMER_INTERRUPT_DEBUG > 0)
@@ -87,7 +91,7 @@ void setup()
   pinMode(outputPin2, OUTPUT);
   
   Serial.begin(115200);
-  while (!Serial);
+  while (!Serial && millis() < 5000);
 
   Serial.print(F("\nStarting Argument_Simple on ")); Serial.println(BOARD_NAME);
   Serial.println(RPI_PICO_TIMER_INTERRUPT_VERSION);

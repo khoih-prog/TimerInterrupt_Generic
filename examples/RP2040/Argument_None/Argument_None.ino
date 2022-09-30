@@ -44,7 +44,7 @@
 // _TIMERINTERRUPT_LOGLEVEL_ from 0 to 4
 // Don't define _TIMERINTERRUPT_LOGLEVEL_ > 0. Only for special ISR debugging only. Can hang the system.
 #define TIMER_INTERRUPT_DEBUG         1
-#define _TIMERINTERRUPT_LOGLEVEL_     4
+#define _TIMERINTERRUPT_LOGLEVEL_     1
 
 #include "TimerInterrupt_Generic.h"
 
@@ -56,6 +56,8 @@
 
 bool TimerHandler0(struct repeating_timer *t)
 {
+  (void) t;
+  
   static bool toggle0 = false;
 
 #if (TIMER_INTERRUPT_DEBUG > 0)
@@ -71,6 +73,8 @@ bool TimerHandler0(struct repeating_timer *t)
 
 bool TimerHandler1(struct repeating_timer *t)
 {
+  (void) t;
+  
   static bool toggle1 = false;
   
 #if (TIMER_INTERRUPT_DEBUG > 0)
@@ -98,7 +102,7 @@ void setup()
   pinMode(PIN_D1,      OUTPUT);
   
   Serial.begin(115200);
-  while (!Serial);
+  while (!Serial && millis() < 5000);
 
   delay(100);
 
