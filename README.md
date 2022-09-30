@@ -3830,7 +3830,8 @@ Many thanks for everyone for bug reporting, new feature suggesting, testing and 
 4. Thanks to good work of [Miguel Wisintainer](https://github.com/tcpipchip) for working with, developing, debugging and testing.
 5. Thanks to [Holger Lembke](https://github.com/holgerlembke) to report [ESP8266TimerInterrupt Issue 8: **ESP8266Timer and PWM --> wdt reset**](https://github.com/khoih-prog/ESP8266TimerInterrupt/issues/8), leading to the [HOWTO Use PWM analogWrite() with ESP8266 running Timer1 Interrupt](https://github.com/khoih-prog/ESP8266TimerInterrupt#howto-use-pwm-analogwrite-with-esp8266-running-timer1-interrupt) notes.
 6. Thanks to [Jelmer](https://github.com/jjwbruijn) to report and make PR in [Moved the implementation header file to a separate .cpp file](https://github.com/khoih-prog/ESP32TimerInterrupt/pull/6).
-7. Thanks to [Django0](https://github.com/Django0) to provide the following PR [Fixed warnings from cppcheck (platformio) and -Wall arduino-cli. PR#10](https://github.com/khoih-prog/TimerInterrupt/pull/10).
+7. Thanks to [Django0](https://github.com/Django0) to provide the following PR [Fixed warnings from cppcheck (platformio) and -Wall arduino-cli. PR#10](https://github.com/khoih-prog/TimerInterrupt/pull/10)
+8. Thanks to [sriccardi-invn](https://github.com/sriccardi-invn) to start the discussion in [Cannot use TimerInterrupt_Generic Library in the same time than Servo Library #11](https://github.com/khoih-prog/TimerInterrupt_Generic/discussions/11) leading to new release v1.10.0 of [SAMD_TimerInterrupt](https://github.com/khoih-prog/SAMD_TimerInterrupt) to fix the bug and add more features
 
 <table>
   <tr>
@@ -3843,6 +3844,7 @@ Many thanks for everyone for bug reporting, new feature suggesting, testing and 
   </tr>
   <tr>
     <td align="center"><a href="https://github.com/Django0"><img src="https://github.com/Django0.png" width="100px;" alt="Django0"/><br /><sub><b>Django0</b></sub></a><br /></td>
+    <td align="center"><a href="https://github.com/sriccardi-invn"><img src="https://github.com/sriccardi-invn.png" width="100px;" alt="sriccardi-invn"/><br /><sub><b>sriccardi-invn</b></sub></a><br /></td>
   </tr> 
 </table>
 
