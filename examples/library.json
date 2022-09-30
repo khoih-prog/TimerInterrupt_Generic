@@ -1,0 +1,30 @@
+{
+  "name": "TimerInterrupt_Generic",
+  "version": "1.12.0",
+  "keywords": "timing, device, control, timer, interrupt, hardware, isr, hardware-timer, mbed, rp2040, esp8266, esp32, samd, nrf52, teensy, stm32, nano-33-ble, nano-rp2040-connect, mega, sam-due, isr-based, 32u4, non-blocking, mission-critical, accuracy, precise",
+  "description": "This library enables you to use Interrupt from Hardware Timers on supported boards such as AVR, Mega-AVR, ESP8266, ESP32, ESP32-S2, SAMD, SAM DUE, nRF52, STM32F/L/H/G/WB/MP1, Teensy, Nano-33-BLE, RP2040-based boards, etc. These hardware timers, using interrupt, still work even if other functions are blocking. It now supports 16 ISR-based timers, while consuming only 1 Hardware Timer. Timers' interval is very long (ulong millisecs). The most important feature is they're ISR-based timers. Therefore, their executions are not blocked by bad-behaving functions or tasks. This important feature is absolutely necessary for mission-critical tasks. Moreover, they are much more precise (certainly depending on clock frequency accuracy) than other software timers using millis() or micros(). That's necessary if you need to measure some data requiring better accuracy",
+  "authors":
+  {
+    "name":  "Khoi Hoang",
+    "url":   "https://github.com/khoih-prog",
+    "maintainer": true
+  },
+  "repository":
+  {
+    "type": "git",
+    "url": "https://github.com/khoih-prog/TimerInterrupt_Generic"
+  },
+  "homepage": "https://github.com/khoih-prog/TimerInterrupt_Generic",
+  "export": {
+    "exclude": [
+      "linux",
+      "extras",
+      "tests"
+    ]
+  },
+  "license": "MIT",
+  "frameworks": "*",
+  "platforms": "*",
+  "examples": "examples/*/*/*.ino",
+  "headers": ["TimerInterrupt_Generic.h", "ISR_Timer_Generic.h"]
+}
