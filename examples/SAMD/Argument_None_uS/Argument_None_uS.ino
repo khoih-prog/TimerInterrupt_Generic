@@ -36,111 +36,86 @@
   #error This code is designed to run on SAMD21/SAMD51 platform! Please check your Tools->Board setting.
 #endif
 
-// These define's must be placed at the beginning before #include "SAMDTimerInterrupt.h"
+/////////////////////////////////////////////////////////////////
+
+// These define's must be placed at the beginning before #include "TimerInterrupt_Generic.h"
 // _TIMERINTERRUPT_LOGLEVEL_ from 0 to 4
 // Don't define _TIMERINTERRUPT_LOGLEVEL_ > 0. Only for special ISR debugging only. Can hang the system.
 // Don't define TIMER_INTERRUPT_DEBUG > 2. Only for special ISR debugging only. Can hang the system.
 #define TIMER_INTERRUPT_DEBUG         0
-#define _TIMERINTERRUPT_LOGLEVEL_     0
+#define _TIMERINTERRUPT_LOGLEVEL_     1
+
+// Select only one to be true for SAMD21. Must must be placed at the beginning before #include "TimerInterrupt_Generic.h"
+#define USING_TIMER_TC3         true      // Only TC3 can be used for SAMD51
+#define USING_TIMER_TC4         false     // Not to use with Servo library
+#define USING_TIMER_TC5         false
+#define USING_TIMER_TCC         false
+#define USING_TIMER_TCC1        false
+#define USING_TIMER_TCC2        false     // Don't use this, can crash on some boards
+
+// Uncomment To test if conflict with Servo library
+//#include "Servo.h"
+
+/////////////////////////////////////////////////////////////////
 
 // To be included only in main(), .ino with setup() to avoid `Multiple Definitions` Linker Error
 #include "TimerInterrupt_Generic.h"
 
-//#ifndef LED_BUILTIN
-//  #define LED_BUILTIN       13
-//#endif
-
-#ifndef LED_BLUE
-  #define LED_BLUE          2
+#ifndef LED_BUILTIN
+  #define LED_BUILTIN       13
 #endif
 
-#ifndef LED_RED
-  #define LED_RED           8
-#endif
+// TC3, TC4, TC5 max permissible TIMER_INTERVAL_MS is 1398.101 ms, larger will overflow, therefore not permitted
+// Use TCC, TCC1, TCC2 for longer TIMER_INTERVAL_MS
+#define TIMER_INTERVAL_MS        1000
+#define TIMER_INTERVAL_US        1000
 
-#define TIMER0_INTERVAL_MS        500   //1000
-#define TIMER0_INTERVAL_US        200   //1000
-
-volatile uint32_t preMillisTimer0 = 0;
+volatile uint32_t preMillisTimer = 0;
 
 // Depending on the board, you can select SAMD21 Hardware Timer from TC3, TC4, TC5, TCC, TCC1 or TCC2
 // SAMD51 Hardware Timer only TC3
 
-// Init SAMD timer TIMER_TC3
-SAMDTimer ITimer0(TIMER_TC3);
-
-//////////////////////////////////////////////
-
-void TimerHandler0()
-{
-  static bool toggle0 = false;
-
-#if (TIMER_INTERRUPT_DEBUG > 0)
-    static uint32_t curMillis = 0;
-    
-    curMillis = millis();
-    
-    if (curMillis > TIMER0_INTERVAL_MS)
-    {
-      Serial.print(F("ITimer0: millis() = ")); Serial.print(curMillis);
-      Serial.print(F(", delta = ")); Serial.println(curMillis - preMillisTimer0);
-    }
-    
-    preMillisTimer0 = curMillis;
-#endif 
-
-  //timer interrupt toggles pin LED_BUILTIN
-  digitalWrite(LED_BUILTIN, toggle0);
-  toggle0 = !toggle0;
-}
-
-//////////////////////////////////////////////
-
-#if (TIMER_INTERRUPT_USING_SAMD21)
-
-#define TIMER1_INTERVAL_MS        2000
-
-volatile uint32_t preMillisTimer1 = 0;
-
-// Init SAMD timer TIMER_TCC
-//SAMDTimer ITimer1(TIMER_TC4);
-//SAMDTimer ITimer1(TIMER_TC5);
-SAMDTimer ITimer1(TIMER_TCC);
-//SAMDTimer ITimer1(TIMER_TCC1);
-//SAMDTimer ITimer1(TIMER_TCC2);
-
-//////////////////////////////////////////////
-
-void TimerHandler1()
-{
-  static bool toggle1 = false;
-
-  #if (TIMER_INTERRUPT_DEBUG > 0)
-    static uint32_t curMillis = 0;
-    
-    curMillis = millis();
-    
-    if (curMillis > TIMER1_INTERVAL_MS)
-    {
-      Serial.print(F("ITimer1: millis() = ")); Serial.print(curMillis);
-      Serial.print(F(", delta = ")); Serial.println(curMillis - preMillisTimer1);
-    }
-    
-    preMillisTimer0 = curMillis;
+#if USING_TIMER_TC3
+  #define SELECTED_TIMER      TIMER_TC3
+#elif USING_TIMER_TC4
+  #define SELECTED_TIMER      TIMER_TC4
+#elif USING_TIMER_TC5
+  #define SELECTED_TIMER      TIMER_TC5
+#elif USING_TIMER_TCC
+  #define SELECTED_TIMER      TIMER_TCC
+#elif USING_TIMER_TCC1
+  #define SELECTED_TIMER      TIMER_TCC1
+#elif USING_TIMER_TCC2
+  #define SELECTED_TIMER      TIMER_TCC
+#else
+  #error You have to select 1 Timer  
 #endif
 
-  //timer interrupt toggles outputPin
-  digitalWrite(LED_BLUE, toggle1);
-  toggle1 = !toggle1;
+// Init selected SAMD timer
+SAMDTimer ITimer(SELECTED_TIMER);
+
+//////////////////////////////////////////////
+
+void TimerHandler()
+{
+  static bool toggle = false;
+  static uint32_t count = 0;
+
+  // Blink once every 1000 interrupt times => ( 1000 * TIMER_INTERVAL_US )
+  if (++count >= 1000)
+  {
+    count = 0;
+    //timer interrupt toggles pin LED_BUILTIN
+    digitalWrite(LED_BUILTIN, toggle);
+    toggle = !toggle;
+  }
 }
-#endif
 
 //////////////////////////////////////////////
 
 void setup()
 {
   pinMode(LED_BUILTIN, OUTPUT);
-  pinMode(LED_BLUE, OUTPUT);
   
   Serial.begin(115200);
   while (!Serial && millis() < 5000);
@@ -153,25 +128,14 @@ void setup()
   Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
   
   // Interval in millisecs
-  //if (ITimer0.attachInterruptInterval_MS(TIMER0_INTERVAL_MS, TimerHandler0))
-  if (ITimer0.attachInterruptInterval(TIMER0_INTERVAL_US, TimerHandler0))
+  //if (ITimer.attachInterruptInterval_MS(TIMER_INTERVAL_MS, TimerHandler))
+  if (ITimer.attachInterruptInterval(TIMER_INTERVAL_US, TimerHandler))
   {
-    preMillisTimer0 = millis();
-    Serial.print(F("Starting  ITimer0 OK, millis() = ")); Serial.println(preMillisTimer0);
+    preMillisTimer = millis();
+    Serial.print(F("Starting  ITimer OK, millis() = ")); Serial.println(preMillisTimer);
   }
   else
-    Serial.println(F("Can't set ITimer0. Select another freq. or timer"));
-
-#if (TIMER_INTERRUPT_USING_SAMD21)
-  // Interval in millisecs
-  if (ITimer1.attachInterruptInterval_MS(TIMER1_INTERVAL_MS, TimerHandler1))
-  {
-    preMillisTimer1 = millis();
-    Serial.print(F("Starting ITimer1 OK, millis() = ")); Serial.println(preMillisTimer1);
-  }
-  else
-    Serial.println(F("Can't set ITimer1. Select another freq. or timer"));
-#endif
+    Serial.println(F("Can't set ITimer. Select another freq. or timer"));
 }
 
 //////////////////////////////////////////////

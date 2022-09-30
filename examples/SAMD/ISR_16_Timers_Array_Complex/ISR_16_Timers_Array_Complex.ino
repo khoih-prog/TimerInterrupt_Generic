@@ -3,7 +3,7 @@
   For SAMD boards
   Written by Khoi Hoang
 
-  Built by Khoi Hoang https://github.com/khoih-prog/TimerInterrupt_Generic
+  Built by Khoi Hoang https://github.com/khoih-prog/SAMD_TimerInterrupt
   Licensed under MIT license
 
   Now even you use all these new 16 ISR-based timers,with their maximum interval practically unlimited (limited only by
@@ -43,18 +43,33 @@
   #error This code is designed to run on SAMD21/SAMD51 platform! Please check your Tools->Board setting.
 #endif
 
-// These define's must be placed at the beginning before #include "SAMDTimerInterrupt.h"
+/////////////////////////////////////////////////////////////////
+
+// These define's must be placed at the beginning before #include "TimerInterrupt_Generic.h"
 // _TIMERINTERRUPT_LOGLEVEL_ from 0 to 4
 // Don't define _TIMERINTERRUPT_LOGLEVEL_ > 0. Only for special ISR debugging only. Can hang the system.
 // Don't define TIMER_INTERRUPT_DEBUG > 2. Only for special ISR debugging only. Can hang the system.
 #define TIMER_INTERRUPT_DEBUG         0
 #define _TIMERINTERRUPT_LOGLEVEL_     0
 
+// Select only one to be true for SAMD21. Must must be placed at the beginning before #include "TimerInterrupt_Generic.h"
+#define USING_TIMER_TC3         true      // Only TC3 can be used for SAMD51
+#define USING_TIMER_TC4         false     // Not to use with Servo library
+#define USING_TIMER_TC5         false
+#define USING_TIMER_TCC         false
+#define USING_TIMER_TCC1        false
+#define USING_TIMER_TCC2        false     // Don't use this, can crash on some boards
+
+// Uncomment To test if conflict with Servo library
+//#include "Servo.h"
+
+/////////////////////////////////////////////////////////////////
+
 // To be included only in main(), .ino with setup() to avoid `Multiple Definitions` Linker Error
 #include "TimerInterrupt_Generic.h"
 
 // To be included only in main(), .ino with setup() to avoid `Multiple Definitions` Linker Error
-#include "ISR_Timer_Generic.h"
+#include "SAMD_ISR_Timer.h"
 
 #include <SimpleTimer.h>              // https://github.com/jfturcot/SimpleTimer
 
@@ -70,30 +85,50 @@
 #define LED_RED           3
 #endif
 
+// TC3, TC4, TC5 max permissible HW_TIMER_INTERVAL_US is 1398101 us, larger will overflow, therefore not permitted
+// Use TCC, TCC1, TCC2 for longer HW_TIMER_INTERVAL_US
 #define HW_TIMER_INTERVAL_US      10000L
 
 volatile uint32_t startMillis = 0;
 
-// You can select SAMD Hardware Timer  from SAMD_TIMER_1 or SAMD_TIMER_3
-
-// Depending on the board, you can select SAMD21 Hardware Timer from TC3, TC4, TC5, TCC, TCC1 or TCC2
-// SAMD51 Hardware Timer only TC3
-
-// Init SAMD timer TIMER_TC3
-SAMDTimer ITimer(TIMER_TC3);
+///////////////////////////////////////////////
 
 #if (TIMER_INTERRUPT_USING_SAMD21)
-// Init SAMD timer TIMER_TCC
-//SAMDTimer ITimer(TIMER_TC4);
-//SAMDTimer ITimer(TIMER_TC5);
-//SAMDTimer ITimer(TIMER_TCC);
-//SAMDTimer ITimer(TIMER_TCC1);
-//SAMDTimer ITimer(TIMER_TCC2);
-#endif
+
+  #if USING_TIMER_TC3
+    #define SELECTED_TIMER      TIMER_TC3
+  #elif USING_TIMER_TC4
+    #define SELECTED_TIMER      TIMER_TC4
+  #elif USING_TIMER_TC5
+    #define SELECTED_TIMER      TIMER_TC5
+  #elif USING_TIMER_TCC
+    #define SELECTED_TIMER      TIMER_TCC
+  #elif USING_TIMER_TCC1
+    #define SELECTED_TIMER      TIMER_TCC1
+  #elif USING_TIMER_TCC2
+    #define SELECTED_TIMER      TIMER_TCC
+  #else
+    #error You have to select 1 Timer  
+  #endif
+
+#else
+
+  #if !(USING_TIMER_TC3)
+    #error You must select TC3 for SAMD51
+  #endif
+  
+  #define SELECTED_TIMER      TIMER_TC3
+
+#endif  
+
+// Init selected SAMD timer
+SAMDTimer ITimer(SELECTED_TIMER);
+
+////////////////////////////////////////////////
 
 // Init SAMD_ISR_Timer
 // Each SAMD_ISR_Timer can service 16 different ISR-based timers
-ISR_Timer SAMD_ISR_Timer;
+SAMD_ISR_Timer ISR_Timer;
 
 #define LED_TOGGLE_INTERVAL_MS        2000L
 
@@ -102,7 +137,7 @@ void TimerHandler()
   static bool toggle  = false;
   static int timeRun  = 0;
 
-  SAMD_ISR_Timer.run();
+  ISR_Timer.run();
 
   // Toggle LED every LED_TOGGLE_INTERVAL_MS = 2000ms = 2s
   if (++timeRun == ((LED_TOGGLE_INTERVAL_MS * 1000) / HW_TIMER_INTERVAL_US) )
@@ -357,10 +392,10 @@ void setup()
   {
 #if USE_COMPLEX_STRUCT
     curISRTimerData[i].previousMillis = startMillis;
-    SAMD_ISR_Timer.setInterval(curISRTimerData[i].TimerInterval, curISRTimerData[i].irqCallbackFunc);
+    ISR_Timer.setInterval(curISRTimerData[i].TimerInterval, curISRTimerData[i].irqCallbackFunc);
 #else
     previousMillis[i] = millis();
-    SAMD_ISR_Timer.setInterval(TimerInterval[i], irqCallbackFunc[i]);
+    ISR_Timer.setInterval(TimerInterval[i], irqCallbackFunc[i]);
 #endif
   }
 
@@ -373,12 +408,12 @@ void setup()
 void loop()
 {
   // This unadvised blocking task is used to demonstrate the blocking effects onto the execution and accuracy to Software timer
-  // You see the time elapse of SAMD_ISR_Timer still accurate, whereas very unaccurate for Software Timer
+  // You see the time elapse of ISR_Timer still accurate, whereas very unaccurate for Software Timer
   // The time elapse for 2000ms software timer now becomes 3000ms (BLOCKING_TIME_MS)
-  // While that of SAMD_ISR_Timer is still prefect.
+  // While that of ISR_Timer is still prefect.
   delay(BLOCKING_TIME_MS);
 
   // You need this Software timer for non-critical tasks. Avoid abusing ISR if not absolutely necessary
-  // You don't need to and never call SAMD_ISR_Timer.run() here in the loop(). It's already handled by ISR timer.
+  // You don't need to and never call ISR_Timer.run() here in the loop(). It's already handled by ISR timer.
   simpleTimer.run();
 }

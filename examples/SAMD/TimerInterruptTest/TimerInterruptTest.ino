@@ -35,121 +35,106 @@
   #error This code is designed to run on SAMD21/SAMD51 platform! Please check your Tools->Board setting.
 #endif
 
-// These define's must be placed at the beginning before #include "SAMDTimerInterrupt.h"
+/////////////////////////////////////////////////////////////////
+
+// These define's must be placed at the beginning before #include "TimerInterrupt_Generic.h"
 // _TIMERINTERRUPT_LOGLEVEL_ from 0 to 4
 // Don't define _TIMERINTERRUPT_LOGLEVEL_ > 0. Only for special ISR debugging only. Can hang the system.
 // Don't define TIMER_INTERRUPT_DEBUG > 2. Only for special ISR debugging only. Can hang the system.
 #define TIMER_INTERRUPT_DEBUG         0
 #define _TIMERINTERRUPT_LOGLEVEL_     0
 
-#include "SAMDTimerInterrupt.h"
+// Select only one to be true for SAMD21. Must must be placed at the beginning before #include "TimerInterrupt_Generic.h"
+#define USING_TIMER_TC3         true      // Only TC3 can be used for SAMD51
+#define USING_TIMER_TC4         false     // Not to use with Servo library
+#define USING_TIMER_TC5         false
+#define USING_TIMER_TCC         false
+#define USING_TIMER_TCC1        false
+#define USING_TIMER_TCC2        false     // Don't use this, can crash on some boards
 
-//#ifndef LED_BUILTIN
-//  #define LED_BUILTIN       13
-//#endif
+// Uncomment To test if conflict with Servo library
+//#include "Servo.h"
 
-#ifndef LED_BLUE
-  #define LED_BLUE          2
-#endif
+/////////////////////////////////////////////////////////////////
 
-#ifndef LED_RED
-  #define LED_RED           8
+#include "TimerInterrupt_Generic.h"
+
+#ifndef LED_BUILTIN
+  #define LED_BUILTIN       13
 #endif
 
 unsigned int SWPin = 7;
 
-#define TIMER0_INTERVAL_MS        1000
-#define TIMER0_DURATION_MS        5000
+// TC3, TC4, TC5 max permissible TIMER_INTERVAL_MS is 1398.101 ms, larger will overflow, therefore not permitted
+// Use TCC, TCC1, TCC2 for longer TIMER_INTERVAL_MS
+#define TIMER_INTERVAL_MS        1000
 
-#define TIMER1_INTERVAL_MS        3000
-#define TIMER1_DURATION_MS        15000
+#define TIMER_DURATION_MS        5000
 
-volatile uint32_t preMillisTimer0 = 0;
-volatile uint32_t preMillisTimer1 = 0;
+volatile uint32_t preMillisTimer = 0;
 
-// Depending on the board, you can select SAMD21 Hardware Timer from TC3, TC4, TC5, TCC, TCC1 or TCC2
-// SAMD51 Hardware Timer only TC3
-
-// Init SAMD timer TIMER_TC3
-SAMDTimer ITimer0(TIMER_TC3);
+///////////////////////////////////////////////
 
 #if (TIMER_INTERRUPT_USING_SAMD21)
-//SAMDTimer ITimer0(TIMER_TC4);
-//SAMDTimer ITimer0(TIMER_TC5);
-//SAMDTimer ITimer0(TIMER_TCC);
-//SAMDTimer ITimer0(TIMER_TCC1);
-//SAMDTimer ITimer0(TIMER_TCC2);
-#endif
 
-void TimerHandler0()
+  #if USING_TIMER_TC3
+    #define SELECTED_TIMER      TIMER_TC3
+  #elif USING_TIMER_TC4
+    #define SELECTED_TIMER      TIMER_TC4
+  #elif USING_TIMER_TC5
+    #define SELECTED_TIMER      TIMER_TC5
+  #elif USING_TIMER_TCC
+    #define SELECTED_TIMER      TIMER_TCC
+  #elif USING_TIMER_TCC1
+    #define SELECTED_TIMER      TIMER_TCC1
+  #elif USING_TIMER_TCC2
+    #define SELECTED_TIMER      TIMER_TCC
+  #else
+    #error You have to select 1 Timer  
+  #endif
+
+#else
+
+  #if !(USING_TIMER_TC3)
+    #error You must select TC3 for SAMD51
+  #endif
+  
+  #define SELECTED_TIMER      TIMER_TC3
+
+#endif  
+
+// Init selected SAMD timer
+SAMDTimer ITimer(SELECTED_TIMER);
+
+////////////////////////////////////////////////
+
+void TimerHandler()
 {
-  static bool toggle0 = false;
-  static bool started = false;
-
-  if (!started)
-  {
-    started = true;
-    pinMode(LED_BUILTIN, OUTPUT);
-  }
+  static bool toggle = false;
  
 #if (TIMER_INTERRUPT_DEBUG > 0)
     static uint32_t curMillis = 0;
       
     curMillis = millis();
     
-    if (curMillis > TIMER0_INTERVAL_MS)
+    if (curMillis > TIMER_INTERVAL_MS)
     {
-      Serial.print("ITimer0: millis() = "); Serial.print(curMillis);
-      Serial.print(", delta = "); Serial.println(curMillis - preMillisTimer0);
+      Serial.print("ITimer: millis() = "); Serial.print(curMillis);
+      Serial.print(", delta = "); Serial.println(curMillis - preMillisTimer);
     }
     
-    preMillisTimer0 = curMillis;
+    preMillisTimer = curMillis;
 #endif
 
   //timer interrupt toggles pin LED_BUILTIN
-  digitalWrite(LED_BUILTIN, toggle0);
-  toggle0 = !toggle0;
+  digitalWrite(LED_BUILTIN, toggle);
+  toggle = !toggle;
 }
-
-#if (TIMER_INTERRUPT_USING_SAMD21)
-
-// Init SAMD timer TIMER_TCC
-SAMDTimer ITimer1(TIMER_TCC);
-
-void TimerHandler1()
-{
-  static bool toggle1 = false;
-  static bool started = false;
-
-  if (!started)
-  {
-    started = true;
-    pinMode(LED_BLUE, OUTPUT);
-  }
-  
-#if (TIMER_INTERRUPT_DEBUG > 0)
-    static uint32_t curMillis = 0;
-    
-    curMillis = millis();
-
-    if (curMillis > TIMER1_INTERVAL_MS)
-    {
-      Serial.print("ITimer1: millis() = "); Serial.print(curMillis);
-      Serial.print(", delta = "); Serial.println(curMillis - preMillisTimer1);
-    }
-    
-    preMillisTimer1 = curMillis;
-#endif
-
-  //timer interrupt toggles outputPin
-  digitalWrite(LED_BLUE, toggle1);
-  toggle1 = !toggle1;
-}
-#endif
-
 
 void setup()
 {
+  pinMode(LED_BUILTIN, OUTPUT);
+  
   Serial.begin(115200);
   while (!Serial && millis() < 5000);
   
@@ -157,75 +142,41 @@ void setup()
 
   Serial.print(F("\nStarting TimerInterruptTest on ")); Serial.println(BOARD_NAME);
   Serial.println(SAMD_TIMER_INTERRUPT_VERSION);
+  Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
   Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
 
   // Interval in millisecs
-  if (ITimer0.attachInterruptInterval_MS(TIMER0_INTERVAL_MS, TimerHandler0))
+  if (ITimer.attachInterruptInterval_MS(TIMER_INTERVAL_MS, TimerHandler))
   {
-    preMillisTimer0 = millis();
-    Serial.print(F("Starting ITimer0 OK, millis() = ")); Serial.println(preMillisTimer0);
+    preMillisTimer = millis();
+    Serial.print(F("Starting ITimer OK, millis() = ")); Serial.println(preMillisTimer);
   }
   else
-    Serial.println(F("Can't set ITimer0. Select another freq. or timer"));
-
-#if (TIMER_INTERRUPT_USING_SAMD21)
-  // Interval in millisecs
-  if (ITimer1.attachInterruptInterval_MS(TIMER1_INTERVAL_MS, TimerHandler1))
-  {
-    preMillisTimer1 = millis();
-    Serial.print(F("Starting ITimer1 OK, millis() = ")); Serial.println(preMillisTimer1);
-  }
-  else
-    Serial.println(F("Can't set ITimer1. Select another freq. or timer"));
-#endif   
+    Serial.println(F("Can't set ITimer. Select another freq. or timer"));
 }
 
 void loop()
 {
-  static unsigned long lastTimer0   = 0; 
-  static bool timer0Stopped         = false;
+  static unsigned long lastTimer   = 0; 
+  static bool timerStopped         = false;
   
 
-  if (millis() - lastTimer0 > TIMER0_DURATION_MS)
+  if (millis() - lastTimer > TIMER_DURATION_MS)
   {
-    lastTimer0 = millis();
+    lastTimer = millis();
 
-    if (timer0Stopped)
+    if (timerStopped)
     {
-      preMillisTimer0 = millis();
-      Serial.print(F("Start ITimer0, millis() = ")); Serial.println(preMillisTimer0);
-      ITimer0.restartTimer();
+      preMillisTimer = millis();
+      Serial.print(F("Start ITimer, millis() = ")); Serial.println(preMillisTimer);
+      ITimer.restartTimer();
     }
     else
     {
-      Serial.print(F("Stop ITimer0, millis() = ")); Serial.println(millis());
-      ITimer0.stopTimer();
+      Serial.print(F("Stop ITimer, millis() = ")); Serial.println(millis());
+      ITimer.stopTimer();
     }
     
-    timer0Stopped = !timer0Stopped;
+    timerStopped = !timerStopped;
   }
-
-#if (TIMER_INTERRUPT_USING_SAMD21)
-  static unsigned long lastTimer1   = 0;
-  static bool timer1Stopped         = false;
-
-  if (millis() - lastTimer1 > TIMER1_DURATION_MS)
-  {
-    lastTimer1 = millis();
-
-    if (timer1Stopped)
-    {
-      preMillisTimer1 = millis();
-      Serial.print(F("Start ITimer1, millis() = ")); Serial.println(preMillisTimer1);
-      ITimer1.restartTimer();
-    }
-    else
-    {
-      Serial.print(F("Stop ITimer1, millis() = ")); Serial.println(millis());
-      ITimer1.stopTimer();
-    }
-    
-    timer1Stopped = !timer1Stopped;
-  }
-#endif  
 }

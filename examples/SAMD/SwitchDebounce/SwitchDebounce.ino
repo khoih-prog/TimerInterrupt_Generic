@@ -41,14 +41,29 @@
   #error This code is designed to run on SAMD21/SAMD51 platform! Please check your Tools->Board setting.
 #endif
 
-// These define's must be placed at the beginning before #include "SAMDTimerInterrupt.h"
+/////////////////////////////////////////////////////////////////
+
+// These define's must be placed at the beginning before #include "TimerInterrupt_Generic.h"
 // _TIMERINTERRUPT_LOGLEVEL_ from 0 to 4
 // Don't define _TIMERINTERRUPT_LOGLEVEL_ > 0. Only for special ISR debugging only. Can hang the system.
 // Don't define TIMER_INTERRUPT_DEBUG > 2. Only for special ISR debugging only. Can hang the system.
 #define TIMER_INTERRUPT_DEBUG         0
 #define _TIMERINTERRUPT_LOGLEVEL_     0
 
-#include "SAMDTimerInterrupt.h"
+// Select only one to be true for SAMD21. Must must be placed at the beginning before #include "TimerInterrupt_Generic.h"
+#define USING_TIMER_TC3         true      // Only TC3 can be used for SAMD51
+#define USING_TIMER_TC4         false     // Not to use with Servo library
+#define USING_TIMER_TC5         false
+#define USING_TIMER_TCC         false
+#define USING_TIMER_TCC1        false
+#define USING_TIMER_TCC2        false     // Don't use this, can crash on some boards
+
+// Uncomment To test if conflict with Servo library
+//#include "Servo.h"
+
+/////////////////////////////////////////////////////////////////
+
+#include "TimerInterrupt_Generic.h"
 
 //#ifndef LED_BUILTIN
 //  #define LED_BUILTIN       13
@@ -64,26 +79,49 @@
 
 unsigned int SWPin = 7;
 
-#define TIMER1_INTERVAL_MS        20
+// TC3, TC4, TC5 max permissible TIMER_INTERVAL_MS is 1398.101 ms, larger will overflow, therefore not permitted
+// Use TCC, TCC1, TCC2 for longer TIMER_INTERVAL_MS
+#define TIMER_INTERVAL_MS         20
+
 #define DEBOUNCING_INTERVAL_MS    100
 #define LONG_PRESS_INTERVAL_MS    5000
 
 #define LOCAL_DEBUG               1
 
-// Depending on the board, you can select SAMD21 Hardware Timer from TC3, TC4, TC5, TCC, TCC1 or TCC2
-// SAMD51 Hardware Timer only TC3
-
-// Init SAMD timer TIMER_TC3
-SAMDTimer ITimer(TIMER_TC3);
+///////////////////////////////////////////////
 
 #if (TIMER_INTERRUPT_USING_SAMD21)
-// Init SAMD timer TIMER_TCC
-//SAMDTimer ITimer(TIMER_TC4);
-//SAMDTimer ITimer(TIMER_TC5);
-//SAMDTimer ITimer(TIMER_TCC);
-//SAMDTimer ITimer(TIMER_TCC1);
-//SAMDTimer ITimer(TIMER_TCC2);
-#endif
+
+  #if USING_TIMER_TC3
+    #define SELECTED_TIMER      TIMER_TC3
+  #elif USING_TIMER_TC4
+    #define SELECTED_TIMER      TIMER_TC4
+  #elif USING_TIMER_TC5
+    #define SELECTED_TIMER      TIMER_TC5
+  #elif USING_TIMER_TCC
+    #define SELECTED_TIMER      TIMER_TCC
+  #elif USING_TIMER_TCC1
+    #define SELECTED_TIMER      TIMER_TCC1
+  #elif USING_TIMER_TCC2
+    #define SELECTED_TIMER      TIMER_TCC
+  #else
+    #error You have to select 1 Timer  
+  #endif
+
+#else
+
+  #if !(USING_TIMER_TC3)
+    #error You must select TC3 for SAMD51
+  #endif
+  
+  #define SELECTED_TIMER      TIMER_TC3
+
+#endif  
+
+// Init selected SAMD timer
+SAMDTimer ITimer(SELECTED_TIMER);
+
+////////////////////////////////////////////////
 
 volatile bool SWPressed     = false;
 volatile bool SWLongPressed = false;
@@ -113,7 +151,7 @@ void TimerHandler()
     // Start debouncing counting debounceCountSWPressed and clear debounceCountSWReleased
     debounceCountSWReleased = 0;
 
-    if (++debounceCountSWPressed >= DEBOUNCING_INTERVAL_MS / TIMER1_INTERVAL_MS)
+    if (++debounceCountSWPressed >= DEBOUNCING_INTERVAL_MS / TIMER_INTERVAL_MS)
     {
       // Call and flag SWPressed
       if (!SWPressed)
@@ -130,7 +168,7 @@ void TimerHandler()
         //Your_Response_To_Press();
       }
 
-      if (debounceCountSWPressed >= LONG_PRESS_INTERVAL_MS / TIMER1_INTERVAL_MS)
+      if (debounceCountSWPressed >= LONG_PRESS_INTERVAL_MS / TIMER_INTERVAL_MS)
       {
         // Call and flag SWLongPressed
         if (!SWLongPressed)
@@ -152,7 +190,7 @@ void TimerHandler()
   else
   {
     // Start debouncing counting debounceCountSWReleased and clear debounceCountSWPressed
-    if ( SWPressed && (++debounceCountSWReleased >= DEBOUNCING_INTERVAL_MS / TIMER1_INTERVAL_MS))
+    if ( SWPressed && (++debounceCountSWReleased >= DEBOUNCING_INTERVAL_MS / TIMER_INTERVAL_MS))
     {
 #if (TIMER_INTERRUPT_DEBUG > 1)      
       SWReleasedTime = currentMillis;
@@ -187,10 +225,11 @@ void setup()
 
   Serial.print(F("\nStarting SwitchDebounce on ")); Serial.println(BOARD_NAME);
   Serial.println(SAMD_TIMER_INTERRUPT_VERSION);
+  Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
   Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
   
   // Interval in mililisecs
-  if (ITimer.attachInterruptInterval_MS(TIMER1_INTERVAL_MS, TimerHandler))
+  if (ITimer.attachInterruptInterval_MS(TIMER_INTERVAL_MS, TimerHandler))
   {
     Serial.print(F("Starting ITimer OK, millis() = ")); Serial.println(millis());
   }

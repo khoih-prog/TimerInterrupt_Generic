@@ -3,7 +3,7 @@
   For SAMD boards
   Written by Khoi Hoang
   
-  Built by Khoi Hoang https://github.com/khoih-prog/TimerInterrupt_Generic
+  Built by Khoi Hoang https://github.com/khoih-prog/SAMD_TimerInterrupt
   Licensed under MIT license
   
   Now even you use all these new 16 ISR-based timers,with their maximum interval practically unlimited (limited only by
@@ -33,10 +33,27 @@
   #error This code is designed to run on SAMD21 platform! Please check your Tools->Board setting.
 #endif
 
-// These define's must be placed at the beginning before #include "SAMDTimerInterrupt.h"
+/////////////////////////////////////////////////////////////////
+
+// These define's must be placed at the beginning before #include "TimerInterrupt_Generic.h"
 // _TIMERINTERRUPT_LOGLEVEL_ from 0 to 4
 // Don't define _TIMERINTERRUPT_LOGLEVEL_ > 0. Only for special ISR debugging only. Can hang the system.
-#define _TIMERINTERRUPT_LOGLEVEL_     4
+// Don't define TIMER_INTERRUPT_DEBUG > 2. Only for special ISR debugging only. Can hang the system.
+#define TIMER_INTERRUPT_DEBUG         0
+#define _TIMERINTERRUPT_LOGLEVEL_     0
+
+// Select only one to be true for SAMD21. Must must be placed at the beginning before #include "TimerInterrupt_Generic.h"
+#define USING_TIMER_TC3         true      // Only TC3 can be used for SAMD51
+#define USING_TIMER_TC4         true     // Not to use with Servo library
+#define USING_TIMER_TC5         true
+#define USING_TIMER_TCC         true
+#define USING_TIMER_TCC1        true
+#define USING_TIMER_TCC2        false     // Don't use this, can crash on some boards
+
+// Uncomment To test if conflict with Servo library
+//#include "Servo.h"
+
+/////////////////////////////////////////////////////////////////
 
 #include "TimerInterrupt_Generic.h"
 
@@ -48,13 +65,14 @@ SAMDTimer ITimer1(TIMER_TC4);
 SAMDTimer ITimer2(TIMER_TC5);
 SAMDTimer ITimer3(TIMER_TCC);
 SAMDTimer ITimer4(TIMER_TCC1);
-SAMDTimer ITimer5(TIMER_TCC2);
 
-volatile uint32_t checkTimer[MAX_TIMER] = { 0, 0, 0, 0, 0, 0 };
+volatile uint32_t checkTimer[MAX_TIMER] = { 0, 0, 0, 0, 0 };
 
-uint32_t TIMER_INTERVAL_MS[MAX_TIMER]   = { 20, 50, 100, 200, 500, 1000 };
+// TC3, TC4, TC5 max permissible TIMER_INTERVAL_MS is 1398.101 ms, larger will overflow, therefore not permitted
+// Use TCC, TCC1, TCC2 for longer TIMER_INTERVAL_MS
+uint32_t TIMER_INTERVAL_MS[MAX_TIMER]   = { 100, 200, 500, 1000, 2000 };
 
-const char* TIMER_NAME[MAX_TIMER]       = { "TC3 ", "TC4 ", "TC5 ", "TCC ", "TCC1", "TCC2" };
+const char* TIMER_NAME[MAX_TIMER]       = { "TC3 ", "TC4 ", "TC5 ", "TCC ", "TCC1" };
 
 void TimerHandler_TIMER_TC3() 
 {
@@ -81,11 +99,6 @@ void TimerHandler_TIMER_TCC1()
   checkTimer[TIMER_TCC1]++;
 }
 
-void TimerHandler_TIMER_TCC2() 
-{
-  checkTimer[TIMER_TCC2]++;
-}
-
 void setup() 
 {
   Serial.begin(115200);
@@ -96,38 +109,43 @@ void setup()
   Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
   Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
 
+#if USING_TIMER_TC3
   if (ITimer0.attachInterruptInterval_MS(TIMER_INTERVAL_MS[TIMER_TC3], TimerHandler_TIMER_TC3))
     Serial.println("Starting  TIMER_TC3 OK, millis() = " + String(millis()));
   else
     Serial.println("Can't set TIMER_TC3. Select another freq. or timer");
+#endif
 
+#if USING_TIMER_TC4
   if (ITimer1.attachInterruptInterval_MS(TIMER_INTERVAL_MS[TIMER_TC4], TimerHandler_TIMER_TC4))
     Serial.println("Starting  TIMER_TC4 OK, millis() = " + String(millis()));
   else
     Serial.println("Can't set TIMER_TC4. Select another freq. or timer");
+#endif
 
+#if USING_TIMER_TC5
   if (ITimer2.attachInterruptInterval_MS(TIMER_INTERVAL_MS[TIMER_TC5], TimerHandler_TIMER_TC5))
     Serial.println("Starting  TIMER_TC5 OK, millis() = " + String(millis()));
   else
     Serial.println("Can't set TIMER_TC5. Select another freq. or timer");
+#endif
 
+#if USING_TIMER_TCC
   if (ITimer3.attachInterruptInterval_MS(TIMER_INTERVAL_MS[TIMER_TCC], TimerHandler_TIMER_TCC))
     Serial.println("Starting  TIMER_TCC OK, millis() = " + String(millis()));
   else
     Serial.println("Can't set TIMER_TCC. Select another freq. or timer");
+#endif
 
+#if USING_TIMER_TCC1
   if (ITimer4.attachInterruptInterval_MS(TIMER_INTERVAL_MS[TIMER_TCC1], TimerHandler_TIMER_TCC1))
     Serial.println("Starting  TIMER_TCC1 OK, millis() = " + String(millis()));
   else
     Serial.println("Can't set TIMER_TCC1. Select another freq. or timer");
-
-  if (ITimer5.attachInterruptInterval_MS(TIMER_INTERVAL_MS[TIMER_TCC2], TimerHandler_TIMER_TCC2))
-    Serial.println("Starting  TIMER_TCC2 OK, millis() = " + String(millis()));
-  else
-    Serial.println("Can't set TIMER_TCC2. Select another freq. or timer");  
+#endif
 }
 
-#define DELAY_TIME_MS     10000
+#define DELAY_TIME_MS     60000
 
 void loop() 
 {
@@ -137,8 +155,12 @@ void loop()
 
   for (uint8_t index = TIMER_TC3; index < MAX_TIMER; index++)
   {
-    Serial.print(TIMER_NAME[index]); Serial.print(" Actual/Programmed (ms) ");  Serial.print(DELAY_TIME_MS / checkTimer[index]); 
-    Serial.print("/"); Serial.println(TIMER_INTERVAL_MS[index]); 
-    checkTimer[index] = 0;
+    if (checkTimer[index] > 0)
+    {
+      // Be sure timer is enabled
+      Serial.print(TIMER_NAME[index]); Serial.print(" Actual/Programmed (ms) ");  Serial.print(DELAY_TIME_MS / checkTimer[index]); 
+      Serial.print("/"); Serial.println(TIMER_INTERVAL_MS[index]); 
+      checkTimer[index] = 0;
+    }
   }
 }
