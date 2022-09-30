@@ -19,7 +19,7 @@
   Built by Khoi Hoang https://github.com/khoih-prog/TimerInterrupt_Generic
   Licensed under MIT license
 
-  Version: 1.11.0
+  Version: 1.12.0
 
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
@@ -36,6 +36,7 @@
   1.9.0   K.Hoang      09/05/2022 Update to use latest TimerInterrupt Libraries' versions
   1.10.0  K.Hoang      10/08/2022 Update to use latest ESP32_New_TimerInterrupt Library version
   1.11.0  K.Hoang      12/08/2022 Add support to new ESP32_C3, ESP32_S2 and ESP32_S3 boards
+  1.12.0  K.Hoang      29/09/2022 Update for SAMD, RP2040, MBED_RP2040
 *****************************************************************************************************************************/
 /*
   SAMD21
@@ -57,6 +58,8 @@
 #ifndef SAMDTIMERINTERRUPT_H
 #define SAMDTIMERINTERRUPT_H
 
+///////////////////////////////////////////
+
 #if !( defined(ARDUINO_SAMD_ZERO) || defined(ARDUINO_SAMD_MKR1000) || defined(ARDUINO_SAMD_MKRWIFI1010) \
       || defined(ARDUINO_SAMD_NANO_33_IOT) || defined(ARDUINO_SAMD_MKRFox1200) || defined(ARDUINO_SAMD_MKRWAN1300) || defined(ARDUINO_SAMD_MKRWAN1310) \
       || defined(ARDUINO_SAMD_MKRGSM1400) || defined(ARDUINO_SAMD_MKRNB1500) || defined(ARDUINO_SAMD_MKRVIDOR4000) \
@@ -67,6 +70,8 @@
       || defined(__SAMD21J15A__) || defined(__SAMD21J16A__) || defined(__SAMD21J17A__) || defined(__SAMD21J18A__) )
   #error This code is designed to run on SAMD21/SAMD51 platform! Please check your Tools->Board setting.
 #endif
+
+///////////////////////////////////////////
 
 #if ( defined(ARDUINO_SAMD_ZERO) || defined(ARDUINO_SAMD_MKR1000) || defined(ARDUINO_SAMD_MKRWIFI1010) || defined(ARDUINO_SAMD_NANO_33_IOT) \
    || defined(ARDUINO_SAMD_MKRFox1200) || defined(ARDUINO_SAMD_MKRWAN1300) || defined(ARDUINO_SAMD_MKRWAN1310) || defined(ARDUINO_SAMD_MKRGSM1400) \
@@ -81,7 +86,11 @@
   
     #if defined(ARDUINO_QWIIC_MICRO)
       #define BOARD_NAME    "Sparkfun SAMD21_QWIIC_MICRO"
-      #warning BOARD_NAME == Sparkfun SAMD21_QWIIC_MICRO
+      
+      #if(_TIMERINTERRUPT_LOGLEVEL_>3)
+        #warning BOARD_NAME == Sparkfun SAMD21_QWIIC_MICRO
+      #endif
+      
     #elif defined(__SAMD21E15A__)
       #define BOARD_NAME    "__SAMD21E15A__"
     #elif defined(__SAMD21E16A__)
@@ -112,7 +121,11 @@
     
   #endif
   
-  #warning Using SAMD21 Hardware Timer
+  #if(_TIMERINTERRUPT_LOGLEVEL_>3)
+    #warning Using SAMD21 Hardware Timer
+  #endif
+
+///////////////////////////////////////////
   
 #elif ( defined(__SAMD51__) || defined(__SAMD51J20A__) || defined(__SAMD51J19A__) || defined(__SAMD51G19A__) || defined(__SAMD51P19A__) )
 
@@ -122,10 +135,17 @@
   
     #if defined(ARDUINO_SAMD51_THING_PLUS)
       #define BOARD_NAME    "Sparkfun SAMD51_THING_PLUS"
-      #warning BOARD_NAME == Sparkfun SAMD51_THING_PLUS
+      
+      #if(_TIMERINTERRUPT_LOGLEVEL_>3)
+        #warning BOARD_NAME == Sparkfun SAMD51_THING_PLUS
+      #endif
+      
     #elif defined(ARDUINO_SAMD51_MICROMOD)
       #define BOARD_NAME    "Sparkfun SAMD51_MICROMOD"
-      #warning BOARD_NAME == Sparkfun SAMD51_MICROMOD
+      
+      #if(_TIMERINTERRUPT_LOGLEVEL_>3)
+        #warning BOARD_NAME == Sparkfun SAMD51_MICROMOD
+      #endif
     #elif defined(__SAMD51J20A__)
       #define BOARD_NAME    "__SAMD51J20A__"
     #elif defined(__SAMD51J19A__)
@@ -140,10 +160,14 @@
     
   #endif
   
-  #warning Using SAMD51 Hardware Timer
+  #if(_TIMERINTERRUPT_LOGLEVEL_>3)
+    #warning Using SAMD51 Hardware Timer
+  #endif
 #else
   #error Unknown board  
 #endif
+
+///////////////////////////////////////////
 
 // Too many boards sharing the same ARDUINO_SAMD_ZERO but very different, such as SAMD21 SparkFun RedBoard Turbo
 // Have to exclude some from the list
@@ -157,17 +181,23 @@
   
 #endif
 
+///////////////////////////////////////////
+
 #include "Arduino.h"
 
+///////////////////////////////////////////
+
 #ifndef SAMD_TIMER_INTERRUPT_VERSION
-  #define SAMD_TIMER_INTERRUPT_VERSION            "SAMDTimerInterrupt v1.9.0"
+  #define SAMD_TIMER_INTERRUPT_VERSION            "SAMDTimerInterrupt v1.10.1"
   
   #define SAMD_TIMER_INTERRUPT_VERSION_MAJOR      1
-  #define SAMD_TIMER_INTERRUPT_VERSION_MINOR      9
-  #define SAMD_TIMER_INTERRUPT_VERSION_PATCH      0
+  #define SAMD_TIMER_INTERRUPT_VERSION_MINOR      10
+  #define SAMD_TIMER_INTERRUPT_VERSION_PATCH      1
 
-  #define SAMD_TIMER_INTERRUPT_VERSION_INT        1009000
+  #define SAMD_TIMER_INTERRUPT_VERSION_INT        1010001
 #endif
+
+///////////////////////////////////////////
 
 #include "TimerInterrupt_Generic_Debug.h"
 
@@ -177,11 +207,15 @@
 
 #if (TIMER_INTERRUPT_USING_SAMD51)
 
+///////////////////////////////////////////
+
 typedef enum
 {
   TIMER_TC3 = 0,
   MAX_TIMER
 } SAMDTimerNumber;
+
+///////////////////////////////////////////
 
 class SAMDTimerInterrupt;
 
@@ -193,10 +227,14 @@ timerCallback TC3_callback;
 
 #define SAMD_TC3        ((TcCount16*) _SAMDTimer)
 
+////////////////////////////////////////////////////
+
 static inline void TC3_wait_for_sync() 
 {
   while (TC3->COUNT16.SYNCBUSY.reg != 0);
 }
+
+////////////////////////////////////////////////////
 
 void TC3_Handler() 
 {
@@ -208,6 +246,7 @@ void TC3_Handler()
   }
 }
 
+////////////////////////////////////////////////////
 ////////////////////////////////////////////////////
 
 class SAMDTimerInterrupt
@@ -265,6 +304,16 @@ class SAMDTimerInterrupt
 		    TISR_LOGWARN3(F("SAMDTimerInterrupt: F_CPU (MHz) ="), F_CPU/1000000, F(", TIMER_HZ ="), TIMER_HZ/1000000);
 		    TISR_LOGWARN3(F("TC_Timer::startTimer _Timer = 0x"), String((uint32_t) _SAMDTimer, HEX), F(", TC3 = 0x"), String((uint32_t) TC3, HEX));
 
+        // maxPermittedPeriod = 1,398,101.33us for 48MHz timer clock
+        float maxPermittedPeriod = (65536.0f * 1024) / (TIMER_HZ / 1000000.0f );
+          
+        if (_period > maxPermittedPeriod )
+        {
+          TISR_LOGERROR3(F("Max permissible _period (us) ="),  maxPermittedPeriod, F(", current _period (us) ="), _period);
+        
+          return false;
+        }
+      
 		    // Enable the TC bus clock, use clock generator 0
 		    GCLK->PCHCTRL[TC3_GCLK_ID].reg = GCLK_PCHCTRL_GEN_GCLK1_Val | (1 << GCLK_PCHCTRL_CHEN_Pos);
 		    
@@ -299,7 +348,7 @@ class SAMDTimerInterrupt
 
     // interval (in microseconds) and duration (in milliseconds). Duration = 0 or not specified => run indefinitely
     // No params and duration now. To be addes in the future by adding similar functions here or to SAMD-hal-timer.c
-    bool setInterval(const unsigned long& interval, timerCallback callback)
+    bool setInterval(const float& interval, timerCallback callback)
     {
       return setFrequency((float) (1000000.0f / interval), callback);
     }
@@ -308,7 +357,7 @@ class SAMDTimerInterrupt
     
     // interval (in milliseconds) and duration (in milliseconds). Duration = 0 or not specified => run indefinitely
     // No params and duration now. To be added in the future by adding similar functions here or to SAMD-hal-timer.c
-    bool setInterval_MS(const unsigned long& interval, timerCallback callback)
+    bool setInterval_MS(const float& interval, timerCallback callback)
     {
       return setFrequency((float) (1000.0f / interval), callback);
     }
@@ -324,7 +373,7 @@ class SAMDTimerInterrupt
 
     // interval (in microseconds) and duration (in milliseconds). Duration = 0 or not specified => run indefinitely
     // No params and duration now. To be addes in the future by adding similar functions here or to SAMD-hal-timer.c
-    bool attachInterruptInterval(const unsigned long& interval, timerCallback callback)
+    bool attachInterruptInterval(const float& interval, timerCallback callback)
     {
       return setFrequency( (float) ( 1000000.0f / interval), callback);
     }
@@ -333,7 +382,7 @@ class SAMDTimerInterrupt
     
     // interval (in milliseconds) and duration (in milliseconds). Duration = 0 or not specified => run indefinitely
     // No params and duration now. To be added in the future by adding similar functions here or to SAMD-hal-timer.c
-    bool attachInterruptInterval_MS(const unsigned long& interval, timerCallback callback)
+    bool attachInterruptInterval_MS(const float& interval, timerCallback callback)
     {
       return setFrequency( (float) ( 1000.0f / interval), callback);
     }
@@ -501,7 +550,7 @@ class SAMDTimerInterrupt
 typedef enum
 {
   TIMER_TC3  = 0,     // TC3
-  TIMER_TC4  = 1,      // TC4
+  TIMER_TC4  = 1,     // TC4
   TIMER_TC5  = 2,     // TC5
   TIMER_TCC  = 3,     // TCC0
   TIMER_TCC1 = 4,     // TCC1
@@ -540,6 +589,11 @@ timerCallback TC5_callback;
 
 ////////////////////////////////////////////////////////
 
+#if USING_TIMER_TC3
+  #if(_TIMERINTERRUPT_LOGLEVEL_>3)
+     #warning USING_TIMER_TC3
+  #endif
+  
   void TC3_Handler()
   {
     // get timer struct
@@ -553,8 +607,15 @@ timerCallback TC5_callback;
     }
   }
   
-////////////////////////////////////////////////////////
+#endif
   
+////////////////////////////////////////////////////////
+
+#if USING_TIMER_TC4
+  #if(_TIMERINTERRUPT_LOGLEVEL_>3)
+     #warning USING_TIMER_TC4
+  #endif
+    
   void TC4_Handler()
   {
     // get timer struct
@@ -567,9 +628,16 @@ timerCallback TC5_callback;
       (*TC4_callback)();
     }
   }
+
+#endif
   
 ////////////////////////////////////////////////////////
-  
+
+#if USING_TIMER_TC5
+  #if(_TIMERINTERRUPT_LOGLEVEL_>3)
+     #warning USING_TIMER_TC5
+  #endif
+    
   void TC5_Handler()
   {
     // get timer struct
@@ -582,9 +650,16 @@ timerCallback TC5_callback;
       (*TC5_callback)();
     }
   }
+
+#endif
   
 ////////////////////////////////////////////////////////
 
+#if USING_TIMER_TCC
+  #if(_TIMERINTERRUPT_LOGLEVEL_>3)
+     #warning USING_TIMER_TCC
+  #endif
+  
   void TCC0_Handler()
   {
     // get timer struct
@@ -604,9 +679,16 @@ timerCallback TC5_callback;
       TC->INTFLAG.bit.OVF = 1;
     }
   }
+
+#endif
   
 ////////////////////////////////////////////////////////
-  
+
+#if USING_TIMER_TCC1
+  #if(_TIMERINTERRUPT_LOGLEVEL_>3)
+     #warning USING_TIMER_TCC1
+  #endif
+    
   void TCC1_Handler()
   {
     // get timer struct
@@ -626,9 +708,16 @@ timerCallback TC5_callback;
       TC->INTFLAG.bit.OVF = 1;
     }
   }
+
+#endif
   
 ////////////////////////////////////////////////////////
-  
+
+#if USING_TIMER_TCC2
+  #if(_TIMERINTERRUPT_LOGLEVEL_>3)
+     #warning USING_TIMER_TCC2
+  #endif
+    
   void TCC2_Handler()
   {
     // get timer struct
@@ -648,6 +737,8 @@ timerCallback TC5_callback;
       TC->INTFLAG.bit.OVF = 1;
     }
   }
+
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////
   
@@ -726,6 +817,16 @@ class SAMDTimerInterrupt
 		  if ( (_timerNumber == TIMER_TC3) || (_timerNumber == TIMER_TC4) || (_timerNumber == TIMER_TC5) )
 		  {    
 		    TISR_LOGDEBUG1(F("_timerNumber ="), _timerNumber);
+		    
+		    // maxPermittedPeriod = 1,398,101.33us for 48MHz timer clock
+        float maxPermittedPeriod = (65536.0f * 1024) / (TIMER_HZ / 1000000.0f );
+      
+        if (_period > maxPermittedPeriod )
+        {
+          TISR_LOGERROR3(F("Max permissible _period (us) ="),  maxPermittedPeriod, F(", current _period (us) ="), _period);
+        
+          return false;
+        }      
 		    
 		    REG_GCLK_CLKCTRL = (uint16_t) (GCLK_CLKCTRL_CLKEN | GCLK_CLKCTRL_GEN_GCLK0 | GCLK_CLKCTRL_ID (TC_GCLK_ID[_timerNumber]));
 		    
@@ -839,7 +940,7 @@ class SAMDTimerInterrupt
 
     // interval (in microseconds) and duration (in milliseconds). Duration = 0 or not specified => run indefinitely
     // No params and duration now. To be added in the future by adding similar functions here or to SAMD-hal-timer.c
-    bool setInterval(const unsigned long& interval, timerCallback callback)
+    bool setInterval(const float& interval, timerCallback callback)
     {
       return setFrequency((float) (1000000.0f / interval), callback);
     }
@@ -848,7 +949,7 @@ class SAMDTimerInterrupt
     
     // interval (in milliseconds) and duration (in milliseconds). Duration = 0 or not specified => run indefinitely
     // No params and duration now. To be added in the future by adding similar functions here or to SAMD-hal-timer.c
-    bool setInterval_MS(const unsigned long& interval, timerCallback callback)
+    bool setInterval_MS(const float& interval, timerCallback callback)
     {
       return setFrequency((float) (1000.0f / interval), callback);
     }
@@ -864,7 +965,7 @@ class SAMDTimerInterrupt
 
     // interval (in microseconds) and duration (in milliseconds). Duration = 0 or not specified => run indefinitely
     // No params and duration now. To be added in the future by adding similar functions here or to SAMD-hal-timer.c
-    bool attachInterruptInterval(const unsigned long& interval, timerCallback callback)
+    bool attachInterruptInterval(const float& interval, timerCallback callback)
     {
       return setFrequency( (float) ( 1000000.0f / interval), callback);
     }
@@ -873,7 +974,7 @@ class SAMDTimerInterrupt
     
     // interval (in milliseconds) and duration (in milliseconds). Duration = 0 or not specified => run indefinitely
     // No params and duration now. To be added in the future by adding similar functions here or to SAMD-hal-timer.c
-    bool attachInterruptInterval_MS(const unsigned long& interval, timerCallback callback)
+    bool attachInterruptInterval_MS(const float& interval, timerCallback callback)
     {
       return setFrequency( (float) ( 1000.0f / interval), callback);
     }

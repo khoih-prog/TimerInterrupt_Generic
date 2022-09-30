@@ -24,7 +24,7 @@
   Built by Khoi Hoang https://github.com/khoih-prog/TimerInterrupt_Generic
   Licensed under MIT license
 
-  Version: 1.11.0
+  Version: 1.12.0
 
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
@@ -41,6 +41,7 @@
   1.9.0   K.Hoang      09/05/2022 Update to use latest TimerInterrupt Libraries' versions
   1.10.0  K.Hoang      10/08/2022 Update to use latest ESP32_New_TimerInterrupt Library version
   1.11.0  K.Hoang      12/08/2022 Add support to new ESP32_C3, ESP32_S2 and ESP32_S3 boards
+  1.12.0  K.Hoang      29/09/2022 Update for SAMD, RP2040, MBED_RP2040
 *****************************************************************************************************************************/
 
 #pragma once
@@ -48,13 +49,16 @@
 #ifndef ESP8266TIMERINTERRUPT_H
 #define ESP8266TIMERINTERRUPT_H
 
+///////////////////////////////////////////
+
 #if !defined(ESP8266)
   #error This code is designed to run on ESP8266 and ESP8266-based boards! Please check your Tools->Board setting.
 #endif
 
+///////////////////////////////////////////
+
 #ifndef ESP8266_TIMER_INTERRUPT_VERSION
   #define ESP8266_TIMER_INTERRUPT_VERSION         "ESP8266TimerInterrupt v1.6.0"
-
 
 	#define ESP8266_TIMER_INTERRUPT_VERSION_MAJOR     1
 	#define ESP8266_TIMER_INTERRUPT_VERSION_MINOR     6
@@ -63,6 +67,8 @@
 	#define ESP8266_TIMER_INTERRUPT_VERSION_INT      1006000
 
 #endif
+
+///////////////////////////////////////////
 
 #ifndef TIMER_INTERRUPT_DEBUG
   #define TIMER_INTERRUPT_DEBUG      0
@@ -113,22 +119,36 @@ typedef void (*timer_callback)  ();
 #define TIM_DIV256_CLOCK        (312500UL)            // 80000000 / 256 = 312.5 KHz
 
 #if ( defined(USING_TIM_DIV1) && USING_TIM_DIV1 )
-  #warning Using TIM_DIV1_CLOCK for shortest and most accurate timer
+  #if (_TIMERINTERRUPT_LOGLEVEL_ > 3)
+    #warning Using TIM_DIV1_CLOCK for shortest and most accurate timer
+  #endif
+  
   #define TIM_CLOCK_FREQ        TIM_DIV1_CLOCK
   #define TIM_DIV               TIM_DIV1
 #elif ( defined(USING_TIM_DIV16) && USING_TIM_DIV16 )
-  #warning Using TIM_DIV16_CLOCK for medium time and medium accurate timer
+  #if (_TIMERINTERRUPT_LOGLEVEL_ > 3)
+    #warning Using TIM_DIV16_CLOCK for medium time and medium accurate timer
+  #endif
+  
   #define TIM_CLOCK_FREQ        TIM_DIV16_CLOCK
   #define TIM_DIV               TIM_DIV16
 #elif ( defined(USING_TIM_DIV256) && USING_TIM_DIV256 )
-  #warning Using TIM_DIV256_CLOCK for longest timer but least accurate
+  #if (_TIMERINTERRUPT_LOGLEVEL_ > 3)
+    #warning Using TIM_DIV256_CLOCK for longest timer but least accurate
+  #endif
+  
   #define TIM_CLOCK_FREQ        TIM_DIV256_CLOCK
   #define TIM_DIV               TIM_DIV256  
 #else
-  #warning Default to using TIM_DIV256_CLOCK for longest timer but least accurate
+  #if (_TIMERINTERRUPT_LOGLEVEL_ > 3)
+    #warning Default to using TIM_DIV256_CLOCK for longest timer but least accurate
+  #endif
+  
   #define TIM_CLOCK_FREQ        TIM_DIV256_CLOCK
   #define TIM_DIV               TIM_DIV256
 #endif  
+
+///////////////////////////////////////////
 
 class ESP8266TimerInterrupt
 {
@@ -145,6 +165,8 @@ class ESP8266TimerInterrupt
       _timerCount = 0;
       _callback   = NULL;
     };
+
+    ///////////////////////////////////////////
 
     // frequency (in hertz)
     bool setFrequency(const float& frequency, const timer_callback& callback)
@@ -189,16 +211,22 @@ class ESP8266TimerInterrupt
       return isOKFlag;
     }
 
+    ///////////////////////////////////////////
+
     // interval (in microseconds)
     bool setInterval(const unsigned long& interval, const timer_callback& callback)
     {
       return setFrequency((float) (1000000.0f / interval), callback);
     }
 
+    ///////////////////////////////////////////
+
     bool attachInterrupt(const float& frequency, const timer_callback& callback)
     {
       return setFrequency(frequency, callback);
     }
+
+    ///////////////////////////////////////////
 
     // interval (in microseconds)
     bool attachInterruptInterval(const unsigned long& interval, const timer_callback& callback)
@@ -206,15 +234,21 @@ class ESP8266TimerInterrupt
       return setFrequency( (float) ( 1000000.0f / interval), callback);
     }
 
+    ///////////////////////////////////////////
+
     void detachInterrupt()
     {
       timer1_disable();
     }
 
+    ///////////////////////////////////////////
+
     void disableTimer()
     {
       timer1_disable();
     }
+
+    ///////////////////////////////////////////
 
     void reattachInterrupt()
     {
@@ -222,10 +256,14 @@ class ESP8266TimerInterrupt
         setFrequency(_frequency, _callback);
     }
 
+    ///////////////////////////////////////////
+
     void enableTimer()
     {
       reattachInterrupt();
     }
+
+    ///////////////////////////////////////////
 
     // Just stop clock source, clear the count
     void stopTimer()
@@ -233,11 +271,16 @@ class ESP8266TimerInterrupt
       timer1_disable();
     }
 
+    ///////////////////////////////////////////
+
     // Just reconnect clock source, start current count from 0
     void restartTimer()
     {
       enableTimer();
     }
+
+    ///////////////////////////////////////////
+    
 }; // class ESP8266TimerInterrupt
 
 

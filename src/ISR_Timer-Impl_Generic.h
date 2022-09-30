@@ -19,7 +19,7 @@
   Built by Khoi Hoang https://github.com/khoih-prog/TimerInterrupt_Generic
   Licensed under MIT license
 
-  Version: 1.11.0
+  Version: 1.12.0
 
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
@@ -36,6 +36,7 @@
   1.9.0   K.Hoang      09/05/2022 Update to use latest TimerInterrupt Libraries' versions
   1.10.0  K.Hoang      10/08/2022 Update to use latest ESP32_New_TimerInterrupt Library version
   1.11.0  K.Hoang      12/08/2022 Add support to new ESP32_C3, ESP32_S2 and ESP32_S3 boards
+  1.12.0  K.Hoang      29/09/2022 Update for SAMD, RP2040, MBED_RP2040
 *****************************************************************************************************************************/
 
 #pragma once
@@ -45,10 +46,14 @@
 
 #include <string.h>
 
+///////////////////////////////////////////
+
 ISR_Timer::ISR_Timer()
   : numTimers (-1)
 {
 }
+
+///////////////////////////////////////////
 
 void IRAM_ATTR_PREFIX ISR_Timer::init() 
 {
@@ -67,6 +72,8 @@ void IRAM_ATTR_PREFIX ISR_Timer::init()
   timerMux = portMUX_INITIALIZER_UNLOCKED;
 #endif
 }
+
+///////////////////////////////////////////
 
 void IRAM_ATTR_PREFIX ISR_Timer::run() 
 {
@@ -146,6 +153,7 @@ void IRAM_ATTR_PREFIX ISR_Timer::run()
 #endif
 }
 
+///////////////////////////////////////////
 
 // find the first available slot
 // return -1 if none found
@@ -170,8 +178,9 @@ int IRAM_ATTR_PREFIX ISR_Timer::findFirstFreeSlot()
   return -1;
 }
 
+///////////////////////////////////////////
 
-int IRAM_ATTR_PREFIX ISR_Timer::setupTimer(unsigned long d, void* f, void* p, bool h, unsigned n) 
+int IRAM_ATTR_PREFIX ISR_Timer::setupTimer(const float& d, void* f, void* p, bool h, const uint32_t& n) 
 {
   int freeTimer;
 
@@ -191,12 +200,12 @@ int IRAM_ATTR_PREFIX ISR_Timer::setupTimer(unsigned long d, void* f, void* p, bo
     return -1;
   }
 
-  timer[freeTimer].delay = d;
-  timer[freeTimer].callback = f;
-  timer[freeTimer].param = p;
-  timer[freeTimer].hasParam = h;
-  timer[freeTimer].maxNumRuns = n;
-  timer[freeTimer].enabled = true;
+  timer[freeTimer].delay       = d;
+  timer[freeTimer].callback    = f;
+  timer[freeTimer].param       = p;
+  timer[freeTimer].hasParam    = h;
+  timer[freeTimer].maxNumRuns  = n;
+  timer[freeTimer].enabled     = true;
   timer[freeTimer].prev_millis = millis();
 
   numTimers++;
@@ -204,38 +213,51 @@ int IRAM_ATTR_PREFIX ISR_Timer::setupTimer(unsigned long d, void* f, void* p, bo
   return freeTimer;
 }
 
+///////////////////////////////////////////
 
-int IRAM_ATTR_PREFIX ISR_Timer::setTimer(unsigned long d, timerCallback f, unsigned n) 
+int IRAM_ATTR_PREFIX ISR_Timer::setTimer(const float& d, timerCallback f, const uint32_t& n) 
 {
   return setupTimer(d, (void *)f, NULL, false, n);
 }
 
-int IRAM_ATTR_PREFIX ISR_Timer::setTimer(unsigned long d, timerCallback_p f, void* p, unsigned n) 
+///////////////////////////////////////////
+
+int IRAM_ATTR_PREFIX ISR_Timer::setTimer(const float& d, timerCallback_p f, void* p, const uint32_t& n) 
 {
   return setupTimer(d, (void *)f, p, true, n);
 }
 
-int IRAM_ATTR_PREFIX ISR_Timer::setInterval(unsigned long d, timerCallback f) 
+///////////////////////////////////////////
+
+int IRAM_ATTR_PREFIX ISR_Timer::setInterval(const float& d, timerCallback f) 
 {
   return setupTimer(d, (void *)f, NULL, false, TIMER_RUN_FOREVER);
 }
 
-int IRAM_ATTR_PREFIX ISR_Timer::setInterval(unsigned long d, timerCallback_p f, void* p) 
+///////////////////////////////////////////
+
+int IRAM_ATTR_PREFIX ISR_Timer::setInterval(const float& d, timerCallback_p f, void* p) 
 {
   return setupTimer(d, (void *)f, p, true, TIMER_RUN_FOREVER);
 }
 
-int IRAM_ATTR_PREFIX ISR_Timer::setTimeout(unsigned long d, timerCallback f) 
+///////////////////////////////////////////
+
+int IRAM_ATTR_PREFIX ISR_Timer::setTimeout(const float& d, timerCallback f) 
 {
   return setupTimer(d, (void *)f, NULL, false, TIMER_RUN_ONCE);
 }
 
-int IRAM_ATTR_PREFIX ISR_Timer::setTimeout(unsigned long d, timerCallback_p f, void* p) 
+///////////////////////////////////////////
+
+int IRAM_ATTR_PREFIX ISR_Timer::setTimeout(const float& d, timerCallback_p f, void* p) 
 {
   return setupTimer(d, (void *)f, p, true, TIMER_RUN_ONCE);
 }
 
-bool IRAM_ATTR_PREFIX ISR_Timer::changeInterval(unsigned numTimer, unsigned long d) 
+///////////////////////////////////////////
+
+bool IRAM_ATTR_PREFIX ISR_Timer::changeInterval(const uint8_t& numTimer, const float& d) 
 {
   if (numTimer >= MAX_NUMBER_TIMERS) 
   {
@@ -265,7 +287,9 @@ bool IRAM_ATTR_PREFIX ISR_Timer::changeInterval(unsigned numTimer, unsigned long
   return false;
 }
 
-void IRAM_ATTR_PREFIX ISR_Timer::deleteTimer(unsigned timerId) 
+///////////////////////////////////////////
+
+void IRAM_ATTR_PREFIX ISR_Timer::deleteTimer(const uint8_t& timerId) 
 {
   if (timerId >= MAX_NUMBER_TIMERS) 
   {
@@ -299,8 +323,10 @@ void IRAM_ATTR_PREFIX ISR_Timer::deleteTimer(unsigned timerId)
   }
 }
 
+///////////////////////////////////////////
+
 // function contributed by code@rowansimms.com
-void IRAM_ATTR_PREFIX ISR_Timer::restartTimer(unsigned numTimer) 
+void IRAM_ATTR_PREFIX ISR_Timer::restartTimer(const uint8_t& numTimer) 
 {
   if (numTimer >= MAX_NUMBER_TIMERS) 
   {
@@ -320,8 +346,9 @@ void IRAM_ATTR_PREFIX ISR_Timer::restartTimer(unsigned numTimer)
 #endif  
 }
 
+///////////////////////////////////////////
 
-bool IRAM_ATTR_PREFIX ISR_Timer::isEnabled(unsigned numTimer) 
+bool IRAM_ATTR_PREFIX ISR_Timer::isEnabled(const uint8_t& numTimer) 
 {
   if (numTimer >= MAX_NUMBER_TIMERS) 
   {
@@ -331,8 +358,9 @@ bool IRAM_ATTR_PREFIX ISR_Timer::isEnabled(unsigned numTimer)
   return timer[numTimer].enabled;
 }
 
+///////////////////////////////////////////
 
-void IRAM_ATTR_PREFIX ISR_Timer::enable(unsigned numTimer) 
+void IRAM_ATTR_PREFIX ISR_Timer::enable(const uint8_t& numTimer) 
 {
   if (numTimer >= MAX_NUMBER_TIMERS) 
   {
@@ -342,8 +370,9 @@ void IRAM_ATTR_PREFIX ISR_Timer::enable(unsigned numTimer)
   timer[numTimer].enabled = true;
 }
 
+///////////////////////////////////////////
 
-void IRAM_ATTR_PREFIX ISR_Timer::disable(unsigned numTimer) 
+void IRAM_ATTR_PREFIX ISR_Timer::disable(const uint8_t& numTimer) 
 {
   if (numTimer >= MAX_NUMBER_TIMERS) 
   {
@@ -352,6 +381,8 @@ void IRAM_ATTR_PREFIX ISR_Timer::disable(unsigned numTimer)
 
   timer[numTimer].enabled = false;
 }
+
+///////////////////////////////////////////
 
 void IRAM_ATTR_PREFIX ISR_Timer::enableAll() 
 {
@@ -376,6 +407,8 @@ void IRAM_ATTR_PREFIX ISR_Timer::enableAll()
 #endif   
 }
 
+///////////////////////////////////////////
+
 void IRAM_ATTR_PREFIX ISR_Timer::disableAll() 
 {
   // Disable all timers with a callback assigned (used)
@@ -399,7 +432,9 @@ void IRAM_ATTR_PREFIX ISR_Timer::disableAll()
 #endif  
 }
 
-void IRAM_ATTR_PREFIX ISR_Timer::toggle(unsigned numTimer) 
+///////////////////////////////////////////
+
+void IRAM_ATTR_PREFIX ISR_Timer::toggle(const uint8_t& numTimer) 
 {
   if (numTimer >= MAX_NUMBER_TIMERS) 
   {
@@ -409,10 +444,13 @@ void IRAM_ATTR_PREFIX ISR_Timer::toggle(unsigned numTimer)
   timer[numTimer].enabled = !timer[numTimer].enabled;
 }
 
+///////////////////////////////////////////
 
-int IRAM_ATTR_PREFIX ISR_Timer::getNumTimers() 
+uint8_t IRAM_ATTR_PREFIX ISR_Timer::getNumTimers() 
 {
   return numTimers;
 }
+
+///////////////////////////////////////////
 
 #endif    // ISR_TIMER_IMPL_GENERIC_H

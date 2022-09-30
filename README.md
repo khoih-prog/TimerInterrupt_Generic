@@ -265,7 +265,7 @@ For Teensy 4.x, this library will be expanded to use other available hardware ti
  
  ---
  
- 2. [`ESP32 Core 2.0.4+`](https://github.com/espressif/arduino-esp32) for ESP32-based boards. [![Latest release](https://img.shields.io/github/release/espressif/arduino-esp32.svg)](https://github.com/espressif/arduino-esp32/releases/latest/)
+ 2. [`ESP32 Core 2.0.5+`](https://github.com/espressif/arduino-esp32) for ESP32-based boards. [![Latest release](https://img.shields.io/github/release/espressif/arduino-esp32.svg)](https://github.com/espressif/arduino-esp32/releases/latest/)
  3. [`ESP8266 Core 3.0.2+`](https://github.com/esp8266/Arduino) for ESP8266-based boards. [![Latest release](https://img.shields.io/github/release/esp8266/Arduino.svg)](https://github.com/esp8266/Arduino/releases/latest/). To use ESP8266 core 2.7.1+ for LittleFS. 
  4. [`Arduino AVR core 1.8.5+`](https://github.com/arduino/ArduinoCore-avr) for Arduino (Use Arduino Board Manager) for AVR boards. [![GitHub release](https://img.shields.io/github/release/arduino/ArduinoCore-avr.svg)](https://github.com/arduino/ArduinoCore-avr/releases/latest)
  5. [`Adafruit AVR core 1.4.13+`](https://github.com/adafruit/Adafruit_Arduino_Boards) for Adafruit AVR boards. Use Arduino Board Manager to install. 
@@ -279,8 +279,8 @@ For Teensy 4.x, this library will be expanded to use other available hardware ti
 13. [`Adafruit nRF52 v1.3.0+`](https://github.com/adafruit/Adafruit_nRF52_Arduino) for nRF52 boards such as Adafruit NRF52840_FEATHER, NRF52832_FEATHER, NRF52840_FEATHER_SENSE, NRF52840_ITSYBITSY, NRF52840_CIRCUITPLAY, NRF52840_CLUE, NRF52840_METRO, NRF52840_PCA10056, PARTICLE_XENON, **NINA_B302_ublox**, etc. [![GitHub release](https://img.shields.io/github/release/adafruit/Adafruit_nRF52_Arduino.svg)](https://github.com/adafruit/Adafruit_nRF52_Arduino/releases/latest)
 14. [`Arduino Core for STM32 v2.3.0+`](https://github.com/stm32duino/Arduino_Core_STM32) for STM32F/L/H/G/WB/MP1 boards. [![GitHub release](https://img.shields.io/github/release/stm32duino/Arduino_Core_STM32.svg)](https://github.com/stm32duino/Arduino_Core_STM32/releases/latest)
 15. [`Arduino megaAVR core 1.8.7+`](https://github.com/arduino/ArduinoCore-megaavr/releases) for Arduino megaAVR boards. Use Arduino Board Manager to install.
-16. [`Arduino mbed_rp2040 core 3.1.1+`](https://github.com/arduino/ArduinoCore-mbed) for Arduino (Use Arduino Board Manager) RP2040-based boards, such as **Arduino Nano RP2040 Connect, RASPBERRY_PI_PICO, etc.**. [![GitHub release](https://img.shields.io/github/release/arduino/ArduinoCore-mbed.svg)](https://github.com/arduino/ArduinoCore-mbed/releases/latest)
-17. [`Earle Philhower's arduino-pico core v2.3.3+`](https://github.com/earlephilhower/arduino-pico) for RP2040-based boards such as **RASPBERRY_PI_PICO, ADAFRUIT_FEATHER_RP2040 and GENERIC_RP2040**, etc. [![GitHub release](https://img.shields.io/github/release/earlephilhower/arduino-pico.svg)](https://github.com/earlephilhower/arduino-pico/releases/latest)
+16. [`Arduino mbed_rp2040 core 3.3.0+`](https://github.com/arduino/ArduinoCore-mbed) for Arduino (Use Arduino Board Manager) RP2040-based boards, such as **Arduino Nano RP2040 Connect, RASPBERRY_PI_PICO, etc.**. [![GitHub release](https://img.shields.io/github/release/arduino/ArduinoCore-mbed.svg)](https://github.com/arduino/ArduinoCore-mbed/releases/latest)
+17. [`Earle Philhower's arduino-pico core v2.5.4+`](https://github.com/earlephilhower/arduino-pico) for RP2040-based boards such as **RASPBERRY_PI_PICO, ADAFRUIT_FEATHER_RP2040 and GENERIC_RP2040**, etc. [![GitHub release](https://img.shields.io/github/release/earlephilhower/arduino-pico.svg)](https://github.com/earlephilhower/arduino-pico/releases/latest)
 18. [`MegaCoreX megaAVR core 1.1.0+`](https://github.com/MCUdude/MegaCoreX/releases) for Arduino megaAVR boards.  [![GitHub release](https://img.shields.io/github/release/MCUdude/MegaCoreX.svg)](https://github.com/MCUdude/MegaCoreX/releases/latest). Follow [**How to install**](https://github.com/MCUdude/MegaCoreX#how-to-install).
 
 ---
@@ -294,7 +294,7 @@ For Teensy 4.x, this library will be expanded to use other available hardware ti
    - [`LwIP library v2.1.2+`](https://github.com/stm32duino/LwIP) for built-in LAN8742A Ethernet on (Nucleo-144, Discovery). [![GitHub release](https://img.shields.io/github/release/stm32duino/LwIP.svg)](https://github.com/stm32duino/LwIP/releases/latest)
    
 21. For W5x00 Ethernet:
-   - [`Ethernet_Generic library v2.4.0+`](https://github.com/khoih-prog/Ethernet_Generic) for W5100, W5200 and W5500/WIZ550io/WIZ850io/USR-ES1 with Wiznet W5500 chip.  [![GitHub release](https://img.shields.io/github/release/khoih-prog/Ethernet_Generic.svg)](https://github.com/khoih-prog/Ethernet_Generic/releases/latest)
+   - [`Ethernet_Generic library v2.6.1+`](https://github.com/khoih-prog/Ethernet_Generic) for W5100, W5200 and W5500/WIZ550io/WIZ850io/USR-ES1 with Wiznet W5500 chip.  [![GitHub release](https://img.shields.io/github/release/khoih-prog/Ethernet_Generic.svg)](https://github.com/khoih-prog/Ethernet_Generic/releases/latest)
    
 22. For ENC28J60 Ethernet:
    - [`EthernetENC library v2.0.3+`](https://github.com/jandrassy/EthernetENC) for ENC28J60. [![GitHub release](https://img.shields.io/github/release/jandrassy/EthernetENC.svg)](https://github.com/jandrassy/EthernetENC/releases/latest). **New and Better**
@@ -302,7 +302,7 @@ For Teensy 4.x, this library will be expanded to use other available hardware ti
    
 ---
 
-23. [`WiFiNINA_Generic library v1.8.14-5+`](https://github.com/khoih-prog/WiFiNINA_Generic) to use WiFiNINA modules/shields. To install. check [![arduino-library-badge](https://www.ardu-badge.com/badge/WiFiNINA_Generic.svg?)](https://www.ardu-badge.com/WiFiNINA_Generic) if using WiFiNINA for boards such as Nano 33 IoT, nRF52, Teensy, etc.
+23. [`WiFiNINA_Generic library v1.8.14-6+`](https://github.com/khoih-prog/WiFiNINA_Generic) to use WiFiNINA modules/shields. To install. check [![arduino-library-badge](https://www.ardu-badge.com/badge/WiFiNINA_Generic.svg?)](https://www.ardu-badge.com/WiFiNINA_Generic) if using WiFiNINA for boards such as Nano 33 IoT, nRF52, Teensy, etc.
 24. [`Blynk_WiFiNINA_WM library 1.1.2+`](https://github.com/khoih-prog/Blynk_WiFiNINA_WM) to use with Blynk-WiFiNINA-related example. To install. check [![arduino-library-badge](https://www.ardu-badge.com/badge/Blynk_WiFiNINA_WM.svg?)](https://www.ardu-badge.com/Blynk_WiFiNINA_WM)
 
 25. To use with certain examples
@@ -550,12 +550,12 @@ With core after v1.5.0, this step is not necessary anymore thanks to the PR [Add
 
 #### 9. For Portenta_H7 boards using Arduino IDE in Linux
 
-  **To be able to upload firmware to Portenta_H7 using Arduino IDE in Linux (Ubuntu, etc.)**, you have to copy the file [portenta_post_install.sh](Packages_Patches/arduino/hardware/mbed_portenta/3.1.1/portenta_post_install.sh) into mbed_portenta directory (~/.arduino15/packages/arduino/hardware/mbed_portenta/3.1.1/portenta_post_install.sh). 
+  **To be able to upload firmware to Portenta_H7 using Arduino IDE in Linux (Ubuntu, etc.)**, you have to copy the file [portenta_post_install.sh](Packages_Patches/arduino/hardware/mbed_portenta/3.3.0/portenta_post_install.sh) into mbed_portenta directory (~/.arduino15/packages/arduino/hardware/mbed_portenta/3.3.0/portenta_post_install.sh). 
   
   Then run the following command using `sudo`
   
 ```
-$ cd ~/.arduino15/packages/arduino/hardware/mbed_portenta/3.1.1
+$ cd ~/.arduino15/packages/arduino/hardware/mbed_portenta/3.3.0
 $ chmod 755 portenta_post_install.sh
 $ sudo ./portenta_post_install.sh
 ```
@@ -568,9 +568,9 @@ This will create the file `/etc/udev/rules.d/49-portenta_h7.rules` as follows:
 SUBSYSTEMS=="usb", ATTRS{idVendor}=="2341", ATTRS{idProduct}=="035b", GROUP="plugdev", MODE="0666"
 ```
 
-Supposing the ArduinoCore-mbed core version is 3.1.1. Now only one file must be copied into the directory:
+Supposing the ArduinoCore-mbed core version is 3.3.0. Now only one file must be copied into the directory:
 
-- `~/.arduino15/packages/arduino/hardware/mbed_portenta/3.1.1/portenta_post_install.sh`
+- `~/.arduino15/packages/arduino/hardware/mbed_portenta/3.3.0/portenta_post_install.sh`
 
 Whenever a new version is installed, remember to copy this files into the new version directory. For example, new version is x.yy.zz
 
@@ -581,11 +581,11 @@ This file must be copied into the directory:
 
 #### 10. For RTL8720DN boards using AmebaD core
  
- To avoid compile error relating to PROGMEM, you have to copy the file [Realtek AmebaD core pgmspace.h](Packages_Patches/realtek/hardware/AmebaD/3.1.3/cores/arduino/avr/pgmspace.h) into Realtek AmebaD directory (~/.arduino15/packages/realtek/hardware/AmebaD/3.1.3/cores/arduino/avr/pgmspace.h). 
+ To avoid compile error relating to PROGMEM, you have to copy the file [Realtek AmebaD core pgmspace.h](Packages_Patches/realtek/hardware/AmebaD/3.1.4/cores/arduino/avr/pgmspace.h) into Realtek AmebaD directory (~/.arduino15/packages/realtek/hardware/AmebaD/3.1.4/cores/arduino/avr/pgmspace.h). 
 
-Supposing the Realtek AmebaD core version is 3.1.3. This file must be copied into the directory:
+Supposing the Realtek AmebaD core version is 3.1.4. This file must be copied into the directory:
 
-- `~/.arduino15/packages/realtek/hardware/AmebaD/3.1.3/cores/arduino/avr/pgmspace.h`
+- `~/.arduino15/packages/realtek/hardware/AmebaD/3.1.4/cores/arduino/avr/pgmspace.h`
 
 Whenever a new version is installed, remember to copy this file into the new version directory. For example, new version is x.yy.zz
 This file must be copied into the directory:
@@ -595,11 +595,11 @@ This file must be copied into the directory:
 
 #### 11. For SAMD21 and SAMD51 boards using ArduinoCore-fab-sam core
  
- To avoid compile error relating to SAMD21/SAMD51, you have to copy the file [ArduinoCore-fab-sam core pgmspace.h](Packages_Patches/Fab_SAM_Arduino/hardware/samd/1.6.18-alpha2/boards.txt) into `ArduinoCore-fab-sam` samd directory (~/.arduino15/packages/Fab_SAM_Arduino/hardware/samd/1.6.18-alpha2/boards.txt). 
+ To avoid compile error relating to SAMD21/SAMD51, you have to copy the file [ArduinoCore-fab-sam core pgmspace.h](Packages_Patches/Fab_SAM_Arduino/hardware/samd/1.7.0/boards.txt) into `ArduinoCore-fab-sam` samd directory (~/.arduino15/packages/Fab_SAM_Arduino/hardware/samd/1.7.0/boards.txt). 
 
-Supposing the `ArduinoCore-fab-sam` samd core version is 1.6.18-alpha2. This file must be copied into the directory:
+Supposing the `ArduinoCore-fab-sam` samd core version is 1.7.0. This file must be copied into the directory:
 
-- `~/.arduino15/packages/Fab_SAM_Arduino/hardware/samd/1.6.18-alpha2/boards.txt`
+- `~/.arduino15/packages/Fab_SAM_Arduino/hardware/samd/1.7.0/boards.txt`
 
 Whenever a new version is installed, remember to copy this file into the new version directory. For example, new version is x.yy.zz
 This file must be copied into the directory:
@@ -879,7 +879,7 @@ To be sure which Timer is available for the board you're using, check the Core P
 
 The information will be as follows:
 
-```
+```C++
 typedef struct
 {
   __IO uint32_t CR1;         /*!< TIM control register 1,              Address offset: 0x00 */
@@ -914,7 +914,7 @@ typedef struct
 
 and
 
-```
+```C++
 #define PERIPH_BASE            0x40000000UL /*!< Base address of : AHB/ABP Peripherals   
 /*!< Peripheral memory map */
 #define APB1PERIPH_BASE        PERIPH_BASE
@@ -1005,7 +1005,7 @@ Before using any Timer, you have to make sure the Timer has not been used by any
 
 #### 1.1 Init Hardware Timer
 
-```
+```C++
 // Depending on the board, you can select NRF52 Hardware Timer from NRF_TIMER_1-NRF_TIMER_4 (1 to 4)
 // If you select the already-used NRF_TIMER_0, it'll be auto modified to use NRF_TIMER_1
 
@@ -1015,7 +1015,7 @@ NRF52Timer ITimer(NRF_TIMER_1);
 
 #### 1.2 Set Hardware Timer Interval and attach Timer Interrupt Handler function
 
-```
+```C++
 void TimerHandler(void)
 {
   // Doing something here inside ISR
@@ -1039,7 +1039,7 @@ void setup()
 
 #### 2.1 Init Hardware Timer and ISR-based Timer
 
-```
+```C++
 /// Depending on the board, you can select NRF52 Hardware Timer from NRF_TIMER_1-NRF_TIMER_4 (1 to 4)
 // If you select the already-used NRF_TIMER_0, it'll be auto modified to use NRF_TIMER_1
 
@@ -1053,7 +1053,7 @@ ISR_Timer NRF52_ISR_Timer;
 
 #### 2.2 Set Hardware Timer Interval and attach Timer Interrupt Handler functions
 
-```
+```C++
 void TimerHandler(void)
 {
   NRF52_ISR_Timer.run();
@@ -1121,7 +1121,7 @@ Before using any Timer, you have to make sure the Timer has not been used by any
 
 #### 1.1 Init Hardware Timer
 
-```
+```C++
 // Depending on the board, you can select SAMD21 Hardware Timer from TC3, TC4, TC5, TCC, TCC1 or TCC2
 // SAMD51 Hardware Timer only TC3
 
@@ -1140,7 +1140,7 @@ SAMDTimer ITimer(TIMER_TC3);
 
 #### 1.2 Set Hardware Timer Interval and attach Timer Interrupt Handler function
 
-```
+```C++
 void TimerHandler0(void)
 {
   // Doing something here inside ISR
@@ -1164,7 +1164,7 @@ void setup()
 
 #### 2.1 Init Hardware Timer and ISR-based Timer
 
-```
+```C++
 // Depending on the board, you can select SAMD21 Hardware Timer from TC3, TC4, TC5, TCC, TCC1 or TCC2
 // SAMD51 Hardware Timer only TC3
 
@@ -1187,7 +1187,7 @@ SAMD_ISR_Timer ISR_Timer;
 
 #### 2.2 Set Hardware Timer Interval and attach Timer Interrupt Handler functions
 
-```
+```C++
 void TimerHandler(void)
 {
   ISR_Timer.run();
@@ -1255,14 +1255,14 @@ Before using any Timer, you have to make sure the Timer has not been used by any
 
 #### 1.1 Init Hardware Timer
 
-```
+```C++
 // Interval in microsecs
 attachDueInterrupt(TIMER1_INTERVAL_MS * 1000, TimerHandler1, "ITimer1");
 ```
 
 #### 1.2 Set Hardware Timer Interval and attach Timer Interrupt Handler function
 
-```
+```C++
 void TimerHandler(void)
 {
   // Doing something here inside ISR
@@ -1300,14 +1300,14 @@ void setup()
 
 #### 2.1 Init Hardware Timer and ISR-based Timer
 
-```
+```C++
 // Interval in microsecs
 attachDueInterrupt(TIMER1_INTERVAL_MS * 1000, TimerHandler1, "ITimer1");
 ```
 
 #### 2.2 Set Hardware Timer Interval and attach Timer Interrupt Handler functions
 
-```
+```C++
 // Init SAMDUE_ISR_Timer
 // Each SAMDUE_ISR_Timer can service 16 different ISR-based timers
 ISR_Timer SAMDUE_ISR_Timer;
@@ -1389,7 +1389,7 @@ Before using any Timer, you have to make sure the Timer has not been used by any
 
 #### 1.1 Init Hardware Timer
 
-```
+```C++
 // You can select Teensy Hardware Timer  from TEENSY_TIMER_1 or TEENSY_TIMER_3
 
 // Init Teensy timer TEENSY_TIMER_1
@@ -1398,7 +1398,7 @@ TeensyTimer ITimer0(TEENSY_TIMER_1);
 
 #### 1.2 Set Hardware Timer Interval and attach Timer Interrupt Handler function
 
-```
+```C++
 void TimerHandler0(void)
 {
   // Doing something here inside ISR
@@ -1424,7 +1424,7 @@ void setup()
 
 #### 2.1 Init Hardware Timer and ISR-based Timer
 
-```
+```C++
 // You can select Teensy Hardware Timer  from TEENSY_TIMER_1 or TEENSY_TIMER_3
 
 // Init Teensy timer TEENSY_TIMER_1
@@ -1437,7 +1437,7 @@ ISR_Timer Teensy_ISR_Timer;
 
 #### 2.2 Set Hardware Timer Interval and attach Timer Interrupt Handler functions
 
-```
+```C++
 void TimerHandler(void)
 {
   Teensy_ISR_Timer.run();
@@ -1505,14 +1505,14 @@ Before using any Timer, you have to make sure the Timer has not been used by any
 
 #### 1.1 Init Hardware Timer
 
-```
+```C++
 // Init STM32 timer TIM1
 STM32Timer ITimer0(TIM1);
 ```
 
 #### 1.2 Set Hardware Timer Interval and attach Timer Interrupt Handler function
 
-```
+```C++
 void TimerHandler0(void)
 {
   // Doing something here inside ISR
@@ -1536,7 +1536,7 @@ void setup()
 
 #### 2.1 Init Hardware Timer and ISR-based Timer
 
-```
+```C++
 // Init STM32 timer TIM1
 STM32Timer ITimer(TIM1);
 
@@ -1547,7 +1547,7 @@ ISR_Timer STM32_ISR_Timer;
 
 #### 2.2 Set Hardware Timer Interval and attach Timer Interrupt Handler functions
 
-```
+```C++
 void TimerHandler(void)
 {
   STM32_ISR_Timer.run();
@@ -1615,7 +1615,7 @@ Before using any Timer, you have to make sure the Timer has not been used by any
 
 #### 1.1 Init Hardware Timer
 
-```
+```C++
 // For core mbed core 1.3.2-
 // Depending on the board, you can select NRF52 Hardware Timer from NRF_TIMER_1,NRF_TIMER_3,NRF_TIMER_4 (1,3 and 4)
 // If you select the already-used NRF_TIMER_0 or NRF_TIMER_2, it'll be auto modified to use NRF_TIMER_1
@@ -1630,7 +1630,7 @@ NRF52_MBED_Timer ITimer0(NRF_TIMER_4);
 
 #### 1.2 Set Hardware Timer Interval and attach Timer Interrupt Handler function
 
-```
+```C++
 void TimerHandler(void)
 {
   // Doing something here inside ISR
@@ -1654,7 +1654,7 @@ void setup()
 
 #### 2.1 Init Hardware Timer and ISR-based Timer
 
-```
+```C++
 /// Depending on the board, you can select NRF52 Hardware Timer from NRF_TIMER_1-NRF_TIMER_4 (1 to 4)
 // If you select the already-used NRF_TIMER_0, it'll be auto modified to use NRF_TIMER_1
 
@@ -1668,7 +1668,7 @@ ISR_Timer NRF52_ISR_Timer;
 
 #### 2.2 Set Hardware Timer Interval and attach Timer Interrupt Handler functions
 
-```
+```C++
 void TimerHandler(void)
 {
   NRF52_ISR_Timer.run();
@@ -1751,8 +1751,7 @@ Before using any Timer, you have to make sure the Timer has not been used by any
 
 #### 1.1 Init Hardware Timer
 
-```
-
+```C++
 #define USE_TIMER_0     false
 #define USE_TIMER_1     true       // <======== This will enable ITimer1
 #define USE_TIMER_2     false
@@ -1762,7 +1761,7 @@ Before using any Timer, you have to make sure the Timer has not been used by any
 
 #### 1.2 Set Hardware Timer Interval and attach Timer Interrupt Handler function
 
-```
+```C++
 void TimerHandler1(void)
 {
   // Doing something here inside ISR
@@ -1793,8 +1792,7 @@ void setup()
 
 #### 2.1 Init Hardware Timer and ISR-based Timer
 
-```
-
+```C++
 // Init ISR_Timer ISR_Timer1 to permit using 16 ISR_based Timers from 1 Hardware Timers (ITimer1)
 ISR_Timer ISR_Timer1;
 
@@ -1802,7 +1800,7 @@ ISR_Timer ISR_Timer1;
 
 #### 2.2 Set Hardware Timer Interval and attach Timer Interrupt Handler functions
 
-```
+```C++
 #define USE_TIMER_0     false
 #define USE_TIMER_1     true       // <======== This will enable ITimer1
 #define USE_TIMER_2     false
@@ -2052,7 +2050,7 @@ While software timer, **programmed for 2s, is activated after 10.917s !!!**. The
 ```
 Starting ISR_Timer_Complex_Ethernet on SAM DUE
 SAMDUETimerInterrupt v1.3.0
-TimerInterrupt_Generic v1.11.0
+TimerInterrupt_Generic v1.12.0
 Using Timer(0) = TC0, channel = 0, IRQ = TC0_IRQn
 Timer(0), us = 50000.00
 ITimer attached to Timer(0)
@@ -2145,7 +2143,7 @@ While software timer, **programmed for 2s, is activated after 4.867s !!!**. Then
 ```
 Starting ISR_Timer_Complex_Ethernet on NRF52840_FEATHER
 NRF52TimerInterrupt v1.4.1
-TimerInterrupt_Generic v1.11.0
+TimerInterrupt_Generic v1.12.0
 NRF52TimerInterrupt: F_CPU (MHz) = 64, Timer = NRF_TIMER2
 NRF52TimerInterrupt: _fre = 1000000.00, _count = 50000
 Starting  ITimer OK, millis() = 1419
@@ -2237,8 +2235,8 @@ In this example, 16 independent ISR Timers are used, yet utilized just one Hardw
 
 ```
 Starting ISR_16_Timers_Array_Complex on SAMD_NANO_33_IOT
-SAMDTimerInterrupt v1.9.0
-TimerInterrupt_Generic v1.11.0
+SAMDTimerInterrupt v1.10.1
+TimerInterrupt_Generic v1.12.0
 CPU Frequency = 48 MHz
 Starting ITimer OK, millis() = 1180
 SimpleTimer : 2, ms : 11180, Dms : 10000
@@ -2390,7 +2388,7 @@ The following is the sample terminal output when running example [**TimerInterru
 ```
 Starting TimerInterruptTest on Teensy 4.0
 Teensy_TimerInterrupt v1.3.0
-TimerInterrupt_Generic v1.11.0
+TimerInterrupt_Generic v1.12.0
 CPU Frequency = 600 MHz
 TEENSY_TIMER_1, F_BUS_ACTUAL (MHz) = 150, request interval = 30000, actual interval (us) = 29999
 Prescale = 7, _timerCount = 17578
@@ -2435,7 +2433,7 @@ The following is the sample terminal output when running example [ISR_16_Timers_
 ```
 Starting ISR_16_Timers_Array_Complex on ESP32_DEV
 ESP32_New_TimerInterrupt v1.4.0
-TimerInterrupt_Generic v1.11.0
+TimerInterrupt_Generic v1.12.0
 CPU Frequency = 240 MHz
 Starting ITimer OK, millis() = 2045
 SimpleTimer : 2, ms : 12044, Dms : 9999
@@ -2587,7 +2585,7 @@ The following is the sample terminal output when running example [ISR_16_Timers_
 ```
 Starting ISR_16_Timers_Array_Complex on ESP8266_NODEMCU_ESP12E
 ESP8266TimerInterrupt v1.6.0
-TimerInterrupt_Generic v1.11.0
+TimerInterrupt_Generic v1.12.0
 CPU Frequency = 160 MHz
 Starting ITimer OK, millis() = 177
 SimpleTimer : 2, ms : 10179, Dms : 10000
@@ -2737,7 +2735,7 @@ The following is the sample terminal output when running example [ISR_16_Timers_
 ```
 Starting ISR_16_Timers_Array_Complex on NUCLEO_F767ZI
 STM32_TimerInterrupt v1.3.0
-TimerInterrupt_Generic v1.11.0
+TimerInterrupt_Generic v1.12.0
 CPU Frequency = 216 MHz
 Starting ITimer OK, millis() = 105
 SimpleTimer : 2, ms : 10110, Dms : 10005
@@ -2888,7 +2886,7 @@ The following is the sample terminal output when running example [**TimerInterru
 ```
 Starting TimerInterruptTest on NUCLEO_F767ZI
 STM32_TimerInterrupt v1.3.0
-TimerInterrupt_Generic v1.11.0
+TimerInterrupt_Generic v1.12.0
 CPU Frequency = 216 MHz
 STM32TimerInterrupt: Timer Input Freq (Hz) = 216000000, _fre = 1000000.00, _count = 1000000
 Starting  ITimer0 OK, millis() = 108
@@ -2945,7 +2943,7 @@ While software timer, **programmed for 2s, is activated after more than 3.000s i
 ```
 Starting ISR_16_Timers_Array_Complex on Nano 33 BLE
 NRF52_MBED_TimerInterrupt v1.4.0
-TimerInterrupt_Generic v1.11.0
+TimerInterrupt_Generic v1.12.0
 Starting ITimer OK, millis() = 810
 SimpleTimer : 2, ms : 3810, Dms : 3000
 Timer : 0, programmed : 5000, actual : 0
@@ -3422,7 +3420,7 @@ SimpleTimer : 2, ms : 85118, Dms : 3011
 ```
 Starting ISR_16_Timers_Array_Complex on megaAVR Nano Every
 megaAVR_TimerInterrupt v1.6.1
-TimerInterrupt_Generic v1.11.0
+TimerInterrupt_Generic v1.12.0
 CPU Frequency = 16 MHz
 TCB Clock Frequency = 16MHz for highest accuracy
 [TISR] TCB 1
@@ -3534,7 +3532,7 @@ SimpleTimer : 2, ms : 90506, Dms : 10064
 
 Starting ISR_16_Timers_Array_Complex on megaAVR Nano Every
 megaAVR_TimerInterrupt v1.6.1
-TimerInterrupt_Generic v1.11.0
+TimerInterrupt_Generic v1.12.0
 CPU Frequency = 16 MHz
 TCB Clock Frequency = 8MHz for very high accuracy
 Starting  ITimer1 OK, millis() = 10
@@ -3603,7 +3601,7 @@ Timer : 15, programmed : 80000, actual : 80000
 ```
 Starting ISR_16_Timers_Array_Complex on megaAVR Nano Every
 megaAVR_TimerInterrupt v1.6.1
-TimerInterrupt_Generic v1.11.0
+TimerInterrupt_Generic v1.12.0
 CPU Frequency = 16 MHz
 TCB Clock Frequency = 250KHz for lower accuracy but longer time
 Starting  ITimer1 OK, millis() = 11
@@ -3726,21 +3724,23 @@ Submit issues to: [TimerInterrupt_Generic issues](https://github.com/khoih-prog/
 
  1. Basic hardware timers for 
 
-- [x] AVR
-- [x] megaAVR
-- [x] ESP8266
-- [x] ESP32
-- [x] ESP32-S2
-- [x] SAMD
-- [x] SAM DUE
-- [x] nRF52
-- [x] Teensy
-- [x] Mbed-OS Nano-33-BLE
-- [x] STM32F/L/H/G/WB/MP1
-- [x] Raspberry Pi pico
-- [x] MBED Raspberry Pi pico
-- [ ] Portenta H7
-- [ ] RTL8720DN
+- [x] AVR. Sync with `v1.8.0`. Latest [![GitHub release](https://img.shields.io/github/release/khoih-prog/TimerInterrupt.svg)](https://github.com/khoih-prog/TimerInterrupt/releases/latest)
+- [x] megaAVR. Sync with `v1.6.1`. Latest [![GitHub release](https://img.shields.io/github/release/khoih-prog/megaAVR_TimerInterrupt.svg)](https://github.com/khoih-prog/megaAVR_TimerInterrupt/releases/latest)
+- [x] ESP8266. Sync with `v1.6.0`. Latest [![GitHub release](https://img.shields.io/github/release/khoih-prog/ESP8266TimerInterrupt.svg)](https://github.com/khoih-prog/ESP8266TimerInterrupt/releases/latest)
+- [x] ESP32. Sync with `v1.4.0`. Latest [![GitHub release](https://img.shields.io/github/release/khoih-prog/ESP32_New_TimerInterrupt.svg)](https://github.com/khoih-prog/ESP32_New_TimerInterrupt/releases/latest)
+- [x] SAMD. Sync with `v1.10.1`. Latest [![GitHub release](https://img.shields.io/github/release/khoih-prog/SAMD_TimerInterrupt.svg)](https://github.com/khoih-prog/SAMD_TimerInterrupt/releases/latest)
+- [x] SAM DUE. Sync with `v1.3.0`. Latest [![GitHub release](https://img.shields.io/github/release/khoih-prog/SAMDUE_TimerInterrupt.svg)](https://github.com/khoih-prog/SAMDUE_TimerInterrupt/releases/latest)
+- [x] nRF52. Sync with `v1.4.1`. Latest [![GitHub release](https://img.shields.io/github/release/khoih-prog/NRF52_TimerInterrupt.svg)](https://github.com/khoih-prog/NRF52_TimerInterrupt/releases/latest)
+- [x] Teensy. Sync with `v1.3.0`. Latest [![GitHub release](https://img.shields.io/github/release/khoih-prog/Teensy_TimerInterrupt.svg)](https://github.com/khoih-prog/Teensy_TimerInterrupt/releases/latest)
+- [x] Mbed-OS nRF52 Nano-33-BLE. Sync with `v1.4.0`. Latest [![GitHub release](https://img.shields.io/github/release/khoih-prog/NRF52_MBED_TimerInterrupt.svg)](https://github.com/khoih-prog/NRF52_MBED_TimerInterrupt/releases/latest)
+- [x] STM32F/L/H/G/WB/MP1. Sync with `v1.3.0`. Latest [![GitHub release](https://img.shields.io/github/release/khoih-prog/STM32_TimerInterrupt.svg)](https://github.com/khoih-prog/STM32_TimerInterrupt/releases/latest)
+- [x] Raspberry Pi pico. Sync with `v1.3.1`. Latest [![GitHub release](https://img.shields.io/github/release/khoih-prog/RPI_PICO_TimerInterrupt.svg)](https://github.com/khoih-prog/RPI_PICO_TimerInterrupt/releases/latest)
+- [x] MBED Raspberry Pi pico. Sync with `v1.1.2`. Latest [![GitHub release](https://img.shields.io/github/release/khoih-prog/MBED_RPI_PICO_TimerInterrupt.svg)](https://github.com/khoih-prog/MBED_RPI_PICO_TimerInterrupt/releases/latest)
+- [ ] Portenta H7. Latest [![GitHub release](https://img.shields.io/github/release/khoih-prog/Portenta_H7_TimerInterrupt.svg)](https://github.com/khoih-prog/Portenta_H7_TimerInterrupt/releases/latest)
+- [ ] RTL8720DN. Latest [![GitHub release](https://img.shields.io/github/release/khoih-prog/RTL8720_TimerInterrupt.svg)](https://github.com/khoih-prog/RTL8720_TimerInterrupt/releases/latest)
+- [ ] AVR_Dx. Latest [![GitHub release](https://img.shields.io/github/release/khoih-prog/Dx_TimerInterrupt.svg)](https://github.com/khoih-prog/Dx_TimerInterrupt/releases/latest)
+- [ ] ATmega. Latest [![GitHub release](https://img.shields.io/github/release/khoih-prog/ATmega_TimerInterrupt.svg)](https://github.com/khoih-prog/ATmega_TimerInterrupt/releases/latest)
+- [ ] ATtiny. Latest [![GitHub release](https://img.shields.io/github/release/khoih-prog/ATtiny_TimerInterrupt.svg)](https://github.com/khoih-prog/ATtiny_TimerInterrupt/releases/latest)
 
  2. More hardware-initiated software-enabled timers
  3. Longer time interval
@@ -3757,6 +3757,10 @@ Submit issues to: [TimerInterrupt_Generic issues](https://github.com/khoih-prog/
   - ESP32_S2 : ESP32S2 Native USB, UM FeatherS2 Neo, UM TinyS2, UM RMP, microS2, LOLIN_S2_MINI, LOLIN_S2_PICO, ADAFRUIT_FEATHER_ESP32S2, ADAFRUIT_FEATHER_ESP32S2_TFT, ATMegaZero ESP32-S2, Deneyap Mini, FRANZININHO_WIFI, FRANZININHO_WIFI_MSC
   - ESP32_S3 : UM TinyS3, UM PROS3, UM FeatherS3, ESP32_S3_USB_OTG, ESP32S3_CAM_LCD, DFROBOT_FIREBEETLE_2_ESP32S3, ADAFRUIT_FEATHER_ESP32S3_TFT
   - ESP32_C3 : LOLIN_C3_MINI, DFROBOT_BEETLE_ESP32_C3, ADAFRUIT_QTPY_ESP32C3, AirM2M_CORE_ESP32C3, XIAO_ESP32C3
+14. Optimize library code by using `reference-passing` instead of `value-passing`
+15. Using `float` instead of `ulong` for better interval accuracy
+16. Drop `src_cpp` and `src_h` directories
+
 
 ---
 ---

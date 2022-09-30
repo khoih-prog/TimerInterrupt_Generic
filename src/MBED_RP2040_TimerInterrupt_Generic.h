@@ -25,7 +25,7 @@
   Based on BlynkTimer.h
   Author: Volodymyr Shymanskyy
 
-  Version: 1.11.0
+  Version: 1.12.0
 
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
@@ -42,12 +42,15 @@
   1.9.0   K.Hoang      09/05/2022 Update to use latest TimerInterrupt Libraries' versions
   1.10.0  K.Hoang      10/08/2022 Update to use latest ESP32_New_TimerInterrupt Library version
   1.11.0  K.Hoang      12/08/2022 Add support to new ESP32_C3, ESP32_S2 and ESP32_S3 boards
+  1.12.0  K.Hoang      29/09/2022 Update for SAMD, RP2040, MBED_RP2040
 *****************************************************************************************************************************/
 
 #pragma once
 
 #ifndef MBED_RPI_PICO_TIMERINTERRUPT_H
 #define MBED_RPI_PICO_TIMERINTERRUPT_H
+
+///////////////////////////////////////////
 
 #if ( defined(ARDUINO_NANO_RP2040_CONNECT) || defined(ARDUINO_RASPBERRY_PI_PICO) || defined(ARDUINO_ADAFRUIT_FEATHER_RP2040) || \
       defined(ARDUINO_GENERIC_RP2040) ) && defined(ARDUINO_ARCH_MBED)
@@ -56,19 +59,25 @@
   #error This code is intended to run on the MBED RASPBERRY_PI_PICO platform! Please check your Tools->Board setting.
 #endif
 
+///////////////////////////////////////////
+
 #ifndef MBED_RPI_PICO_TIMER_INTERRUPT_VERSION
-  #define MBED_RPI_PICO_TIMER_INTERRUPT_VERSION       "MBED_RPi_Pico_TimerInterrupt v1.1.0"
+  #define MBED_RPI_PICO_TIMER_INTERRUPT_VERSION       "MBED_RPi_Pico_TimerInterrupt v1.1.2"
   
   #define MBED_RPI_PICO_TIMER_INTERRUPT_VERSION_MAJOR      1
   #define MBED_RPI_PICO_TIMER_INTERRUPT_VERSION_MINOR      1
-  #define MBED_RPI_PICO_TIMER_INTERRUPT_VERSION_PATCH      0
+  #define MBED_RPI_PICO_TIMER_INTERRUPT_VERSION_PATCH      2
 
-  #define MBED_RPI_PICO_TIMER_INTERRUPT_VERSION_INT        1001000  
+  #define MBED_RPI_PICO_TIMER_INTERRUPT_VERSION_INT        1001002
 #endif
+
+///////////////////////////////////////////
 
 #ifndef TIMER_INTERRUPT_DEBUG
   #define TIMER_INTERRUPT_DEBUG      0
 #endif
+
+///////////////////////////////////////////
 
 #include "Arduino.h"
 
@@ -98,11 +107,15 @@
 absolute_time_t   absAlarmTime[MAX_RPI_PICO_NUM_TIMERS]; 
 volatile uint64_t _timerCount [MAX_RPI_PICO_NUM_TIMERS];
 
+///////////////////////////////////////////
+
 void TIMER_ISR_START(uint alarm_num)
 {  
   absAlarmTime[alarm_num]._private_us_since_boot = time_us_64() + _timerCount[alarm_num];                
   hardware_alarm_set_target(alarm_num, absAlarmTime[alarm_num]);
 }
+
+///////////////////////////////////////////
 
 void TIMER_ISR_END(uint alarm_num)
 {
@@ -132,7 +145,11 @@ class MBED_RPI_PICO_TimerInterrupt
       _callback = NULL;
     };
 
+    ///////////////////////////////////////////
+
     #define TIM_CLOCK_FREQ      ( (float) 1000000.0f )
+
+    ///////////////////////////////////////////
 
     // frequency (in hertz) and duration (in milliseconds). Duration = 0 or not specified => run indefinitely
     // No params and duration now. To be added in the future by adding similar functions here
@@ -163,7 +180,8 @@ class MBED_RPI_PICO_TimerInterrupt
         TIMER_ISR_START(_timerNo);
                
         //bool hardware_alarm_set_target(uint alarm_num, absolute_time_t t);
-        hardware_alarm_set_target(_timerNo, absAlarmTime[_timerNo]);
+        // KH, redundant, to be removed
+        //hardware_alarm_set_target(_timerNo, absAlarmTime[_timerNo]);
          
         TISR_LOGWARN1(F("hardware_alarm_set_target, uS = "), _timerCount[_timerNo]);
 
@@ -179,48 +197,64 @@ class MBED_RPI_PICO_TimerInterrupt
       TIMER_ISR_END(_timerNo);
     }
 
+    ///////////////////////////////////////////
+
     // interval (in microseconds) and duration (in milliseconds). Duration = 0 or not specified => run indefinitely
     // No params and duration now. To be added in the future by adding similar functions here
-    bool setInterval(const unsigned long& interval, hardware_alarm_callback_t callback)
+    bool setInterval(const float& interval, hardware_alarm_callback_t callback)
     {
       return setFrequency((float) (1000000.0f / interval), callback);
     }
+
+    ///////////////////////////////////////////
 
     bool attachInterrupt(const float& frequency, hardware_alarm_callback_t callback)
     {
       return setFrequency(frequency, callback);
     }
 
+    ///////////////////////////////////////////
+
     // interval (in microseconds) and duration (in milliseconds). Duration = 0 or not specified => run indefinitely
     // No params and duration now. To be added in the future by adding similar functions here
-    bool attachInterruptInterval(const unsigned long& interval, hardware_alarm_callback_t callback)
+    bool attachInterruptInterval(const float& interval, hardware_alarm_callback_t callback)
     {
       return setFrequency( (float) ( 1000000.0f / interval), callback);
     }
+
+    ///////////////////////////////////////////
 
     void detachInterrupt()
     {
       hardware_alarm_set_callback(_timerNo, NULL);
     }
 
+    ///////////////////////////////////////////
+
     void disableTimer()
     {
       hardware_alarm_set_callback(_timerNo, NULL);
     }
 
+    ///////////////////////////////////////////
+
     // Duration (in milliseconds). Duration = 0 or not specified => run indefinitely
     void reattachInterrupt()
     {
-      TIMER_ISR_START(_timerNo);
       hardware_alarm_set_callback(_timerNo, _callback);
+      TIMER_ISR_START(_timerNo);
     }
+
+    ///////////////////////////////////////////
 
     // Duration (in milliseconds). Duration = 0 or not specified => run indefinitely
     void enableTimer()
     {
-      TIMER_ISR_START(_timerNo);
       hardware_alarm_set_callback(_timerNo, _callback);
+      TIMER_ISR_START(_timerNo);
     }
+
+    ///////////////////////////////////////////
 
     // Just stop clock source, clear the count
     void stopTimer()
@@ -228,17 +262,24 @@ class MBED_RPI_PICO_TimerInterrupt
       hardware_alarm_set_callback(_timerNo, NULL);
     }
 
+    ///////////////////////////////////////////
+
     // Just reconnect clock source, start current count from 0
     void restartTimer()
     {
-      TIMER_ISR_START(_timerNo);
       hardware_alarm_set_callback(_timerNo, _callback);
+      TIMER_ISR_START(_timerNo);
     }
+
+    ///////////////////////////////////////////
 
     int8_t getTimer() __attribute__((always_inline))
     {
       return _timerNo;
     }
+
+    ///////////////////////////////////////////
+    
 }; // class MBED_RPI_PICO_TimerInterrupt
 
 #endif    // MBED_RPI_PICO_TIMERINTERRUPT_H

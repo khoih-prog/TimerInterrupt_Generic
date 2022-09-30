@@ -27,13 +27,13 @@ Please ensure to specify the following:
 
 ```
 Arduino IDE version: 1.8.19
-MBED RP2040 core v3.1.1
+MBED RP2040 core v3.3.0
 RASPBERRY_PI_PICO Module
 OS: Ubuntu 20.04 LTS
-Linux xy-Inspiron-3593 5.15.0-41-generic #44~20.04.1-Ubuntu SMP Fri Jun 24 13:27:29 UTC 2022 x86_64 x86_64 x86_64 GNU/Linux
+Linux xy-Inspiron-3593 5.15.0-48-generic #54~20.04.1-Ubuntu SMP Thu Sep 1 16:17:26 UTC 2022 x86_64 x86_64 x86_64 GNU/Linux
 
 Context:
-I encountered a crash while trying to use the Timer Interrupt.
+I encountered a crash while trying to use this library
 
 Steps to reproduce:
 1. ...

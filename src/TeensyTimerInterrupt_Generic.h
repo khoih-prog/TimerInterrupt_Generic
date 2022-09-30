@@ -19,7 +19,7 @@
   Built by Khoi Hoang https://github.com/khoih-prog/TimerInterrupt_Generic
   Licensed under MIT license
 
-  Version: 1.11.0
+  Version: 1.12.0
 
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
@@ -36,6 +36,7 @@
   1.9.0   K.Hoang      09/05/2022 Update to use latest TimerInterrupt Libraries' versions
   1.10.0  K.Hoang      10/08/2022 Update to use latest ESP32_New_TimerInterrupt Library version
   1.11.0  K.Hoang      12/08/2022 Add support to new ESP32_C3, ESP32_S2 and ESP32_S3 boards
+  1.12.0  K.Hoang      29/09/2022 Update for SAMD, RP2040, MBED_RP2040
 *****************************************************************************************************************************/
 
 #pragma once
@@ -84,13 +85,17 @@ typedef void (*timerCallback)  ();
 
   // For Teensy 4.0/4.1
   #if defined(ARDUINO_TEENSY41)
-    #warning Using Teensy 4.1
+    #if(_TIMERINTERRUPT_LOGLEVEL_>3)
+      #warning Using Teensy 4.1
+    #endif
     
     #ifndef BOARD_NAME
       #define BOARD_NAME          "Teensy 4.1"
     #endif
   #else
-    #warning Using Teensy 4.0
+    #if(_TIMERINTERRUPT_LOGLEVEL_>3)
+      #warning Using Teensy 4.0
+    #endif
     
     #ifndef BOARD_NAME
       #define BOARD_NAME          "Teensy 4.0"
@@ -435,23 +440,38 @@ static void ext_isr()
     
   #if defined(__MK66FX1M0__)
     // For Teensy 3.6
-    #warning Using Teensy 3.6
+    #if(_TIMERINTERRUPT_LOGLEVEL_>3)
+      #warning Using Teensy 3.6
+    #endif
+    
     #define BOARD_NAME  "Teensy 3.6"
   #elif defined(__MK64FX512__)
     // For Teensy 3.5
-    #warning Using Teensy 3.5
+    #if(_TIMERINTERRUPT_LOGLEVEL_>3)
+      #warning Using Teensy 3.5
+    #endif
+    
     #define BOARD_NAME  "Teensy 3.5"
   #elif defined(__MK20DX256__)
     // For Teensy 3.2/3.1
-    #warning Using Teensy 3.2/3.1
+    #if(_TIMERINTERRUPT_LOGLEVEL_>3)
+      #warning Using Teensy 3.2/3.1
+    #endif
+    
     #define BOARD_NAME  "Teensy 3.2/3.1"
   #elif defined(__MK20DX128__)
     // For Teensy 3.0
-    #warning Using Teensy 3.0
+    #if(_TIMERINTERRUPT_LOGLEVEL_>3)
+      #warning Using Teensy 3.0
+    #endif
+    
     #define BOARD_NAME  "Teensy 3.0"
   #elif defined(__MKL26Z64__)
     // For Teensy LC
-    #warning Using Teensy LC
+    #if(_TIMERINTERRUPT_LOGLEVEL_>3)
+      #warning Using Teensy LC
+    #endif
+    
     #define BOARD_NAME  "Teensy LC"
   #endif
 
@@ -879,7 +899,10 @@ void ftm2_isr()
   #endif
     
   // For Teensy 2.0 and Teensy++ 2.0
-  #warning Using Teensy 2.0 or Teensy++ 2.0
+  #if(_TIMERINTERRUPT_LOGLEVEL_>3)
+    #warning Using Teensy 2.0 or Teensy++ 2.0
+  #endif
+  
   #define BOARD_NAME  "Teensy 2.0 or Teensy++ 2.0"
   
   #if defined(KINETISK)

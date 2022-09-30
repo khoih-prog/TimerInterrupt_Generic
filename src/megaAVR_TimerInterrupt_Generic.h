@@ -12,7 +12,7 @@
   Therefore, their executions are not blocked by bad-behaving functions / tasks.
   This important feature is absolutely necessary for mission-critical tasks.
 
-  Version: 1.11.0
+  Version: 1.12.0
 
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
@@ -29,12 +29,15 @@
   1.9.0   K.Hoang      09/05/2022 Update to use latest TimerInterrupt Libraries' versions
   1.10.0  K.Hoang      10/08/2022 Update to use latest ESP32_New_TimerInterrupt Library version
   1.11.0  K.Hoang      12/08/2022 Add support to new ESP32_C3, ESP32_S2 and ESP32_S3 boards
+  1.12.0  K.Hoang      29/09/2022 Update for SAMD, RP2040, MBED_RP2040
 ****************************************************************************************************************************/
 
 #pragma once
 
 #ifndef MEGA_AVR_TIMERINTERRUPT_H
 #define MEGA_AVR_TIMERINTERRUPT_H
+
+///////////////////////////////////////////
 
 #if ( defined(__AVR_ATmega4809__) || defined(ARDUINO_AVR_UNO_WIFI_REV2) || defined(ARDUINO_AVR_NANO_EVERY) || \
       defined(ARDUINO_AVR_ATmega4809) || defined(ARDUINO_AVR_ATmega4808) || defined(ARDUINO_AVR_ATmega3209) || \
@@ -75,11 +78,17 @@
   #error This is designed only for Arduino or MegaCoreX megaAVR board! Please check your Tools->Board setting
 #endif
 
+///////////////////////////////////////////
+
 #ifndef TIMER_INTERRUPT_DEBUG
   #define TIMER_INTERRUPT_DEBUG      0
 #endif
 
+///////////////////////////////////////////
+
 #include "TimerInterrupt_Generic_Debug.h"
+
+///////////////////////////////////////////
 
 #ifndef MEGA_AVR_TIMER_INTERRUPT_VERSION
   #define MEGA_AVR_TIMER_INTERRUPT_VERSION       "megaAVR_TimerInterrupt v1.6.1"
@@ -148,7 +157,7 @@ typedef enum TCB_CNTMODE_enum
 *****************************************************************************************/
 
 #if ( defined(__AVR_ATmega4809__) || defined(__AVR_ATmega3209__) || defined(__AVR_ATmega1609__) || defined(__AVR_ATmega809__) )
-  #if (_TIMERINTERRUPT_LOGLEVEL_ > 2)
+  #if (_TIMERINTERRUPT_LOGLEVEL_ > 3)
     #warning Using __AVR_ATmegaXX09__ architecture
   #endif
   
@@ -157,7 +166,7 @@ typedef enum TCB_CNTMODE_enum
   TCB_t* TimerTCB[ NUM_HW_TIMERS ] = { &TCB0, &TCB1, &TCB2, &TCB3 };
   
 #elif ( defined(__AVR_ATmega4808__) || defined(__AVR_ATmega3208__) || defined(__AVR_ATmega1608__) || defined(__AVR_ATmega808__) )
-  #if (_TIMERINTERRUPT_LOGLEVEL_ > 2)
+  #if (_TIMERINTERRUPT_LOGLEVEL_ > 3)
     #warning Using __AVR_ATmegaXX08__ architecture
   #endif
   
@@ -174,23 +183,35 @@ typedef enum TCB_CNTMODE_enum
 // Clock for UNO WiFi Rev2 and Nano Every is 16MHz
 #if USING_16MHZ  
   // Use no prescaler (prescaler 1) => 16MHz
-  #warning Using no prescaler => 16MHz
+  #if (_TIMERINTERRUPT_LOGLEVEL_ > 3)
+    #warning Using no prescaler => 16MHz
+  #endif
+  
   #define TCB_CLKSEL_VALUE      TCB_CLKSEL_CLKDIV1_gc
   #define CLOCK_PRESCALER       1
 #elif USING_8MHZ
   // Use prescaler 2 => 8MHz
-  #warning Using prescaler 2 => 8MHz
+  #if (_TIMERINTERRUPT_LOGLEVEL_ > 3)
+    #warning Using prescaler 2 => 8MHz
+  #endif
+  
   #define TCB_CLKSEL_VALUE      TCB_CLKSEL_CLKDIV2_gc
   #define CLOCK_PRESCALER       2
 #elif USING_250KHZ
   // Optional, but for clarity
   // Use Timer A as clock (prescaler 64) => 250KHz
-  #warning Using prescaler 64 => 250KHz
+  #if (_TIMERINTERRUPT_LOGLEVEL_ > 3)
+    #warning Using prescaler 64 => 250KHz
+  #endif
+  
   #define TCB_CLKSEL_VALUE      TCB_CLKSEL_CLKTCA_gc 
   #define CLOCK_PRESCALER       64
 #else
   // Use Timer A as clock (prescaler 64) => 250KHz
-  #warning Using prescaler 64 => 250KHz
+  #if (_TIMERINTERRUPT_LOGLEVEL_ > 3)
+    #warning Using prescaler 64 => 250KHz
+  #endif
+  
   #define TCB_CLKSEL_VALUE      TCB_CLKSEL_CLKTCA_gc
   #define CLOCK_PRESCALER       64
 #endif

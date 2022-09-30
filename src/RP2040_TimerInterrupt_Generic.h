@@ -25,7 +25,7 @@
   Based on BlynkTimer.h
   Author: Volodymyr Shymanskyy
 
-  Version: 1.11.0
+  Version: 1.12.0
 
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
@@ -42,12 +42,15 @@
   1.9.0   K.Hoang      09/05/2022 Update to use latest TimerInterrupt Libraries' versions
   1.10.0  K.Hoang      10/08/2022 Update to use latest ESP32_New_TimerInterrupt Library version
   1.11.0  K.Hoang      12/08/2022 Add support to new ESP32_C3, ESP32_S2 and ESP32_S3 boards
+  1.12.0  K.Hoang      29/09/2022 Update for SAMD, RP2040, MBED_RP2040
 *****************************************************************************************************************************/
 
 #pragma once
 
 #ifndef RPI_PICO_TIMERINTERRUPT_H
 #define RPI_PICO_TIMERINTERRUPT_H
+
+///////////////////////////////////////////
 
 #if ( defined(ARDUINO_ARCH_RP2040) || defined(ARDUINO_RASPBERRY_PI_PICO) || defined(ARDUINO_ADAFRUIT_FEATHER_RP2040) || defined(ARDUINO_GENERIC_RP2040) ) && !defined(ARDUINO_ARCH_MBED) 
   #if defined(USING_RPI_PICO_TIMER_INTERRUPT)
@@ -58,22 +61,32 @@
   #error This code is intended to run on the non-mbed RP2040 arduino-pico platform! Please check your Tools->Board setting.
 #endif
 
+///////////////////////////////////////////
+
 #ifndef RPI_PICO_TIMER_INTERRUPT_VERSION
-  #define RPI_PICO_TIMER_INTERRUPT_VERSION       "RPi_Pico_TimerInterrupt v1.2.0"
+  #define RPI_PICO_TIMER_INTERRUPT_VERSION       "RPi_Pico_TimerInterrupt v1.3.1"
   
   #define RPI_PICO_TIMER_INTERRUPT_VERSION_MAJOR      1
-  #define RPI_PICO_TIMER_INTERRUPT_VERSION_MINOR      2
-  #define RPI_PICO_TIMER_INTERRUPT_VERSION_PATCH      0
+  #define RPI_PICO_TIMER_INTERRUPT_VERSION_MINOR      3
+  #define RPI_PICO_TIMER_INTERRUPT_VERSION_PATCH      1
 
-  #define RPI_PICO_TIMER_INTERRUPT_VERSION_INT        1002000  
+  #define RPI_PICO_TIMER_INTERRUPT_VERSION_INT        1003001
 #endif
+
+///////////////////////////////////////////
 
 #ifndef TIMER_INTERRUPT_DEBUG
   #define TIMER_INTERRUPT_DEBUG      0
 #endif
 
+///////////////////////////////////////////
+
 #if defined(ARDUINO_ARCH_MBED)
-  #warning Using MBED RP2040 platform
+  
+  #if(_TIMERINTERRUPT_LOGLEVEL_>3)
+    #warning Using mbed_rp2040 core
+  #endif
+  
   #include "pico.h"
   //#include "pico/stdio.h"
   #include "pico/time.h"
@@ -83,7 +96,11 @@
   #include "hardware/timer.h"
   #include "hardware/irq.h"
 #else
-  #warning Using RP2040 platform
+  
+  #if(_TIMERINTERRUPT_LOGLEVEL_>3)
+    #warning Using RP2040 arduino-pico core
+  #endif
+  
   #include <stdio.h>
   #include "pico/stdlib.h"
   #include "hardware/timer.h"
@@ -91,6 +108,8 @@
 #endif
 
 #include "TimerInterrupt_Generic_Debug.h"
+
+///////////////////////////////////////////
 
 /*
   To enable an alarm:
@@ -102,7 +121,6 @@
   INTR.
 */
 
-
 class RPI_PICO_TimerInterrupt;
 
 typedef RPI_PICO_TimerInterrupt RPI_PICO_Timer;
@@ -113,6 +131,8 @@ typedef RPI_PICO_TimerInterrupt RPI_PICO_Timer;
 typedef bool (*pico_timer_callback)  (struct repeating_timer *t);
 
 
+///////////////////////////////////////////
+
 class RPI_PICO_TimerInterrupt
 {
   private:
@@ -121,7 +141,7 @@ class RPI_PICO_TimerInterrupt
 
     pico_timer_callback     _callback;        // pointer to the callback function
     float                   _frequency;       // Timer frequency
-    uint64_t                _timerCount;        // count to activate timer, in us
+    int64_t                 _timerCount;      // count to activate timer, in us
       
     struct repeating_timer  _timer;
 
@@ -133,7 +153,11 @@ class RPI_PICO_TimerInterrupt
       _callback = NULL;
     };
 
+    ///////////////////////////////////////////
+
     #define TIM_CLOCK_FREQ      ( (float) 1000000.0f )
+
+    ///////////////////////////////////////////
 
     // frequency (in hertz) and duration (in milliseconds). Duration = 0 or not specified => run indefinitely
     // No params and duration now. To be added in the future by adding similar functions here
@@ -151,7 +175,7 @@ class RPI_PICO_TimerInterrupt
         // select timer frequency is 1MHz for better accuracy. We don't use 16-bit prescaler for now.
         // Will use later if very low frequency is needed.       
         _frequency  = frequency;
-        _timerCount = (uint64_t) TIM_CLOCK_FREQ / frequency;
+        _timerCount = (int64_t) TIM_CLOCK_FREQ / frequency;
         
         TISR_LOGWARN5(F("_timerNo = "), _timerNo, F(", Clock (Hz) = "), TIM_CLOCK_FREQ, F(", _fre (Hz) = "), _frequency);
         TISR_LOGWARN3(F("_count = "), (uint32_t) (_timerCount >> 32) , F("-"), (uint32_t) (_timerCount));
@@ -161,10 +185,18 @@ class RPI_PICO_TimerInterrupt
         // static bool add_repeating_timer_us(int64_t delay_us, repeating_timer_callback_t callback, void *user_data, repeating_timer_t *out);
         // static bool add_repeating_timer_ms(int64_t delay_ms, repeating_timer_callback_t callback, void *user_data, repeating_timer_t *out);
         // bool cancel_repeating_timer (repeating_timer_t *timer);
+        //////////////////////////////////////////////////////////////////////////
+        // Important Notes
+        // delay_ms the repeat delay in milliseconds; if >0 then this is the delay between one callback ending and the next
+        // starting; if <0 then this is the negative of the time between the starts of the callbacks. 
+        // The value of 0 is treated as 1 microsecond
+        //////////////////////////////////////////////////////////////////////////
         cancel_repeating_timer(&_timer);
-        add_repeating_timer_us(_timerCount, _callback, NULL, &_timer);
+        
+        // Use negative value to select time between the starts of the callbacks
+        add_repeating_timer_us(-(_timerCount), _callback, NULL, &_timer);
                
-        TISR_LOGWARN1(F("add_repeating_timer_us = "), _timerCount);
+        TISR_LOGWARN1(F("add_repeating_timer_us between starts = "), _timerCount);
 
         return true;
       }
@@ -176,46 +208,62 @@ class RPI_PICO_TimerInterrupt
       }
     }
 
+    ////////////////////////////////////////////////////////////////
+
     // interval (in microseconds) and duration (in milliseconds). Duration = 0 or not specified => run indefinitely
     // No params and duration now. To be added in the future by adding similar functions here
-    bool setInterval(const unsigned long& interval, pico_timer_callback callback)
+    bool setInterval(const float& interval, pico_timer_callback callback)
     {
       return setFrequency((float) (1000000.0f / interval), callback);
     }
+
+    ////////////////////////////////////////////////////////////////
 
     bool attachInterrupt(const float& frequency, pico_timer_callback callback)
     {
       return setFrequency(frequency, callback);
     }
 
+    ////////////////////////////////////////////////////////////////
+
     // interval (in microseconds) and duration (in milliseconds). Duration = 0 or not specified => run indefinitely
     // No params and duration now. To be added in the future by adding similar functions here
-    bool attachInterruptInterval(const unsigned long& interval, pico_timer_callback callback)
+    bool attachInterruptInterval(const float& interval, pico_timer_callback callback)
     {
       return setFrequency( (float) ( 1000000.0f / interval), callback);
     }
+
+    ////////////////////////////////////////////////////////////////
 
     void detachInterrupt()
     {
       cancel_repeating_timer(&_timer);
     }
 
+    ////////////////////////////////////////////////////////////////
+
     void disableTimer()
     {
       cancel_repeating_timer(&_timer);
     }
 
-    // Duration (in milliseconds). Duration = 0 or not specified => run indefinitely
+    ////////////////////////////////////////////////////////////////
+
+    // Duration (in microseconds). Duration = 0 or not specified => run indefinitely
     void reattachInterrupt()
     {
-      add_repeating_timer_us(_timerCount, _callback, NULL, &_timer);
+      add_repeating_timer_us(-(_timerCount), _callback, NULL, &_timer);
     }
 
-    // Duration (in milliseconds). Duration = 0 or not specified => run indefinitely
+    ////////////////////////////////////////////////////////////////
+
+    // Duration (in microseconds). Duration = 0 or not specified => run indefinitely
     void enableTimer()
     {
-      add_repeating_timer_us(_timerCount, _callback, NULL, &_timer);
+      add_repeating_timer_us(-(_timerCount), _callback, NULL, &_timer);
     }
+
+    ////////////////////////////////////////////////////////////////
 
     // Just stop clock source, clear the count
     void stopTimer()
@@ -223,17 +271,24 @@ class RPI_PICO_TimerInterrupt
       cancel_repeating_timer(&_timer);
     }
 
+    ////////////////////////////////////////////////////////////////
+
     // Just reconnect clock source, start current count from 0
     void restartTimer()
     {
       cancel_repeating_timer(&_timer);
-      add_repeating_timer_us(_timerCount, _callback, NULL, &_timer);
+      add_repeating_timer_us(-(_timerCount), _callback, NULL, &_timer);
     }
+
+    ////////////////////////////////////////////////////////////////
 
     int8_t getTimer() __attribute__((always_inline))
     {
       return _timerNo;
     };
+
+    ////////////////////////////////////////////////////////////////
+    
 }; // class RPI_PICO_TimerInterrupt
 
 #endif    // RPI_PICO_TIMERINTERRUPT_H

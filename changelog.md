@@ -12,6 +12,7 @@
 ## Table of Contents
 
 * [Changelog](#changelog)
+  * [Major Releases v1.12.0](#major-releases-v1120)
   * [Major Releases v1.11.0](#major-releases-v1110)
   * [Major Releases v1.10.0](#major-releases-v1100)
   * [Major Releases v1.9.0](#major-releases-v190)
@@ -31,6 +32,18 @@
 ---
 
 ## Changelog
+
+### Major Releases v1.12.0
+
+1. Update to use latest versions of the following libraries
+- [SAMDTimerInterrupt](https://github.com/khoih-prog/SAMDTimerInterrupt)
+- [RPI_PICO_TimerInterrupt](https://github.com/khoih-prog/RPI_PICO_TimerInterrupt)
+- [MBED_RPI_PICO_TimerInterrupt](https://github.com/khoih-prog/MBED_RPI_PICO_TimerInterrupt)
+2. Optimize library code by using `reference-passing` instead of `value-passing`
+3. Using `float` instead of `ulong` for better interval accuracy
+4. Drop `src_cpp` and `src_h` directories
+5. Update `Packages_Patches`
+
 
 ### Major Releases v1.11.0
 
