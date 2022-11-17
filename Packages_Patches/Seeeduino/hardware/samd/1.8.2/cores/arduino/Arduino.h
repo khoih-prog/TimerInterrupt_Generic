@@ -44,7 +44,7 @@ typedef uint16_t word;
 #include "itoa.h"
 
 #ifdef __cplusplus
-extern "C"{
+extern "C" {
 #endif // __cplusplus
 
 // Include Atmel headers
@@ -100,25 +100,25 @@ int __debug_buf(const char* head, char* buf, int len);
 
 // undefine stdlib's abs if encountered
 #ifdef abs
-#undef abs
+  #undef abs
 #endif // abs
 // undefine stdlib's abs if encountered
 #ifdef abs
-#undef abs
+  #undef abs
 #endif // abs
 
 #ifdef __cplusplus
-  template<class T, class L> 
-  auto min(const T& a, const L& b) -> decltype((b < a) ? b : a)
-  {
-    return (b < a) ? b : a;
-  }
+template<class T, class L>
+auto min(const T& a, const L& b) -> decltype((b < a) ? b : a)
+{
+  return (b < a) ? b : a;
+}
 
-  template<class T, class L> 
-  auto max(const T& a, const L& b) -> decltype((b < a) ? b : a)
-  {
-    return (a < b) ? b : a;
-  }
+template<class T, class L>
+auto max(const T& a, const L& b) -> decltype((b < a) ? b : a)
+{
+  return (a < b) ? b : a;
+}
 #else
 #ifndef min
 #define min(a,b) \
@@ -164,18 +164,18 @@ static inline unsigned char __interruptsStatus(void)
 #define bit(b) (1UL << (b))
 
 #if (ARDUINO_SAMD_VARIANT_COMPLIANCE >= 10606)
-// Interrupts
-#define digitalPinToInterrupt(P)   ( P )
+  // Interrupts
+  #define digitalPinToInterrupt(P)   ( P )
 #endif
 
 // USB
 #ifdef USE_TINYUSB
-#include "Adafruit_TinyUSB_Core.h"
+  #include "Adafruit_TinyUSB_Core.h"
 #else
-#include "USB/USBDesc.h"
-#include "USB/USBCore.h"
-#include "USB/USBAPI.h"
-#include "USB/USB_host.h"
+  #include "USB/USBDesc.h"
+  #include "USB/USBCore.h"
+  #include "USB/USBAPI.h"
+  #include "USB/USB_host.h"
 #endif
 
 #endif // Arduino_h
