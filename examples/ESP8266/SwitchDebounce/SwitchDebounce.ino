@@ -35,7 +35,7 @@
    SW is released.
 */
 #if !defined(ESP8266)
-  #error This code is designed to run on ESP8266 and ESP8266-based boards! Please check your Tools->Board setting.
+	#error This code is designed to run on ESP8266 and ESP8266-based boards! Please check your Tools->Board setting.
 #endif
 
 // These define's must be placed at the beginning before #include "TimerInterrupt_Generic.h"
@@ -64,110 +64,121 @@ volatile bool SWLongPressed = false;
 
 void IRAM_ATTR TimerHandler()
 {
-  static unsigned int debounceCountSWPressed  = 0;
-  static unsigned int debounceCountSWReleased = 0;
+	static unsigned int debounceCountSWPressed  = 0;
+	static unsigned int debounceCountSWReleased = 0;
 
 #if (TIMER_INTERRUPT_DEBUG > 0)
-  static unsigned long SWPressedTime;
-  static unsigned long SWReleasedTime;
+	static unsigned long SWPressedTime;
+	static unsigned long SWReleasedTime;
 
-  static unsigned long currentMillis;
+	static unsigned long currentMillis;
 #endif
 
-  currentMillis = millis();
+	currentMillis = millis();
 
-  if ( (!digitalRead(SWPin)) )
-  {
-    // Start debouncing counting debounceCountSWPressed and clear debounceCountSWReleased
-    debounceCountSWReleased = 0;
+	if ( (!digitalRead(SWPin)) )
+	{
+		// Start debouncing counting debounceCountSWPressed and clear debounceCountSWReleased
+		debounceCountSWReleased = 0;
 
-    if (++debounceCountSWPressed >= DEBOUNCING_INTERVAL_MS / TIMER_INTERVAL_MS)
-    {
-      // Call and flag SWPressed
-      if (!SWPressed)
-      {
+		if (++debounceCountSWPressed >= DEBOUNCING_INTERVAL_MS / TIMER_INTERVAL_MS)
+		{
+			// Call and flag SWPressed
+			if (!SWPressed)
+			{
 #if (TIMER_INTERRUPT_DEBUG > 0)
-        SWPressedTime = currentMillis;
-        
-        Serial.print("SW Press, from millis() = "); Serial.println(SWPressedTime - DEBOUNCING_INTERVAL_MS);
+				SWPressedTime = currentMillis;
+
+				Serial.print("SW Press, from millis() = ");
+				Serial.println(SWPressedTime - DEBOUNCING_INTERVAL_MS);
 #endif
 
-        SWPressed = true;
-        // Do something for SWPressed here in ISR
-        // But it's better to use outside software timer to do your job instead of inside ISR
-        //Your_Response_To_Press();
-      }
+				SWPressed = true;
+				// Do something for SWPressed here in ISR
+				// But it's better to use outside software timer to do your job instead of inside ISR
+				//Your_Response_To_Press();
+			}
 
-      if (debounceCountSWPressed >= LONG_PRESS_INTERVAL_MS / TIMER_INTERVAL_MS)
-      {
-        // Call and flag SWLongPressed
-        if (!SWLongPressed)
-        {
+			if (debounceCountSWPressed >= LONG_PRESS_INTERVAL_MS / TIMER_INTERVAL_MS)
+			{
+				// Call and flag SWLongPressed
+				if (!SWLongPressed)
+				{
 #if (TIMER_INTERRUPT_DEBUG > 0)
-          Serial.print("SW Long Pressed, total time ms = "); Serial.print(currentMillis);
-          Serial.print(" - "); Serial.print(SWPressedTime - DEBOUNCING_INTERVAL_MS);
-          Serial.print(" = "); Serial.println(currentMillis - SWPressedTime + DEBOUNCING_INTERVAL_MS);       
+					Serial.print("SW Long Pressed, total time ms = ");
+					Serial.print(currentMillis);
+					Serial.print(" - ");
+					Serial.print(SWPressedTime - DEBOUNCING_INTERVAL_MS);
+					Serial.print(" = ");
+					Serial.println(currentMillis - SWPressedTime + DEBOUNCING_INTERVAL_MS);
 #endif
 
-          SWLongPressed = true;
-          // Do something for SWLongPressed here in ISR
-          // But it's better to use outside software timer to do your job instead of inside ISR
-          //Your_Response_To_Long_Press();
-        }
-      }
-    }
-  }
-  else
-  {
-    // Start debouncing counting debounceCountSWReleased and clear debounceCountSWPressed
-    if ( SWPressed && (++debounceCountSWReleased >= DEBOUNCING_INTERVAL_MS / TIMER_INTERVAL_MS))
-    {
-      // Call and flag SWPressed
+					SWLongPressed = true;
+					// Do something for SWLongPressed here in ISR
+					// But it's better to use outside software timer to do your job instead of inside ISR
+					//Your_Response_To_Long_Press();
+				}
+			}
+		}
+	}
+	else
+	{
+		// Start debouncing counting debounceCountSWReleased and clear debounceCountSWPressed
+		if ( SWPressed && (++debounceCountSWReleased >= DEBOUNCING_INTERVAL_MS / TIMER_INTERVAL_MS))
+		{
+			// Call and flag SWPressed
 #if (TIMER_INTERRUPT_DEBUGEBUG > 0)
-      SWReleasedTime = millis();
+			SWReleasedTime = millis();
 
-      // Call and flag SWPressed
-      Serial.print("SW Released, from millis() = "); Serial.println(millis());
+			// Call and flag SWPressed
+			Serial.print("SW Released, from millis() = ");
+			Serial.println(millis());
 #endif
 
-      SWPressed     = false;
-      SWLongPressed = false;
+			SWPressed     = false;
+			SWLongPressed = false;
 
-      // Do something for !SWPressed here in ISR
-      // But it's better to use outside software timer to do your job instead of inside ISR
-      //Your_Response_To_Release();
+			// Do something for !SWPressed here in ISR
+			// But it's better to use outside software timer to do your job instead of inside ISR
+			//Your_Response_To_Release();
 
-      // Call and flag SWPressed
+			// Call and flag SWPressed
 #if (TIMER_INTERRUPT_DEBUG > 0)
-      Serial.print("SW Pressed total time ms = "); Serial.println(millis() - SWPressedTime);
+			Serial.print("SW Pressed total time ms = ");
+			Serial.println(millis() - SWPressedTime);
 #endif
 
-      debounceCountSWPressed = 0;
-    }
-  }
+			debounceCountSWPressed = 0;
+		}
+	}
 }
 
 void setup()
 {
-  pinMode(SWPin, INPUT_PULLUP);
-  
-  Serial.begin(115200);
-  while (!Serial);
-  
-  delay(200);
+	pinMode(SWPin, INPUT_PULLUP);
 
-  Serial.print(F("\nStarting SwitchDebounce on ")); Serial.println(ARDUINO_BOARD);
-  Serial.println(ESP8266_TIMER_INTERRUPT_VERSION);
-  Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
-  Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
+	Serial.begin(115200);
 
-  // Interval in microsecs
-  if (ITimer.attachInterruptInterval(TIMER_INTERVAL_MS * 1000, TimerHandler))
-  {
-    Serial.print(F("Starting ITimer OK, millis() = ")); Serial.println(millis());
-  }
-  else
-    Serial.println(F("Can't set ITimer. Select another freq. or timer"));
+	while (!Serial && millis() < 5000);
+
+  delay(500);
+
+	Serial.print(F("\nStarting SwitchDebounce on "));
+	Serial.println(ARDUINO_BOARD);
+	Serial.println(ESP8266_TIMER_INTERRUPT_VERSION);
+	Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
+	Serial.print(F("CPU Frequency = "));
+	Serial.print(F_CPU / 1000000);
+	Serial.println(F(" MHz"));
+
+	// Interval in microsecs
+	if (ITimer.attachInterruptInterval(TIMER_INTERVAL_MS * 1000, TimerHandler))
+	{
+		Serial.print(F("Starting ITimer OK, millis() = "));
+		Serial.println(millis());
+	}
+	else
+		Serial.println(F("Can't set ITimer. Select another freq. or timer"));
 }
 
 void loop()

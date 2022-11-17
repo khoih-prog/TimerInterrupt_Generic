@@ -31,7 +31,7 @@
 */
 
 #if !defined(ESP8266)
-  #error This code is designed to run on ESP8266 and ESP8266-based boards! Please check your Tools->Board setting.
+	#error This code is designed to run on ESP8266 and ESP8266-based boards! Please check your Tools->Board setting.
 #endif
 
 // These define's must be placed at the beginning before #include "TimerInterrupt_Generic.h"
@@ -43,7 +43,7 @@
 #include "TimerInterrupt_Generic.h"
 
 #ifndef LED_BUILTIN
-  #define LED_BUILTIN           D4        // Pin D4 mapped to pin GPIO2/TXD1 of ESP8266, NodeMCU and WeMoS, control on-board LED
+	#define LED_BUILTIN           D4        // Pin D4 mapped to pin GPIO2/TXD1 of ESP8266, NodeMCU and WeMoS, control on-board LED
 #endif
 
 
@@ -56,43 +56,50 @@ ESP8266Timer ITimer;
 
 void printResult(uint32_t currTime)
 {
-  Serial.print(F("Time = ")); Serial.print(currTime); 
-  Serial.print(F(", TimerCount = ")); Serial.println(TimerCount);
+	Serial.print(F("Time = "));
+	Serial.print(currTime);
+	Serial.print(F(", TimerCount = "));
+	Serial.println(TimerCount);
 }
 
 void TimerHandler()
 {
-  static bool toggle = false;
+	static bool toggle = false;
 
-  // Flag for checking to be sure ISR is working as Serial.print is not OK here in ISR
-  TimerCount++;
+	// Flag for checking to be sure ISR is working as Serial.print is not OK here in ISR
+	TimerCount++;
 
-  //timer interrupt toggles pin LED_BUILTIN
-  digitalWrite(LED_BUILTIN, toggle);
-  toggle = !toggle;
+	//timer interrupt toggles pin LED_BUILTIN
+	digitalWrite(LED_BUILTIN, toggle);
+	toggle = !toggle;
 }
 
 void setup()
 {
-  pinMode(LED_BUILTIN, OUTPUT);
-  
-  Serial.begin(115200);
-  while (!Serial);
+	pinMode(LED_BUILTIN, OUTPUT);
 
-  delay(300);
+	Serial.begin(115200);
 
-  Serial.print(F("\nStarting Change_Interval on ")); Serial.println(ARDUINO_BOARD);
-  Serial.println(ESP8266_TIMER_INTERRUPT_VERSION);
-  Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
-  Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
- 
-  // Interval in microsecs
-  if (ITimer.attachInterruptInterval(TIMER_INTERVAL_MS * 1000, TimerHandler))
-  {
-    Serial.print(F("Starting  ITimer OK, millis() = ")); Serial.println(millis());
-  }
-  else
-    Serial.println(F("Can't set ITimer. Select another freq. or timer"));
+	while (!Serial && millis() < 5000);
+
+  delay(500);
+
+	Serial.print(F("\nStarting Change_Interval on "));
+	Serial.println(ARDUINO_BOARD);
+	Serial.println(ESP8266_TIMER_INTERRUPT_VERSION);
+	Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
+	Serial.print(F("CPU Frequency = "));
+	Serial.print(F_CPU / 1000000);
+	Serial.println(F(" MHz"));
+
+	// Interval in microsecs
+	if (ITimer.attachInterruptInterval(TIMER_INTERVAL_MS * 1000, TimerHandler))
+	{
+		Serial.print(F("Starting  ITimer OK, millis() = "));
+		Serial.println(millis());
+	}
+	else
+		Serial.println(F("Can't set ITimer. Select another freq. or timer"));
 }
 
 #define CHECK_INTERVAL_MS     10000L
@@ -100,28 +107,29 @@ void setup()
 
 void loop()
 {
-  static uint32_t lastTime = 0;
-  static uint32_t lastChangeTime = 0;
-  static uint32_t currTime;
-  static uint32_t multFactor = 0;
+	static uint32_t lastTime = 0;
+	static uint32_t lastChangeTime = 0;
+	static uint32_t currTime;
+	static uint32_t multFactor = 0;
 
-  currTime = millis();
+	currTime = millis();
 
-  if (currTime - lastTime > CHECK_INTERVAL_MS)
-  {
-    printResult(currTime);
-    lastTime = currTime;
+	if (currTime - lastTime > CHECK_INTERVAL_MS)
+	{
+		printResult(currTime);
+		lastTime = currTime;
 
-    if (currTime - lastChangeTime > CHANGE_INTERVAL_MS)
-    {
-      //setInterval(unsigned long interval, timerCallback callback)
-      multFactor = (multFactor + 1) % 2;
-      
-      ITimer.setInterval(TIMER_INTERVAL_MS * 1000 * (multFactor + 1), TimerHandler);
+		if (currTime - lastChangeTime > CHANGE_INTERVAL_MS)
+		{
+			//setInterval(unsigned long interval, timerCallback callback)
+			multFactor = (multFactor + 1) % 2;
 
-      Serial.print(F("Changing Interval, Timer = ")); Serial.println(TIMER_INTERVAL_MS * (multFactor + 1));
-      
-      lastChangeTime = currTime;
-    }
-  }
+			ITimer.setInterval(TIMER_INTERVAL_MS * 1000 * (multFactor + 1), TimerHandler);
+
+			Serial.print(F("Changing Interval, Timer = "));
+			Serial.println(TIMER_INTERVAL_MS * (multFactor + 1));
+
+			lastChangeTime = currTime;
+		}
+	}
 }

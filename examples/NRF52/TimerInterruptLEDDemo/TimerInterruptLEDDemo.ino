@@ -2,20 +2,20 @@
   TimerInterruptLEDDemo.ino
   For NRF52 boards
   Written by Khoi Hoang
-  
+
   Now even you use all these new 16 ISR-based timers,with their maximum interval practically unlimited (limited only by
   unsigned long miliseconds), you just consume only one Hardware timer and avoid conflicting with other cores' tasks.
   The accuracy is nearly perfect compared to software timers. The most important feature is they're ISR-based timers
   Therefore, their executions are not blocked by bad-behaving functions / tasks.
   This important feature is absolutely necessary for mission-critical tasks.
-  
+
   Based on SimpleTimer - A timer library for Arduino.
   Author: mromani@ottotecnica.com
   Copyright (c) 2010 OTTOTECNICA Italy
-  
+
   Based on BlynkTimer.h
   Author: Volodymyr Shymanskyy
-  
+
   Built by Khoi Hoang https://github.com/khoih-prog/TimerInterrupt_Generic
   Licensed under MIT license
 *****************************************************************************************************************************/
@@ -36,7 +36,7 @@
       defined(NRF52840_FEATHER_SENSE) || defined(NRF52840_ITSYBITSY) || defined(NRF52840_CIRCUITPLAY) || \
       defined(NRF52840_CLUE) || defined(NRF52840_METRO) || defined(NRF52840_PCA10056) || defined(PARTICLE_XENON) || \
       defined(MDBT50Q_RX) || defined(NINA_B302_ublox) || defined(NINA_B112_ublox) )
-  #error This code is designed to run on nRF52 platform! Please check your Tools->Board setting.
+#error This code is designed to run on nRF52 platform! Please check your Tools->Board setting.
 #endif
 
 // These define's must be placed at the beginning before #include "TimerInterrupt_Generic.h"
@@ -51,13 +51,13 @@
 //#endif
 
 #ifndef LED_BLUE_PIN
-  #define LED_BLUE_PIN          7
+	#define LED_BLUE_PIN          7
 #endif
 
 #ifndef LED_RED
-  #define LED_RED               8
+	#define LED_RED               8
 #endif
-   
+
 #include "TimerInterrupt_Generic.h"
 #include "ISR_Timer_Generic.h"
 
@@ -79,7 +79,7 @@ ISR_Timer NRF52_ISR_Timer;
 
 void TimerHandler()
 {
-  NRF52_ISR_Timer.run();
+	NRF52_ISR_Timer.run();
 }
 
 // In NRF52, avoid doing something fancy in ISR, for example complex Serial.print with String() argument
@@ -87,56 +87,63 @@ void TimerHandler()
 // Or you can get this run-time error / crash
 void doingSomething1()
 {
-  digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
-  Serial.println("G");
+	digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
+	Serial.println("G");
 }
 
 void doingSomething2()
 {
-  digitalWrite(LED_BLUE, !digitalRead(LED_BLUE));
-  Serial.println("B");
+	digitalWrite(LED_BLUE, !digitalRead(LED_BLUE));
+	Serial.println("B");
 }
 void doingSomething3()
 {
-  digitalWrite(LED_RED, !digitalRead(LED_RED));
-  Serial.println("R");
+	digitalWrite(LED_RED, !digitalRead(LED_RED));
+	Serial.println("R");
 }
 
 void setup()
 {
-  Serial.begin(115200);
-  while (!Serial);
+	Serial.begin(115200);
 
-  Serial.print(F("\nTimerInterruptLEDDemo on ")); Serial.println(BOARD_NAME);
-  Serial.println(NRF52_TIMER_INTERRUPT_VERSION);
-  Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
-  Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
-  
-  // Instantiate HardwareTimer object. Thanks to 'new' instanciation, HardwareTimer is not destructed when setup() function is finished.
-  //HardwareTimer *MyTim = new HardwareTimer(Instance);
+	while (!Serial && millis() < 5000);
 
-  // configure pin in output mode
-  pinMode(LED_BUILTIN,  OUTPUT);
-  pinMode(LED_BLUE,     OUTPUT);
-  pinMode(LED_RED,      OUTPUT);
+  delay(500);
 
-  // Interval in microsecs
-  if (ITimer.attachInterruptInterval(HW_TIMER_INTERVAL_MS * 1000, TimerHandler))
-  {
-    Serial.print(F("Starting ITimer OK, millis() = ")); Serial.println(millis());
-  }
-  else
-    Serial.println(F("Can't set ITimer. Select another freq. or timer"));
+	Serial.print(F("\nTimerInterruptLEDDemo on "));
+	Serial.println(BOARD_NAME);
+	Serial.println(NRF52_TIMER_INTERRUPT_VERSION);
+	Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
+	Serial.print(F("CPU Frequency = "));
+	Serial.print(F_CPU / 1000000);
+	Serial.println(F(" MHz"));
 
-  // Just to demonstrate, don't use too many ISR Timers if not absolutely necessary
-  // You can use up to 16 timer for each NRF52_ISR_Timer
-  NRF52_ISR_Timer.setInterval(TIMER_INTERVAL_1S,  doingSomething1);
-  NRF52_ISR_Timer.setInterval(TIMER_INTERVAL_2S,  doingSomething2);
-  NRF52_ISR_Timer.setInterval(TIMER_INTERVAL_5S,  doingSomething3);
+	// Instantiate HardwareTimer object. Thanks to 'new' instanciation, HardwareTimer is not destructed when setup() function is finished.
+	//HardwareTimer *MyTim = new HardwareTimer(Instance);
+
+	// configure pin in output mode
+	pinMode(LED_BUILTIN,  OUTPUT);
+	pinMode(LED_BLUE,     OUTPUT);
+	pinMode(LED_RED,      OUTPUT);
+
+	// Interval in microsecs
+	if (ITimer.attachInterruptInterval(HW_TIMER_INTERVAL_MS * 1000, TimerHandler))
+	{
+		Serial.print(F("Starting ITimer OK, millis() = "));
+		Serial.println(millis());
+	}
+	else
+		Serial.println(F("Can't set ITimer. Select another freq. or timer"));
+
+	// Just to demonstrate, don't use too many ISR Timers if not absolutely necessary
+	// You can use up to 16 timer for each NRF52_ISR_Timer
+	NRF52_ISR_Timer.setInterval(TIMER_INTERVAL_1S,  doingSomething1);
+	NRF52_ISR_Timer.setInterval(TIMER_INTERVAL_2S,  doingSomething2);
+	NRF52_ISR_Timer.setInterval(TIMER_INTERVAL_5S,  doingSomething3);
 }
 
 
 void loop()
 {
-  /* Nothing to do all is done by hardware. Even no interrupt required. */
+	/* Nothing to do all is done by hardware. Even no interrupt required. */
 }

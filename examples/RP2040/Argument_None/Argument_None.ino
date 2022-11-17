@@ -1,6 +1,6 @@
 /****************************************************************************************************************************
   Argument_None.ino
-  
+
   For RP2040-based boards such as RASPBERRY_PI_PICO, ADAFRUIT_FEATHER_RP2040 and GENERIC_RP2040.
   Written by Khoi Hoang
 
@@ -49,43 +49,45 @@
 #include "TimerInterrupt_Generic.h"
 
 #ifndef LED_BUILTIN
-  #define LED_BUILTIN       25        // Pin LED_BUILTIN mapped to pin GPIO25 of RPI_PICO, control on-board LED
+	#define LED_BUILTIN       25        // Pin LED_BUILTIN mapped to pin GPIO25 of RPI_PICO, control on-board LED
 #endif
 
 #define PIN_D1              1         // Pin D1 mapped to pin GPIO1 of RPI_PICO
 
 bool TimerHandler0(struct repeating_timer *t)
 {
-  (void) t;
-  
-  static bool toggle0 = false;
+	(void) t;
+
+	static bool toggle0 = false;
 
 #if (TIMER_INTERRUPT_DEBUG > 0)
-  Serial.print("ITimer0: millis() = "); Serial.println(millis());
+	Serial.print("ITimer0: millis() = ");
+	Serial.println(millis());
 #endif
 
-  //timer interrupt toggles pin LED_BUILTIN
-  digitalWrite(LED_BUILTIN, toggle0);
-  toggle0 = !toggle0;
+	//timer interrupt toggles pin LED_BUILTIN
+	digitalWrite(LED_BUILTIN, toggle0);
+	toggle0 = !toggle0;
 
-  return true;
+	return true;
 }
 
 bool TimerHandler1(struct repeating_timer *t)
 {
-  (void) t;
-  
-  static bool toggle1 = false;
-  
+	(void) t;
+
+	static bool toggle1 = false;
+
 #if (TIMER_INTERRUPT_DEBUG > 0)
-  Serial.print("ITimer1: millis() = "); Serial.println(millis());
+	Serial.print("ITimer1: millis() = ");
+	Serial.println(millis());
 #endif
 
-  //timer interrupt toggles outputPin
-  digitalWrite(PIN_D1, toggle1);
-  toggle1 = !toggle1;
+	//timer interrupt toggles outputPin
+	digitalWrite(PIN_D1, toggle1);
+	toggle1 = !toggle1;
 
-  return true;
+	return true;
 }
 
 #define TIMER0_INTERVAL_MS        1000
@@ -98,35 +100,41 @@ RPI_PICO_Timer ITimer1(1);
 
 void setup()
 {
-  pinMode(LED_BUILTIN, OUTPUT);
-  pinMode(PIN_D1,      OUTPUT);
-  
-  Serial.begin(115200);
-  while (!Serial && millis() < 5000);
+	pinMode(LED_BUILTIN, OUTPUT);
+	pinMode(PIN_D1,      OUTPUT);
 
-  delay(100);
+	Serial.begin(115200);
 
-  Serial.print(F("\nStarting Argument_None on ")); Serial.println(BOARD_NAME);
-  Serial.println(RPI_PICO_TIMER_INTERRUPT_VERSION);
-  Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
-  Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
+	while (!Serial && millis() < 5000);
 
-  // Interval in microsecs
-  if (ITimer0.attachInterruptInterval(TIMER0_INTERVAL_MS * 1000, TimerHandler0))
-  {
-    Serial.print(F("Starting ITimer0 OK, millis() = ")); Serial.println(millis());
-  }
-  else
-    Serial.println(F("Can't set ITimer0. Select another Timer, freq. or timer"));
+  delay(500);
+
+	Serial.print(F("\nStarting Argument_None on "));
+	Serial.println(BOARD_NAME);
+	Serial.println(RPI_PICO_TIMER_INTERRUPT_VERSION);
+	Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
+	Serial.print(F("CPU Frequency = "));
+	Serial.print(F_CPU / 1000000);
+	Serial.println(F(" MHz"));
+
+	// Interval in microsecs
+	if (ITimer0.attachInterruptInterval(TIMER0_INTERVAL_MS * 1000, TimerHandler0))
+	{
+		Serial.print(F("Starting ITimer0 OK, millis() = "));
+		Serial.println(millis());
+	}
+	else
+		Serial.println(F("Can't set ITimer0. Select another Timer, freq. or timer"));
 
 
-  // Interval in microsecs
-  if (ITimer1.attachInterruptInterval(TIMER1_INTERVAL_MS * 1000, TimerHandler1))
-  {
-    Serial.print(F("Starting ITimer1 OK, millis() = ")); Serial.println(millis());
-  }
-  else
-    Serial.println(F("Can't set ITimer1. Select another Timer, freq. or timer"));
+	// Interval in microsecs
+	if (ITimer1.attachInterruptInterval(TIMER1_INTERVAL_MS * 1000, TimerHandler1))
+	{
+		Serial.print(F("Starting ITimer1 OK, millis() = "));
+		Serial.println(millis());
+	}
+	else
+		Serial.println(F("Can't set ITimer1. Select another Timer, freq. or timer"));
 }
 
 void loop()

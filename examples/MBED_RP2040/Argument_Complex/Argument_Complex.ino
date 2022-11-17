@@ -28,9 +28,9 @@
 
 #if ( defined(ARDUINO_NANO_RP2040_CONNECT) || defined(ARDUINO_RASPBERRY_PI_PICO) || defined(ARDUINO_ADAFRUIT_FEATHER_RP2040) || \
       defined(ARDUINO_GENERIC_RP2040) ) && defined(ARDUINO_ARCH_MBED)
-  #define USING_MBED_RPI_PICO_TIMER_INTERRUPT        true
+#define USING_MBED_RPI_PICO_TIMER_INTERRUPT        true
 #else
-  #error This code is intended to run on the MBED RASPBERRY_PI_PICO platform! Please check your Tools->Board setting.
+#error This code is intended to run on the MBED RASPBERRY_PI_PICO platform! Please check your Tools->Board setting.
 #endif
 
 // These define's must be placed at the beginning before #include "TimerInterrupt_Generic.h"
@@ -40,7 +40,7 @@
 #include "TimerInterrupt_Generic.h"
 
 #ifndef LED_BUILTIN
-  #define LED_BUILTIN       25        // Pin LED_BUILTIN mapped to pin GPIO25 of RPI_PICO, control on-board LED
+	#define LED_BUILTIN       25        // Pin LED_BUILTIN mapped to pin GPIO25 of RPI_PICO, control on-board LED
 #endif
 
 // MAX_RPI_PICO_NUM_TIMERS = 4. Change the pin accroding to your test
@@ -52,46 +52,51 @@ MBED_RPI_PICO_Timer ITimer1(1);
 // Never use Serial.print inside this mbed ISR. Will hang the system
 void TimerHandler(uint alarm_num)
 {
-  static bool toggle = false;
+	static bool toggle = false;
 
-  ///////////////////////////////////////////////////////////
-  // Always call this for MBED RP2040 before processing ISR
-  TIMER_ISR_START(alarm_num);
-  ///////////////////////////////////////////////////////////
- 
-  digitalWrite(pinArray[alarm_num], toggle);
-                 
-  toggle = !toggle;
+	///////////////////////////////////////////////////////////
+	// Always call this for MBED RP2040 before processing ISR
+	TIMER_ISR_START(alarm_num);
+	///////////////////////////////////////////////////////////
 
-  ////////////////////////////////////////////////////////////
-  // Always call this for MBED RP2040 after processing ISR
-  TIMER_ISR_END(alarm_num);
-  ////////////////////////////////////////////////////////////
+	digitalWrite(pinArray[alarm_num], toggle);
+
+	toggle = !toggle;
+
+	////////////////////////////////////////////////////////////
+	// Always call this for MBED RP2040 after processing ISR
+	TIMER_ISR_END(alarm_num);
+	////////////////////////////////////////////////////////////
 }
 
 #define TIMER_INTERVAL_MS    1000
 
 void setup()
 {
-  for (uint8_t i = 0; i < MAX_RPI_PICO_NUM_TIMERS; i++)
-  {
-    pinMode(pinArray[i], OUTPUT);
-  }
-    
-  Serial.begin(115200);
-  while (!Serial);
+	for (uint8_t i = 0; i < MAX_RPI_PICO_NUM_TIMERS; i++)
+	{
+		pinMode(pinArray[i], OUTPUT);
+	}
 
-  Serial.print(F("\nStarting Argument_Complex on ")); Serial.println(BOARD_NAME);
-  Serial.println(MBED_RPI_PICO_TIMER_INTERRUPT_VERSION);
-  Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
+	Serial.begin(115200);
 
-  // Interval in microsecs
-  if (ITimer1.attachInterruptInterval(TIMER_INTERVAL_MS  * 1000, TimerHandler))
-  {
-    Serial.print(F("Starting ITimer1 OK, millis() = ")); Serial.println(millis());
-  }
-  else
-    Serial.println(F("Can't set ITimer1. Select another freq. or timer"));
+	while (!Serial && millis() < 5000);
+
+  delay(500);
+
+	Serial.print(F("\nStarting Argument_Complex on "));
+	Serial.println(BOARD_NAME);
+	Serial.println(MBED_RPI_PICO_TIMER_INTERRUPT_VERSION);
+	Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
+
+	// Interval in microsecs
+	if (ITimer1.attachInterruptInterval(TIMER_INTERVAL_MS  * 1000, TimerHandler))
+	{
+		Serial.print(F("Starting ITimer1 OK, millis() = "));
+		Serial.println(millis());
+	}
+	else
+		Serial.println(F("Can't set ITimer1. Select another freq. or timer"));
 }
 
 void loop()

@@ -5,7 +5,7 @@
 
   Built by Khoi Hoang https://github.com/khoih-prog/TimerInterrupt_Generic
   Licensed under MIT license
-  
+
   Now even you use all these new 16 ISR-based timers,with their maximum interval practically unlimited (limited only by
   unsigned long miliseconds), you just consume only one NRF52 timer and avoid conflicting with other cores' tasks.
   The accuracy is nearly perfect compared to software timers. The most important feature is they're ISR-based timers
@@ -25,7 +25,7 @@
 */
 
 #if !( ARDUINO_ARCH_NRF52840 && TARGET_NAME == ARDUINO_NANO33BLE )
-  #error This code is designed to run on nRF52-based Nano-33-BLE boards using mbed-RTOS platform! Please check your Tools->Board setting.
+	#error This code is designed to run on nRF52-based Nano-33-BLE boards using mbed-RTOS platform! Please check your Tools->Board setting.
 #endif
 
 // These define's must be placed at the beginning before #include "TimerInterrupt_Generic.h"
@@ -43,11 +43,11 @@
 //#endif
 
 #ifndef LED_BLUE_PIN
-  #define LED_BLUE_PIN            D7
+	#define LED_BLUE_PIN            D7
 #endif
 
 #ifndef LED_RED_PIN
-  #define LED_RED_PIN             D8
+	#define LED_RED_PIN             D8
 #endif
 
 #define TIMER0_INTERVAL_MS        1000
@@ -69,12 +69,12 @@ static bool toggle1 = false;
 NRF52_MBED_Timer ITimer0(NRF_TIMER_3);
 
 void TimerHandler0()
-{  
-  preMillisTimer0 = millis();
+{
+	preMillisTimer0 = millis();
 
-  //timer interrupt toggles pin LED_BUILTIN
-  digitalWrite(LED_BUILTIN, toggle0);
-  toggle0 = !toggle0;
+	//timer interrupt toggles pin LED_BUILTIN
+	digitalWrite(LED_BUILTIN, toggle0);
+	toggle0 = !toggle0;
 }
 
 // Init NRF52 timer NRF_TIMER4
@@ -82,89 +82,98 @@ NRF52_MBED_Timer ITimer1(NRF_TIMER_4);
 
 void TimerHandler1()
 {
-  preMillisTimer1 = millis();
+	preMillisTimer1 = millis();
 
-  //timer interrupt toggles outputPin
-  digitalWrite(LED_BLUE_PIN, toggle1);
-  toggle1 = !toggle1;
+	//timer interrupt toggles outputPin
+	digitalWrite(LED_BLUE_PIN, toggle1);
+	toggle1 = !toggle1;
 }
 
 void setup()
 {
-  pinMode(LED_BUILTIN,  OUTPUT);
-  pinMode(LED_BLUE_PIN, OUTPUT);
-  
-  Serial.begin(115200);
-  while (!Serial);
-  
-  delay(100);
-  
-  Serial.print(F("\nStarting TimerInterruptTest on ")); Serial.println(BOARD_NAME);
-  Serial.println(NRF52_MBED_TIMER_INTERRUPT_VERSION);
-  Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
+	pinMode(LED_BUILTIN,  OUTPUT);
+	pinMode(LED_BLUE_PIN, OUTPUT);
 
-  // Interval in microsecs
-  if (ITimer0.attachInterruptInterval(TIMER0_INTERVAL_MS * 1000, TimerHandler0))
-  {
-    preMillisTimer0 = millis();
-    Serial.print(F("Starting ITimer0 OK, millis() = ")); Serial.println(preMillisTimer0);
-  }
-  else
-    Serial.println(F("Can't set ITimer0. Select another freq. or timer"));
+	Serial.begin(115200);
 
-  // Interval in microsecs
-  if (ITimer1.attachInterruptInterval(TIMER1_INTERVAL_MS * 1000, TimerHandler1))
-  {
-    preMillisTimer1 = millis();
-    Serial.print(F("Starting ITimer1 OK, millis() = ")); Serial.println(preMillisTimer1);
-  }
-  else
-    Serial.println(F("Can't set ITimer1. Select another freq. or timer"));
+	while (!Serial && millis() < 5000);
+
+  delay(500);
+
+	Serial.print(F("\nStarting TimerInterruptTest on "));
+	Serial.println(BOARD_NAME);
+	Serial.println(NRF52_MBED_TIMER_INTERRUPT_VERSION);
+	Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
+
+	// Interval in microsecs
+	if (ITimer0.attachInterruptInterval(TIMER0_INTERVAL_MS * 1000, TimerHandler0))
+	{
+		preMillisTimer0 = millis();
+		Serial.print(F("Starting ITimer0 OK, millis() = "));
+		Serial.println(preMillisTimer0);
+	}
+	else
+		Serial.println(F("Can't set ITimer0. Select another freq. or timer"));
+
+	// Interval in microsecs
+	if (ITimer1.attachInterruptInterval(TIMER1_INTERVAL_MS * 1000, TimerHandler1))
+	{
+		preMillisTimer1 = millis();
+		Serial.print(F("Starting ITimer1 OK, millis() = "));
+		Serial.println(preMillisTimer1);
+	}
+	else
+		Serial.println(F("Can't set ITimer1. Select another freq. or timer"));
 }
 
 void loop()
 {
-  static unsigned long lastTimer0   = 0; 
-  static bool timer0Stopped         = false;
-  
-  static unsigned long lastTimer1   = 0;
-  static bool timer1Stopped         = false;
-  
+	static unsigned long lastTimer0   = 0;
+	static bool timer0Stopped         = false;
 
-  if (millis() - lastTimer0 > TIMER0_DURATION_MS)
-  {
-    lastTimer0 = millis();
+	static unsigned long lastTimer1   = 0;
+	static bool timer1Stopped         = false;
 
-    if (timer0Stopped)
-    {
-      preMillisTimer0 = millis();
-      Serial.print(F("Start ITimer0, millis() = ")); Serial.println(preMillisTimer0);
-      ITimer0.restartTimer();
-    }
-    else
-    {
-      Serial.print(F("Stop ITimer0, millis() = ")); Serial.println(millis());
-      ITimer0.stopTimer();
-    }
-    timer0Stopped = !timer0Stopped;
-  }
 
-  if (millis() - lastTimer1 > TIMER1_DURATION_MS)
-  {
-    lastTimer1 = millis();
+	if (millis() - lastTimer0 > TIMER0_DURATION_MS)
+	{
+		lastTimer0 = millis();
 
-    if (timer1Stopped)
-    {
-      preMillisTimer1 = millis();
-      Serial.print(F("Start ITimer1, millis() = ")); Serial.println(preMillisTimer1);
-      ITimer1.restartTimer();
-    }
-    else
-    {
-      Serial.print(F("Stop ITimer1, millis() = ")); Serial.println(millis());
-      ITimer1.stopTimer();
-    }
-    
-    timer1Stopped = !timer1Stopped;
-  }
+		if (timer0Stopped)
+		{
+			preMillisTimer0 = millis();
+			Serial.print(F("Start ITimer0, millis() = "));
+			Serial.println(preMillisTimer0);
+			ITimer0.restartTimer();
+		}
+		else
+		{
+			Serial.print(F("Stop ITimer0, millis() = "));
+			Serial.println(millis());
+			ITimer0.stopTimer();
+		}
+
+		timer0Stopped = !timer0Stopped;
+	}
+
+	if (millis() - lastTimer1 > TIMER1_DURATION_MS)
+	{
+		lastTimer1 = millis();
+
+		if (timer1Stopped)
+		{
+			preMillisTimer1 = millis();
+			Serial.print(F("Start ITimer1, millis() = "));
+			Serial.println(preMillisTimer1);
+			ITimer1.restartTimer();
+		}
+		else
+		{
+			Serial.print(F("Stop ITimer1, millis() = "));
+			Serial.println(millis());
+			ITimer1.stopTimer();
+		}
+
+		timer1Stopped = !timer1Stopped;
+	}
 }

@@ -41,7 +41,7 @@
    In this super simple example, you don't see much different after Blynk is connected, because of no competing task is
    written
 */
-  
+
 // These define's must be placed at the beginning before #include "TimerInterrupt.h"
 // _TIMERINTERRUPT_LOGLEVEL_ from 0 to 4
 // Don't define _TIMERINTERRUPT_LOGLEVEL_ > 0. Only for special ISR debugging only. Can hang the system.
@@ -54,11 +54,11 @@
         defined(ARDUINO_AVR_NG) || defined(ARDUINO_AVR_UNO_WIFI_DEV_ED) || defined(ARDUINO_AVR_DUEMILANOVE) || defined(ARDUINO_AVR_FEATHER328P) || \
         defined(ARDUINO_AVR_METRO) || defined(ARDUINO_AVR_PROTRINKET5) || defined(ARDUINO_AVR_PROTRINKET3) || defined(ARDUINO_AVR_PROTRINKET5FTDI) || \
         defined(ARDUINO_AVR_PROTRINKET3FTDI) )
-  #define USE_TIMER_1     true
-  #warning Using Timer1
-#else          
-  #define USE_TIMER_3     true
-  #warning Using Timer3
+#define USE_TIMER_1     true
+#warning Using Timer1
+#else
+#define USE_TIMER_3     true
+#warning Using Timer3
 #endif
 
 #define LOCAL_DEBUG         1
@@ -66,7 +66,7 @@
 #include "TimerInterrupt_Generic.h"
 
 #ifndef LED_BUILTIN
-  #define LED_BUILTIN       13
+	#define LED_BUILTIN       13
 #endif
 
 // For PWM_Value from 0-255.You can change to 1024 or 2048
@@ -76,9 +76,10 @@
 
 // You have to calibrate and update this mapping table
 float mappingTable[MAPPING_TABLE_SIZE] =
-{ 0.0,     3.281,   6.860,  10.886,  15.285,  20.355,  26.096,  32.732,  40.785,  50.180,
-  62.557,  79.557, 104.461, 136.075, 163.066, 181.930, 195.724, 207.132, 216.228, 223.684,
-  230.395, 236.136, 241.206, 245.680, 249.781, 253.509
+{
+	0.0,     3.281,   6.860,  10.886,  15.285,  20.355,  26.096,  32.732,  40.785,  50.180,
+	62.557,  79.557, 104.461, 136.075, 163.066, 181.930, 195.724, 207.132, 216.228, 223.684,
+	230.395, 236.136, 241.206, 245.680, 249.781, 253.509
 };
 
 #define TIMER_FREQUENCY_HZ     10000UL
@@ -97,23 +98,23 @@ volatile uint32_t startMillis = 0;
 
 void TimerHandler(void)
 {
-  static bool toggle  = false;
-  static uint32_t timeRun  = 0;
+	static bool toggle  = false;
+	static uint32_t timeRun  = 0;
 
-  for (uint16_t i = 0; i < NUMBER_ISR_TIMERS; i++)
-  {
-    doingSomething(i);
-  }
+	for (uint16_t i = 0; i < NUMBER_ISR_TIMERS; i++)
+	{
+		doingSomething(i);
+	}
 
-  // Toggle LED every LED_TOGGLE_INTERVAL_MS = 500ms = 0.5s
-  if (++timeRun == ((LED_TOGGLE_INTERVAL_MS * TIMER_FREQUENCY_HZ) / 1000) )
-  {   
-    timeRun = 0;
+	// Toggle LED every LED_TOGGLE_INTERVAL_MS = 500ms = 0.5s
+	if (++timeRun == ((LED_TOGGLE_INTERVAL_MS * TIMER_FREQUENCY_HZ) / 1000) )
+	{
+		timeRun = 0;
 
-    //timer interrupt toggles pin LED_BUILTIN
-    digitalWrite(LED_BUILTIN, toggle);
-    toggle = !toggle;
-  }
+		//timer interrupt toggles pin LED_BUILTIN
+		digitalWrite(LED_BUILTIN, toggle);
+		toggle = !toggle;
+	}
 }
 
 /////////////////////////////////////////////////
@@ -127,11 +128,11 @@ typedef void (*irqCallback)  (void);
 
 typedef struct
 {
-  int16_t       PWM_Value;          // Writing negative value to stop and free this PWM
-  uint16_t      PWM_PremapValue;    // To detect if use the same PWM_Value setting => don't do anything
-  uint16_t      pin;
-  int16_t       countPWM;
-  bool          beingUsed;
+	int16_t       PWM_Value;          // Writing negative value to stop and free this PWM
+	uint16_t      PWM_PremapValue;    // To detect if use the same PWM_Value setting => don't do anything
+	uint16_t      pin;
+	int16_t       countPWM;
+	bool          beingUsed;
 } ISRTimerData;
 
 // Avoid doing something fancy in ISR, for example Serial.print()
@@ -142,47 +143,47 @@ typedef struct
 
 volatile ISRTimerData curISRTimerData[NUMBER_ISR_TIMERS] =
 {
-  { 0, 0, 0, 0, false },
-  { 0, 0, 0, 0, false },
-  { 0, 0, 0, 0, false },
-  { 0, 0, 0, 0, false },
-  { 0, 0, 0, 0, false },
-  { 0, 0, 0, 0, false },
-  { 0, 0, 0, 0, false },
-  { 0, 0, 0, 0, false },
-  { 0, 0, 0, 0, false },
-  { 0, 0, 0, 0, false },
-  { 0, 0, 0, 0, false },
-  { 0, 0, 0, 0, false },
-  { 0, 0, 0, 0, false },
-  { 0, 0, 0, 0, false },
-  { 0, 0, 0, 0, false },
-  { 0, 0, 0, 0, false },
+	{ 0, 0, 0, 0, false },
+	{ 0, 0, 0, 0, false },
+	{ 0, 0, 0, 0, false },
+	{ 0, 0, 0, 0, false },
+	{ 0, 0, 0, 0, false },
+	{ 0, 0, 0, 0, false },
+	{ 0, 0, 0, 0, false },
+	{ 0, 0, 0, 0, false },
+	{ 0, 0, 0, 0, false },
+	{ 0, 0, 0, 0, false },
+	{ 0, 0, 0, 0, false },
+	{ 0, 0, 0, 0, false },
+	{ 0, 0, 0, 0, false },
+	{ 0, 0, 0, 0, false },
+	{ 0, 0, 0, 0, false },
+	{ 0, 0, 0, 0, false },
 };
 
 void doingSomething(int index)
 {
-  // First check if enabled and pin != 0
-  if ( (curISRTimerData[index].beingUsed) && (curISRTimerData[index].PWM_Value > 0) && (curISRTimerData[index].pin != 0) )
-  {
-    // Divide the time into MAX_PWM_VALUE slots.
-    // PWM_Value = 0 => no digitalWrite(pin, 1)
-    // PWM_Value > 0 => digitalWrite(pin, 1) from countPWM = 0 to countPWM = PWM_Value
+	// First check if enabled and pin != 0
+	if ( (curISRTimerData[index].beingUsed) && (curISRTimerData[index].PWM_Value > 0) && (curISRTimerData[index].pin != 0) )
+	{
+		// Divide the time into MAX_PWM_VALUE slots.
+		// PWM_Value = 0 => no digitalWrite(pin, 1)
+		// PWM_Value > 0 => digitalWrite(pin, 1) from countPWM = 0 to countPWM = PWM_Value
 
-    if (curISRTimerData[index].countPWM == 0)
-    {
-      if (curISRTimerData[index].PWM_Value > 0)
-        digitalWrite(curISRTimerData[index].pin, 1);
-      else
-        digitalWrite(curISRTimerData[index].pin, 0);
-    }
-    else if (curISRTimerData[index].countPWM == curISRTimerData[index].PWM_Value)
-    {
-      digitalWrite(curISRTimerData[index].pin, 0);
-    }
-  }
+		if (curISRTimerData[index].countPWM == 0)
+		{
+			if (curISRTimerData[index].PWM_Value > 0)
+				digitalWrite(curISRTimerData[index].pin, 1);
+			else
+				digitalWrite(curISRTimerData[index].pin, 0);
+		}
+		else if (curISRTimerData[index].countPWM == curISRTimerData[index].PWM_Value)
+		{
+			digitalWrite(curISRTimerData[index].pin, 0);
+		}
+	}
 
-  curISRTimerData[index].countPWM = (curISRTimerData[index].countPWM + 1) % MAX_PWM_VALUE;
+	curISRTimerData[index].countPWM = (curISRTimerData[index].countPWM + 1) % MAX_PWM_VALUE;
 }
 
 ///////////////////////////////////////////
@@ -190,204 +191,223 @@ void doingSomething(int index)
 
 void setup()
 {
-  pinMode(LED_BUILTIN, OUTPUT);
+	pinMode(LED_BUILTIN, OUTPUT);
 
-  Serial.begin(115200);
-  while (!Serial);
+	Serial.begin(115200);
 
-  Serial.print(F("\nStarting FakeAnalogWrite on ")); Serial.println(BOARD_TYPE);
-  Serial.println(TIMER_INTERRUPT_VERSION);
-  Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
-  Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
+	while (!Serial && millis() < 5000);
 
-  // Timer0 is used for micros(), millis(), delay(), etc and can't be used
-  // Select Timer 1-2 for UNO, 1-5 for MEGA, 1,3,4 for 16u4/32u4
-  // Timer 2 is 8-bit timer, only for higher frequency
-  // Timer 4 of 16u4 and 32u4 is 8/10-bit timer, only for higher frequency
-  
+  delay(500);
+
+	Serial.print(F("\nStarting FakeAnalogWrite on "));
+	Serial.println(BOARD_TYPE);
+	Serial.println(TIMER_INTERRUPT_VERSION);
+	Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
+	Serial.print(F("CPU Frequency = "));
+	Serial.print(F_CPU / 1000000);
+	Serial.println(F(" MHz"));
+
+	// Timer0 is used for micros(), millis(), delay(), etc and can't be used
+	// Select Timer 1-2 for UNO, 1-5 for MEGA, 1,3,4 for 16u4/32u4
+	// Timer 2 is 8-bit timer, only for higher frequency
+	// Timer 4 of 16u4 and 32u4 is 8/10-bit timer, only for higher frequency
+
 #if USE_TIMER_1
 
-  ITimer1.init();
+	ITimer1.init();
 
-  // Using ATmega328 used in UNO => 16MHz CPU clock ,
+	// Using ATmega328 used in UNO => 16MHz CPU clock ,
 
-  //if (ITimer1.attachInterruptInterval(TIMER_INTERVAL_MS, TimerHandler))
-  if (ITimer1.attachInterrupt(TIMER_FREQUENCY_HZ, TimerHandler))
-  {
-    Serial.print(F("Starting  ITimer1 OK, millis() = ")); Serial.println(millis());
-  }
-  else
-    Serial.println(F("Can't set ITimer1. Select another freq. or timer"));
-    
+	//if (ITimer1.attachInterruptInterval(TIMER_INTERVAL_MS, TimerHandler))
+	if (ITimer1.attachInterrupt(TIMER_FREQUENCY_HZ, TimerHandler))
+	{
+		Serial.print(F("Starting  ITimer1 OK, millis() = "));
+		Serial.println(millis());
+	}
+	else
+		Serial.println(F("Can't set ITimer1. Select another freq. or timer"));
+
 #elif USE_TIMER_3
 
-  ITimer3.init();
+	ITimer3.init();
 
-  //if (ITimer3.attachInterruptInterval(TIMER_INTERVAL_MS, TimerHandler))
-  if (ITimer3.attachInterrupt(TIMER_FREQUENCY_HZ, TimerHandler))
-  {
-    Serial.print(F("Starting  ITimer3 OK, millis() = ")); Serial.println(millis());
-  }
-  else
-    Serial.println(F("Can't set ITimer3. Select another freq. or timer"));
+	//if (ITimer3.attachInterruptInterval(TIMER_INTERVAL_MS, TimerHandler))
+	if (ITimer3.attachInterrupt(TIMER_FREQUENCY_HZ, TimerHandler))
+	{
+		Serial.print(F("Starting  ITimer3 OK, millis() = "));
+		Serial.println(millis());
+	}
+	else
+		Serial.println(F("Can't set ITimer3. Select another freq. or timer"));
 
 #endif
-    
-  // Just to demonstrate, don't use too many ISR Timers if not absolutely necessary
-  // You can use up to 16 timer for each ISR_Timer
-  for (uint16_t i = 0; i < NUMBER_ISR_TIMERS; i++)
-  {
-    curISRTimerData[i].beingUsed      = false;
-    curISRTimerData[i].pin            = 0;
-    curISRTimerData[i].PWM_Value      = 0;
 
-    //ISR_Timer.setInterval(curISRTimerData[i].TimerInterval, curISRTimerData[i].irqCallbackFunc);
-  }
+	// Just to demonstrate, don't use too many ISR Timers if not absolutely necessary
+	// You can use up to 16 timer for each ISR_Timer
+	for (uint16_t i = 0; i < NUMBER_ISR_TIMERS; i++)
+	{
+		curISRTimerData[i].beingUsed      = false;
+		curISRTimerData[i].pin            = 0;
+		curISRTimerData[i].PWM_Value      = 0;
+
+		//ISR_Timer.setInterval(curISRTimerData[i].TimerInterval, curISRTimerData[i].irqCallbackFunc);
+	}
 }
 
 #define USING_MAPPING_TABLE   false
 
 void fakeAnalogWrite(uint16_t pin, uint16_t value)
 {
-  uint16_t localValue;
+	uint16_t localValue;
 
-#if USING_MAPPING_TABLE  
-  uint16_t localIndex = 0;
+#if USING_MAPPING_TABLE
+	uint16_t localIndex = 0;
 #endif
 
-  // First check if already got that pin, then just update the PWM_Value
-  for (uint16_t i = 0; i < NUMBER_ISR_TIMERS; i++)
-  {
-    if ( (curISRTimerData[i].beingUsed) && (curISRTimerData[i].pin == pin) )
-    {
-      localValue = (value < MAX_PWM_VALUE) ? value : MAX_PWM_VALUE;
+	// First check if already got that pin, then just update the PWM_Value
+	for (uint16_t i = 0; i < NUMBER_ISR_TIMERS; i++)
+	{
+		if ( (curISRTimerData[i].beingUsed) && (curISRTimerData[i].pin == pin) )
+		{
+			localValue = (value < MAX_PWM_VALUE) ? value : MAX_PWM_VALUE;
 
-      if (curISRTimerData[i].PWM_PremapValue == localValue)
-      {
+			if (curISRTimerData[i].PWM_PremapValue == localValue)
+			{
 #if (LOCAL_DEBUG > 0)
-        Serial.print(F("Ignore : Same Value for index = ")); Serial.println(i);
+				Serial.print(F("Ignore : Same Value for index = "));
+				Serial.println(i);
 #endif
 
-        return;
-      }
-      else if (curISRTimerData[i].PWM_Value >= 0)
-      {
-        curISRTimerData[i].PWM_PremapValue = localValue;
+				return;
+			}
+			else if (curISRTimerData[i].PWM_Value >= 0)
+			{
+				curISRTimerData[i].PWM_PremapValue = localValue;
 
-        // Mapping to corect value
-        if ( ( localValue == 0) || ( localValue == MAX_PWM_VALUE - 1) )
-        {
-          // Keep MAX_PWM_VALUE
-          curISRTimerData[i].PWM_Value = localValue;
-        }
-        else
-        {
+				// Mapping to corect value
+				if ( ( localValue == 0) || ( localValue == MAX_PWM_VALUE - 1) )
+				{
+					// Keep MAX_PWM_VALUE
+					curISRTimerData[i].PWM_Value = localValue;
+				}
+				else
+				{
 
 #if USING_MAPPING_TABLE
 
-          // Get the mapping index
-          for (uint16_t j = 0; j < MAPPING_TABLE_SIZE; j++)
-          {
-            if ( (float) localValue < mappingTable[j])
-            {
-              localIndex = j - 1;
-              break;
-            }
-          }
+					// Get the mapping index
+					for (uint16_t j = 0; j < MAPPING_TABLE_SIZE; j++)
+					{
+						if ( (float) localValue < mappingTable[j])
+						{
+							localIndex = j - 1;
+							break;
+						}
+					}
 
 #if (LOCAL_DEBUG > 1)
-          Serial.print(F("localIndex = ")); Serial.println(localIndex);
+					Serial.print(F("localIndex = "));
+					Serial.println(localIndex);
 #endif
 
-          // Can use map() function
-          // Can use map() function
-          curISRTimerData[i].PWM_Value = (uint16_t) ( (localIndex * 10 ) +
-                                         ( (localValue - mappingTable[localIndex]) * 10 ) /  (mappingTable[localIndex + 1] - mappingTable[localIndex]) );
+					// Can use map() function
+					// Can use map() function
+					curISRTimerData[i].PWM_Value = (uint16_t) ( (localIndex * 10 ) +
+					                                            ( (localValue - mappingTable[localIndex]) * 10 ) /  (mappingTable[localIndex + 1] - mappingTable[localIndex]) );
 
 #else
-          curISRTimerData[i].PWM_Value = localValue;
+					curISRTimerData[i].PWM_Value = localValue;
 #endif
 
 #if (LOCAL_DEBUG > 0)
-          Serial.print(F("Update index = ")); Serial.print(i);
-          Serial.print(F(", pin = ")); Serial.print(pin);
-          Serial.print(F(", input PWM_Value = ")); Serial.print(value);
-          Serial.print(F(", mapped PWM_Value = ")); Serial.println(curISRTimerData[i].PWM_Value);
+					Serial.print(F("Update index = "));
+					Serial.print(i);
+					Serial.print(F(", pin = "));
+					Serial.print(pin);
+					Serial.print(F(", input PWM_Value = "));
+					Serial.print(value);
+					Serial.print(F(", mapped PWM_Value = "));
+					Serial.println(curISRTimerData[i].PWM_Value);
 #endif
-        }
-      }
-      else
-      {
-        curISRTimerData[i].beingUsed      = false;
-        curISRTimerData[i].pin            = 0;
-        curISRTimerData[i].PWM_Value      = 0;
-      }
+				}
+			}
+			else
+			{
+				curISRTimerData[i].beingUsed      = false;
+				curISRTimerData[i].pin            = 0;
+				curISRTimerData[i].PWM_Value      = 0;
+			}
 
-      // Reset countPWM
-      curISRTimerData[i].countPWM = 0;
+			// Reset countPWM
+			curISRTimerData[i].countPWM = 0;
 
-      return;
-    }
-  }
+			return;
+		}
+	}
 
-  for (uint16_t i = 0; i < NUMBER_ISR_TIMERS; i++)
-  {
-    if (!curISRTimerData[i].beingUsed)
-    {
-      curISRTimerData[i].beingUsed    = true;
-      curISRTimerData[i].pin          = pin;
+	for (uint16_t i = 0; i < NUMBER_ISR_TIMERS; i++)
+	{
+		if (!curISRTimerData[i].beingUsed)
+		{
+			curISRTimerData[i].beingUsed    = true;
+			curISRTimerData[i].pin          = pin;
 
-      // Mapping to corect value
-      localValue = (value < MAX_PWM_VALUE) ? value : MAX_PWM_VALUE;
+			// Mapping to corect value
+			localValue = (value < MAX_PWM_VALUE) ? value : MAX_PWM_VALUE;
 
-      if ( ( localValue == 0) || ( localValue == MAX_PWM_VALUE - 1) )
-      {
-        // Keep MAX_PWM_VALUE
-        curISRTimerData[i].PWM_Value = localValue;
-      }
-      else
-      {
-        curISRTimerData[i].PWM_PremapValue = localValue;
+			if ( ( localValue == 0) || ( localValue == MAX_PWM_VALUE - 1) )
+			{
+				// Keep MAX_PWM_VALUE
+				curISRTimerData[i].PWM_Value = localValue;
+			}
+			else
+			{
+				curISRTimerData[i].PWM_PremapValue = localValue;
 
 #if USING_MAPPING_TABLE
 
-        // Get the mapping index
-        for (uint16_t j = 0; j < MAPPING_TABLE_SIZE; j++)
-        {
-          if ( (float) localValue < mappingTable[j])
-          {
-            localIndex = j - 1;
-            break;
-          }
-        }
+				// Get the mapping index
+				for (uint16_t j = 0; j < MAPPING_TABLE_SIZE; j++)
+				{
+					if ( (float) localValue < mappingTable[j])
+					{
+						localIndex = j - 1;
+						break;
+					}
+				}
 
 #if (LOCAL_DEBUG > 1)
-        Serial.print(F("localIndex = ")); Serial.println(localIndex);
+				Serial.print(F("localIndex = "));
+				Serial.println(localIndex);
 #endif
 
-        // Can use map() function
-        // Can use map() function
-        curISRTimerData[i].PWM_Value = (uint16_t) ( (localIndex * 10 ) +
-                                       ( (localValue - mappingTable[localIndex]) * 10 ) /  (mappingTable[localIndex + 1] - mappingTable[localIndex]) );
+				// Can use map() function
+				// Can use map() function
+				curISRTimerData[i].PWM_Value = (uint16_t) ( (localIndex * 10 ) +
+				                                            ( (localValue - mappingTable[localIndex]) * 10 ) /  (mappingTable[localIndex + 1] - mappingTable[localIndex]) );
 #else
-        curISRTimerData[i].PWM_Value = localValue;
+				curISRTimerData[i].PWM_Value = localValue;
 #endif
-      }
+			}
 
-      curISRTimerData[i].countPWM     = 0;
+			curISRTimerData[i].countPWM     = 0;
 
-      pinMode(pin, OUTPUT);
+			pinMode(pin, OUTPUT);
 
 #if (LOCAL_DEBUG > 0)
-      Serial.print(F("Add index = ")); Serial.print(i);
-      Serial.print(F(", pin = ")); Serial.print(pin);
-      Serial.print(F(", input PWM_Value = ")); Serial.print(value);
-      Serial.print(F(", mapped PWM_Value = ")); Serial.println(curISRTimerData[i].PWM_Value);
+			Serial.print(F("Add index = "));
+			Serial.print(i);
+			Serial.print(F(", pin = "));
+			Serial.print(pin);
+			Serial.print(F(", input PWM_Value = "));
+			Serial.print(value);
+			Serial.print(F(", mapped PWM_Value = "));
+			Serial.println(curISRTimerData[i].PWM_Value);
 #endif
 
-      return;
-    }
-  }
+			return;
+		}
+	}
 }
 
 #define DELAY_BETWEEN_CHANGE_MS     5000L
@@ -397,56 +417,58 @@ void fakeAnalogWrite(uint16_t pin, uint16_t value)
 
 void loop()
 {
-  for (uint16_t i = 0; i <= MAX_PWM_VALUE / DIVIDER; i++)
-  {
-    // Change the pin according to board
-    // UNI, Nano, etc can use pins from 2-12. Pin 13 is used for LED_BUILTIN
-    // Mega can use many more pins, such as 22-53
+	for (uint16_t i = 0; i <= MAX_PWM_VALUE / DIVIDER; i++)
+	{
+		// Change the pin according to board
+		// UNI, Nano, etc can use pins from 2-12. Pin 13 is used for LED_BUILTIN
+		// Mega can use many more pins, such as 22-53
 
 #if (defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__))
-    fakeAnalogWrite(22, i * DIVIDER);
-    fakeAnalogWrite(23, i * DIVIDER);
-    fakeAnalogWrite(24, i * DIVIDER);
-    fakeAnalogWrite(25, i * DIVIDER);
-    fakeAnalogWrite(26, i * DIVIDER);
-    fakeAnalogWrite(27, i * DIVIDER);
-    fakeAnalogWrite(28, i * DIVIDER);
-    fakeAnalogWrite(29, i * DIVIDER);
-    fakeAnalogWrite(30, i * DIVIDER);
-    fakeAnalogWrite(31, i * DIVIDER);
-    fakeAnalogWrite(32, i * DIVIDER);
-    fakeAnalogWrite(33, i * DIVIDER);
-    fakeAnalogWrite(34, i * DIVIDER);
-    fakeAnalogWrite(35, i * DIVIDER);
-    fakeAnalogWrite(36, i * DIVIDER);
-    fakeAnalogWrite(37, i * DIVIDER);
+		fakeAnalogWrite(22, i * DIVIDER);
+		fakeAnalogWrite(23, i * DIVIDER);
+		fakeAnalogWrite(24, i * DIVIDER);
+		fakeAnalogWrite(25, i * DIVIDER);
+		fakeAnalogWrite(26, i * DIVIDER);
+		fakeAnalogWrite(27, i * DIVIDER);
+		fakeAnalogWrite(28, i * DIVIDER);
+		fakeAnalogWrite(29, i * DIVIDER);
+		fakeAnalogWrite(30, i * DIVIDER);
+		fakeAnalogWrite(31, i * DIVIDER);
+		fakeAnalogWrite(32, i * DIVIDER);
+		fakeAnalogWrite(33, i * DIVIDER);
+		fakeAnalogWrite(34, i * DIVIDER);
+		fakeAnalogWrite(35, i * DIVIDER);
+		fakeAnalogWrite(36, i * DIVIDER);
+		fakeAnalogWrite(37, i * DIVIDER);
 #else
-    fakeAnalogWrite( 2, i * DIVIDER);
-    fakeAnalogWrite( 3, i * DIVIDER);
-    fakeAnalogWrite( 4, i * DIVIDER);
-    fakeAnalogWrite( 5, i * DIVIDER);
-    fakeAnalogWrite( 6, i * DIVIDER);
-    fakeAnalogWrite( 7, i * DIVIDER);
-    fakeAnalogWrite( 8, i * DIVIDER);
-    fakeAnalogWrite( 9, i * DIVIDER);
-    fakeAnalogWrite(10, i * DIVIDER);
-    fakeAnalogWrite(11, i * DIVIDER);
-    fakeAnalogWrite(12, i * DIVIDER);
-    fakeAnalogWrite(A0, i * DIVIDER);
-    fakeAnalogWrite(A1, i * DIVIDER);
-    fakeAnalogWrite(A2, i * DIVIDER);
-    fakeAnalogWrite(A3, i * DIVIDER);
-    fakeAnalogWrite(A4, i * DIVIDER);
+		fakeAnalogWrite( 2, i * DIVIDER);
+		fakeAnalogWrite( 3, i * DIVIDER);
+		fakeAnalogWrite( 4, i * DIVIDER);
+		fakeAnalogWrite( 5, i * DIVIDER);
+		fakeAnalogWrite( 6, i * DIVIDER);
+		fakeAnalogWrite( 7, i * DIVIDER);
+		fakeAnalogWrite( 8, i * DIVIDER);
+		fakeAnalogWrite( 9, i * DIVIDER);
+		fakeAnalogWrite(10, i * DIVIDER);
+		fakeAnalogWrite(11, i * DIVIDER);
+		fakeAnalogWrite(12, i * DIVIDER);
+		fakeAnalogWrite(A0, i * DIVIDER);
+		fakeAnalogWrite(A1, i * DIVIDER);
+		fakeAnalogWrite(A2, i * DIVIDER);
+		fakeAnalogWrite(A3, i * DIVIDER);
+		fakeAnalogWrite(A4, i * DIVIDER);
 #endif
 
 #if (LOCAL_DEBUG > 0)
-    Serial.print(F("Test PWM_Value = ")); Serial.print(i * DIVIDER);
-    Serial.print(F(", max = ")); Serial.println(MAX_PWM_VALUE - 1);
+		Serial.print(F("Test PWM_Value = "));
+		Serial.print(i * DIVIDER);
+		Serial.print(F(", max = "));
+		Serial.println(MAX_PWM_VALUE - 1);
 #endif
 
-    delay(DELAY_BETWEEN_CHANGE_MS);
-  }
+		delay(DELAY_BETWEEN_CHANGE_MS);
+	}
 
-  Serial.println(F("==================="));
-  delay(REPEAT_INTERVAL_MS);
+	Serial.println(F("==================="));
+	delay(REPEAT_INTERVAL_MS);
 }

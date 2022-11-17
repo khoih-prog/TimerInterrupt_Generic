@@ -1,6 +1,6 @@
 /****************************************************************************************************************************
   RPM_Measure.ino
-  
+
   For RP2040-based boards such as RASPBERRY_PI_PICO, ADAFRUIT_FEATHER_RP2040 and GENERIC_RP2040.
   Written by Khoi Hoang
 
@@ -74,75 +74,85 @@ float avgRPM    = 0.00;
 volatile int debounceCounter;
 
 bool TimerHandler0(struct repeating_timer *t)
-{  
-  (void) t;
-  
-  if ( !digitalRead(SWPin) && (debounceCounter >= DEBOUNCING_INTERVAL_MS / TIMER0_INTERVAL_MS ) )
-  {
-    //min time between pulses has passed
-    RPM = (float) ( 60000.0f / ( rotationTime * TIMER0_INTERVAL_MS ) );
+{
+	(void) t;
 
-    avgRPM = ( 2 * avgRPM + RPM) / 3,
+	if ( !digitalRead(SWPin) && (debounceCounter >= DEBOUNCING_INTERVAL_MS / TIMER0_INTERVAL_MS ) )
+	{
+		//min time between pulses has passed
+		RPM = (float) ( 60000.0f / ( rotationTime * TIMER0_INTERVAL_MS ) );
+
+		avgRPM = ( 2 * avgRPM + RPM) / 3,
 
 #if (TIMER_INTERRUPT_DEBUG > 0)
-      Serial.print("RPM = "); Serial.print(avgRPM);
-      Serial.print(", rotationTime ms = "); Serial.println(rotationTime * TIMER0_INTERVAL_MS);
+		Serial.print("RPM = ");
+		Serial.print(avgRPM);
+		Serial.print(", rotationTime ms = ");
+		Serial.println(rotationTime * TIMER0_INTERVAL_MS);
 #endif
 
-    rotationTime = 0;
-    debounceCounter = 0;
-  }
-  else
-  {
-    debounceCounter++;
-  }
+		rotationTime = 0;
+		debounceCounter = 0;
+	}
+	else
+	{
+		debounceCounter++;
+	}
 
-  if (rotationTime >= 5000)
-  {
-    // If idle, set RPM to 0, don't increase rotationTime
-    RPM = 0;
-    
-#if (TIMER_INTERRUPT_DEBUG > 0)   
-    Serial.print("RPM = "); Serial.print(RPM); Serial.print(", rotationTime = "); Serial.println(rotationTime);
+	if (rotationTime >= 5000)
+	{
+		// If idle, set RPM to 0, don't increase rotationTime
+		RPM = 0;
+
+#if (TIMER_INTERRUPT_DEBUG > 0)
+		Serial.print("RPM = ");
+		Serial.print(RPM);
+		Serial.print(", rotationTime = ");
+		Serial.println(rotationTime);
 #endif
-    
-    rotationTime = 0;
-  }
-  else
-  {
-    rotationTime++;
-  }
 
-  return true;
+		rotationTime = 0;
+	}
+	else
+	{
+		rotationTime++;
+	}
+
+	return true;
 }
 
 void setup()
 {
-  pinMode(SWPin, INPUT_PULLUP);
-  
-  Serial.begin(115200);
-  while (!Serial && millis() < 5000);
+	pinMode(SWPin, INPUT_PULLUP);
 
-  delay(100);
-  
-  Serial.print(F("\nStarting RPM_Measure on ")); Serial.println(BOARD_NAME);
-  Serial.println(RPI_PICO_TIMER_INTERRUPT_VERSION);
-  Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
-  Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
+	Serial.begin(115200);
 
-  // Using ESP32  => 80 / 160 / 240MHz CPU clock ,
-  // For 64-bit timer counter
-  // For 16-bit timer prescaler up to 1024
+	while (!Serial && millis() < 5000);
 
-  // Interval in microsecs
-  if (ITimer0.attachInterruptInterval(TIMER0_INTERVAL_MS * 1000, TimerHandler0))
-  {
-    Serial.print(F("Starting  ITimer0 OK, millis() = ")); Serial.println(millis());
-  }
-  else
-    Serial.println(F("Can't set ITimer0. Select another freq. or timer"));
+  delay(500);
 
-  Serial.flush();   
+	Serial.print(F("\nStarting RPM_Measure on "));
+	Serial.println(BOARD_NAME);
+	Serial.println(RPI_PICO_TIMER_INTERRUPT_VERSION);
+	Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
+	Serial.print(F("CPU Frequency = "));
+	Serial.print(F_CPU / 1000000);
+	Serial.println(F(" MHz"));
+
+	// Using ESP32  => 80 / 160 / 240MHz CPU clock ,
+	// For 64-bit timer counter
+	// For 16-bit timer prescaler up to 1024
+
+	// Interval in microsecs
+	if (ITimer0.attachInterruptInterval(TIMER0_INTERVAL_MS * 1000, TimerHandler0))
+	{
+		Serial.print(F("Starting  ITimer0 OK, millis() = "));
+		Serial.println(millis());
+	}
+	else
+		Serial.println(F("Can't set ITimer0. Select another freq. or timer"));
+
+	Serial.flush();
 }
 
 void loop()

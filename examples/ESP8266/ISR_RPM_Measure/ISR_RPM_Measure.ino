@@ -40,7 +40,7 @@
 */
 
 #if !defined(ESP8266)
-  #error This code is designed to run on ESP8266 and ESP8266-based boards! Please check your Tools->Board setting.
+	#error This code is designed to run on ESP8266 and ESP8266-based boards! Please check your Tools->Board setting.
 #endif
 
 // These define's must be placed at the beginning before #include "TimerInterrupt_Generic.h"
@@ -73,81 +73,91 @@ volatile bool activeState = false;
 
 void IRAM_ATTR detectRotation()
 {
-  activeState = true;
+	activeState = true;
 }
 
 void IRAM_ATTR TimerHandler()
 {
-  if ( activeState )
-  {
-    // Reset to prepare for next round of interrupt
-    activeState = false;
+	if ( activeState )
+	{
+		// Reset to prepare for next round of interrupt
+		activeState = false;
 
-    if (debounceCounter >= DEBOUNCING_INTERVAL_MS / TIMER_INTERVAL_MS )
-    {
+		if (debounceCounter >= DEBOUNCING_INTERVAL_MS / TIMER_INTERVAL_MS )
+		{
 
-      //min time between pulses has passed
-      RPM = (float) ( 60000.0f / ( rotationTime * TIMER_INTERVAL_MS ) );
+			//min time between pulses has passed
+			RPM = (float) ( 60000.0f / ( rotationTime * TIMER_INTERVAL_MS ) );
 
-      avgRPM = ( 2 * avgRPM + RPM) / 3,
+			avgRPM = ( 2 * avgRPM + RPM) / 3,
 
 #if (TIMER_INTERRUPT_DEBUG > 1)
-      Serial.print("RPM = "); Serial.print(avgRPM);
-      Serial.print(", rotationTime ms = "); Serial.println(rotationTime * TIMER_INTERVAL_MS);
+			Serial.print("RPM = ");
+			Serial.print(avgRPM);
+			Serial.print(", rotationTime ms = ");
+			Serial.println(rotationTime * TIMER_INTERVAL_MS);
 #endif
 
-      rotationTime = 0;
-      debounceCounter = 0;
-    }
-    else
-      debounceCounter++;
-  }
-  else
-  {
-    debounceCounter++;
-  }
+			rotationTime = 0;
+			debounceCounter = 0;
+		}
+		else
+			debounceCounter++;
+	}
+	else
+	{
+		debounceCounter++;
+	}
 
-  if (rotationTime >= 5000)
-  {
-    // If idle, set RPM to 0, don't increase rotationTime
-    RPM = 0;
-    
-#if (TIMER_INTERRUPT_DEBUG > 1)   
-    Serial.print("RPM = "); Serial.print(RPM); Serial.print(", rotationTime = "); Serial.println(rotationTime);
+	if (rotationTime >= 5000)
+	{
+		// If idle, set RPM to 0, don't increase rotationTime
+		RPM = 0;
+
+#if (TIMER_INTERRUPT_DEBUG > 1)
+		Serial.print("RPM = ");
+		Serial.print(RPM);
+		Serial.print(", rotationTime = ");
+		Serial.println(rotationTime);
 #endif
-    
-    rotationTime = 0;
-  }
-  else
-  {
-    rotationTime++;
-  }
+
+		rotationTime = 0;
+	}
+	else
+	{
+		rotationTime++;
+	}
 }
 
 void setup()
 {
-  pinMode(interruptPin, INPUT_PULLUP);
-  
-  Serial.begin(115200);
-  while (!Serial);
-  
-  delay(300);
+	pinMode(interruptPin, INPUT_PULLUP);
 
-  Serial.print(F("\nStarting ISR_RPM_Measure on ")); Serial.println(ARDUINO_BOARD);
-  Serial.println(ESP8266_TIMER_INTERRUPT_VERSION);
-  Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
-  Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
- 
-  // Interval in microsecs
-  if (ITimer.attachInterruptInterval(TIMER_INTERVAL_MS * 1000, TimerHandler))
-  {
-    Serial.print(F("Starting  ITimer OK, millis() = ")); Serial.println(millis());
-  }
-  else
-    Serial.println(F("Can't set ITimer. Select another freq. or timer"));
+	Serial.begin(115200);
 
-  // Assumming the interruptPin will go LOW
-  attachInterrupt(digitalPinToInterrupt(interruptPin), detectRotation, FALLING);
+	while (!Serial && millis() < 5000);
+
+  delay(500);
+
+	Serial.print(F("\nStarting ISR_RPM_Measure on "));
+	Serial.println(ARDUINO_BOARD);
+	Serial.println(ESP8266_TIMER_INTERRUPT_VERSION);
+	Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
+	Serial.print(F("CPU Frequency = "));
+	Serial.print(F_CPU / 1000000);
+	Serial.println(F(" MHz"));
+
+	// Interval in microsecs
+	if (ITimer.attachInterruptInterval(TIMER_INTERVAL_MS * 1000, TimerHandler))
+	{
+		Serial.print(F("Starting  ITimer OK, millis() = "));
+		Serial.println(millis());
+	}
+	else
+		Serial.println(F("Can't set ITimer. Select another freq. or timer"));
+
+	// Assumming the interruptPin will go LOW
+	attachInterrupt(digitalPinToInterrupt(interruptPin), detectRotation, FALLING);
 }
 
 void loop()

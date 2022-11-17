@@ -1,6 +1,6 @@
 /****************************************************************************************************************************
   TimerInterruptTest.ino
- 
+
   For RP2040-based boards such as RASPBERRY_PI_PICO, ADAFRUIT_FEATHER_RP2040 and GENERIC_RP2040.
   Written by Khoi Hoang
 
@@ -47,57 +47,59 @@
 #include "TimerInterrupt_Generic.h"
 
 #ifndef LED_BUILTIN
-  #define LED_BUILTIN       25        // Pin D2 mapped to pin GPIO2/ADC12 of ESP32, control on-board LED
+	#define LED_BUILTIN       25        // Pin D2 mapped to pin GPIO2/ADC12 of ESP32, control on-board LED
 #endif
 
 #define PIN_D1              1         // Pin D1 mapped to pin GPIO1 of RPI_PICO
 
 bool TimerHandler0(struct repeating_timer *t)
-{ 
-  (void) t;
-  
-  static bool toggle0 = false;
-  static bool started = false;
+{
+	(void) t;
 
-  if (!started)
-  {
-    started = true;
-    pinMode(LED_BUILTIN, OUTPUT);
-  }
+	static bool toggle0 = false;
+	static bool started = false;
+
+	if (!started)
+	{
+		started = true;
+		pinMode(LED_BUILTIN, OUTPUT);
+	}
 
 #if (TIMER_INTERRUPT_DEBUG > 0)
-  Serial.print("ITimer0 called, millis() = "); Serial.println(millis());
+	Serial.print("ITimer0 called, millis() = ");
+	Serial.println(millis());
 #endif
 
-  //timer interrupt toggles pin LED_BUILTIN
-  digitalWrite(LED_BUILTIN, toggle0);
-  toggle0 = !toggle0;
+	//timer interrupt toggles pin LED_BUILTIN
+	digitalWrite(LED_BUILTIN, toggle0);
+	toggle0 = !toggle0;
 
-  return true;
+	return true;
 }
 
 bool TimerHandler1(struct repeating_timer *t)
-{ 
-  (void) t;
-  
-  static bool toggle1 = false;
-  static bool started = false;
+{
+	(void) t;
 
-  if (!started)
-  {
-    started = true;
-    pinMode(PIN_D1, OUTPUT);
-  }
+	static bool toggle1 = false;
+	static bool started = false;
+
+	if (!started)
+	{
+		started = true;
+		pinMode(PIN_D1, OUTPUT);
+	}
 
 #if (TIMER_INTERRUPT_DEBUG > 0)
-  Serial.print("ITimer1 called, millis() = "); Serial.println(millis());
+	Serial.print("ITimer1 called, millis() = ");
+	Serial.println(millis());
 #endif
 
-  //timer interrupt toggles outputPin
-  digitalWrite(PIN_D1, toggle1);
-  toggle1 = !toggle1;
+	//timer interrupt toggles outputPin
+	digitalWrite(PIN_D1, toggle1);
+	toggle1 = !toggle1;
 
-  return true;
+	return true;
 }
 
 #define TIMER0_INTERVAL_MS        1000
@@ -112,75 +114,86 @@ RPI_PICO_Timer ITimer1(1);
 
 void setup()
 {
-  Serial.begin(115200);
-  while (!Serial && millis() < 5000);
-  
-  delay(100);
-  
-  Serial.print(F("\nStarting TimerInterruptTest on ")); Serial.println(BOARD_NAME);
-  Serial.println(RPI_PICO_TIMER_INTERRUPT_VERSION);
-  Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
-  Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
+	Serial.begin(115200);
 
-  // Interval in microsecs
-  if (ITimer0.attachInterruptInterval(TIMER0_INTERVAL_MS * 1000, TimerHandler0))
-  {
-    Serial.print(F("Starting ITimer0 OK, millis() = ")); Serial.println(millis());
-  }
-  else
-    Serial.println(F("Can't set ITimer0. Select another freq. or timer"));
+	while (!Serial && millis() < 5000);
 
-  // Interval in microsecs
-  if (ITimer1.attachInterruptInterval(TIMER1_INTERVAL_MS * 1000, TimerHandler1))
-  {
-    Serial.print(F("Starting ITimer1 OK, millis() = ")); Serial.println(millis());
-  }
-  else
-    Serial.println(F("Can't set ITimer1. Select another freq. or timer"));
+  delay(500);
 
-  Serial.flush();  
+	Serial.print(F("\nStarting TimerInterruptTest on "));
+	Serial.println(BOARD_NAME);
+	Serial.println(RPI_PICO_TIMER_INTERRUPT_VERSION);
+	Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
+	Serial.print(F("CPU Frequency = "));
+	Serial.print(F_CPU / 1000000);
+	Serial.println(F(" MHz"));
+
+	// Interval in microsecs
+	if (ITimer0.attachInterruptInterval(TIMER0_INTERVAL_MS * 1000, TimerHandler0))
+	{
+		Serial.print(F("Starting ITimer0 OK, millis() = "));
+		Serial.println(millis());
+	}
+	else
+		Serial.println(F("Can't set ITimer0. Select another freq. or timer"));
+
+	// Interval in microsecs
+	if (ITimer1.attachInterruptInterval(TIMER1_INTERVAL_MS * 1000, TimerHandler1))
+	{
+		Serial.print(F("Starting ITimer1 OK, millis() = "));
+		Serial.println(millis());
+	}
+	else
+		Serial.println(F("Can't set ITimer1. Select another freq. or timer"));
+
+	Serial.flush();
 }
 
 void loop()
 {
-  static unsigned long lastTimer0 = 0;
-  static unsigned long lastTimer1 = 0;
+	static unsigned long lastTimer0 = 0;
+	static unsigned long lastTimer1 = 0;
 
-  static bool timer0Stopped         = false;
-  static bool timer1Stopped         = false;
+	static bool timer0Stopped         = false;
+	static bool timer1Stopped         = false;
 
-  if (millis() - lastTimer0 > TIMER0_DURATION_MS)
-  {
-    lastTimer0 = millis();
+	if (millis() - lastTimer0 > TIMER0_DURATION_MS)
+	{
+		lastTimer0 = millis();
 
-    if (timer0Stopped)
-    {
-      Serial.print(F("Start ITimer0, millis() = ")); Serial.println(millis());
-      ITimer0.restartTimer();
-    }
-    else
-    {
-      Serial.print(F("Stop ITimer0, millis() = ")); Serial.println(millis());
-      ITimer0.stopTimer();
-    }
-    timer0Stopped = !timer0Stopped;
-  }
+		if (timer0Stopped)
+		{
+			Serial.print(F("Start ITimer0, millis() = "));
+			Serial.println(millis());
+			ITimer0.restartTimer();
+		}
+		else
+		{
+			Serial.print(F("Stop ITimer0, millis() = "));
+			Serial.println(millis());
+			ITimer0.stopTimer();
+		}
 
-  if (millis() - lastTimer1 > TIMER1_DURATION_MS)
-  {
-    lastTimer1 = millis();
+		timer0Stopped = !timer0Stopped;
+	}
 
-    if (timer1Stopped)
-    {
-      Serial.print(F("Start ITimer1, millis() = ")); Serial.println(millis());
-      ITimer1.restartTimer();
-    }
-    else
-    {
-      Serial.print(F("Stop ITimer1, millis() = ")); Serial.println(millis());
-      ITimer1.stopTimer();
-    }
-    
-    timer1Stopped = !timer1Stopped;
-  }
+	if (millis() - lastTimer1 > TIMER1_DURATION_MS)
+	{
+		lastTimer1 = millis();
+
+		if (timer1Stopped)
+		{
+			Serial.print(F("Start ITimer1, millis() = "));
+			Serial.println(millis());
+			ITimer1.restartTimer();
+		}
+		else
+		{
+			Serial.print(F("Stop ITimer1, millis() = "));
+			Serial.println(millis());
+			ITimer1.stopTimer();
+		}
+
+		timer1Stopped = !timer1Stopped;
+	}
 }

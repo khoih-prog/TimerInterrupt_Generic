@@ -2,20 +2,20 @@
   ISR_Timer_Complex_WiFiNINA.ino
   For NRF52 boards
   Written by Khoi Hoang
-  
+
   Now even you use all these new 16 ISR-based timers,with their maximum interval practically unlimited (limited only by
   unsigned long miliseconds), you just consume only one Hardware timer and avoid conflicting with other cores' tasks.
   The accuracy is nearly perfect compared to software timers. The most important feature is they're ISR-based timers
   Therefore, their executions are not blocked by bad-behaving functions / tasks.
   This important feature is absolutely necessary for mission-critical tasks.
-  
+
   Based on SimpleTimer - A timer library for Arduino.
   Author: mromani@ottotecnica.com
   Copyright (c) 2010 OTTOTECNICA Italy
-  
+
   Based on BlynkTimer.h
   Author: Volodymyr Shymanskyy
-  
+
   Built by Khoi Hoang https://github.com/khoih-prog/TimerInterrupt_Generic
   Licensed under MIT license
 *****************************************************************************************************************************/
@@ -52,14 +52,14 @@
       defined(NRF52840_FEATHER_SENSE) || defined(NRF52840_ITSYBITSY) || defined(NRF52840_CIRCUITPLAY) || \
       defined(NRF52840_CLUE) || defined(NRF52840_METRO) || defined(NRF52840_PCA10056) || defined(PARTICLE_XENON) || \
       defined(MDBT50Q_RX) || defined(NINA_B302_ublox) || defined(NINA_B112_ublox) )
-  #error This code is designed to run on nRF52 platform! Please check your Tools->Board setting.
+#error This code is designed to run on nRF52 platform! Please check your Tools->Board setting.
 #endif
 
 #define BLYNK_PRINT Serial
 
 //#define BLYNK_DEBUG
 #ifdef BLYNK_DEBUG
-  #undef BLYNK_DEBUG
+	#undef BLYNK_DEBUG
 #endif
 
 /* Comment this out to disable prints and save space */
@@ -70,20 +70,20 @@
 #define USE_LOCAL_SERVER      true
 
 #if USE_LOCAL_SERVER
-  char auth[] = "******";
-  char server[] = "account.duckdns.org";
-  //char server[] = "192.168.2.112";
+	char auth[] = "******";
+	char server[] = "account.duckdns.org";
+	//char server[] = "192.168.2.112";
 
 #else
-  char auth[] = "******";
-  char server[] = "blynk-cloud.com";
+	char auth[] = "******";
+	char server[] = "blynk-cloud.com";
 #endif
-  
-  #define BLYNK_HARDWARE_PORT       8080
+
+#define BLYNK_HARDWARE_PORT       8080
 
 #if !(USE_BUILTIN_ETHERNET || USE_UIP_ETHERNET)
-  #define W5100_CS  10
-  #define SDCARD_CS 4
+	#define W5100_CS  10
+	#define SDCARD_CS 4
 #endif
 
 // Your WiFi credentials.
@@ -126,27 +126,27 @@ BlynkTimer blynkTimer;
 
 void TimerHandler()
 {
-  static bool toggle  = false;
-  static bool started = false;
-  static int timeRun  = 0;
+	static bool toggle  = false;
+	static bool started = false;
+	static int timeRun  = 0;
 
-  NRF52_ISR_Timer.run();
+	NRF52_ISR_Timer.run();
 
-  // Toggle LED every LED_TOGGLE_INTERVAL_MS = 5000ms = 5s
-  if (++timeRun == (LED_TOGGLE_INTERVAL_MS / HW_TIMER_INTERVAL_MS) )
-  {
-    timeRun = 0;
+	// Toggle LED every LED_TOGGLE_INTERVAL_MS = 5000ms = 5s
+	if (++timeRun == (LED_TOGGLE_INTERVAL_MS / HW_TIMER_INTERVAL_MS) )
+	{
+		timeRun = 0;
 
-    if (!started)
-    {
-      started = true;
-      pinMode(LED_BUILTIN, OUTPUT);
-    }
+		if (!started)
+		{
+			started = true;
+			pinMode(LED_BUILTIN, OUTPUT);
+		}
 
-    //timer interrupt toggles pin LED_BUILTIN
-    digitalWrite(LED_BUILTIN, toggle);
-    toggle = !toggle;
-  }
+		//timer interrupt toggles pin LED_BUILTIN
+		digitalWrite(LED_BUILTIN, toggle);
+		toggle = !toggle;
+	}
 }
 
 // In NRF52, avoid doing something fancy in ISR, for example complex Serial.print with String() argument
@@ -154,17 +154,18 @@ void TimerHandler()
 // Or you can get this run-time error / crash
 void doingSomething2s()
 {
-#if (NRF52_TIMER_INTERRUPT_DEBUG > 0)  
-  static unsigned long previousMillis = lastMillis;
-  unsigned long deltaMillis = millis() - previousMillis;
+#if (NRF52_TIMER_INTERRUPT_DEBUG > 0)
+	static unsigned long previousMillis = lastMillis;
+	unsigned long deltaMillis = millis() - previousMillis;
 
 
-  if (previousMillis > TIMER_INTERVAL_2S)
-  {
-    Serial.print("2s: Delta ms = "); Serial.println(deltaMillis);
-  }
+	if (previousMillis > TIMER_INTERVAL_2S)
+	{
+		Serial.print("2s: Delta ms = ");
+		Serial.println(deltaMillis);
+	}
 
-  previousMillis = millis();
+	previousMillis = millis();
 #endif
 }
 
@@ -173,17 +174,18 @@ void doingSomething2s()
 // Or you can get this run-time error / crash
 void doingSomething5s()
 {
-#if (NRF52_TIMER_INTERRUPT_DEBUG > 0)  
-  static unsigned long previousMillis = lastMillis;
-  unsigned long deltaMillis = millis() - previousMillis;
+#if (NRF52_TIMER_INTERRUPT_DEBUG > 0)
+	static unsigned long previousMillis = lastMillis;
+	unsigned long deltaMillis = millis() - previousMillis;
 
 
-  if (previousMillis > TIMER_INTERVAL_5S)
-  {
-    Serial.print("5s: Delta ms = "); Serial.println(deltaMillis);
-  }
+	if (previousMillis > TIMER_INTERVAL_5S)
+	{
+		Serial.print("5s: Delta ms = ");
+		Serial.println(deltaMillis);
+	}
 
-  previousMillis = millis();
+	previousMillis = millis();
 #endif
 }
 
@@ -192,17 +194,18 @@ void doingSomething5s()
 // Or you can get this run-time error / crash
 void doingSomething11s()
 {
-#if (NRF52_TIMER_INTERRUPT_DEBUG > 0)  
-  static unsigned long previousMillis = lastMillis;
-  unsigned long deltaMillis = millis() - previousMillis;
+#if (NRF52_TIMER_INTERRUPT_DEBUG > 0)
+	static unsigned long previousMillis = lastMillis;
+	unsigned long deltaMillis = millis() - previousMillis;
 
 
-  if (previousMillis > TIMER_INTERVAL_11S)
-  {
-    Serial.print("11s: Delta ms = "); Serial.println(deltaMillis);
-  }
+	if (previousMillis > TIMER_INTERVAL_11S)
+	{
+		Serial.print("11s: Delta ms = ");
+		Serial.println(deltaMillis);
+	}
 
-  previousMillis = millis();
+	previousMillis = millis();
 #endif
 }
 
@@ -211,17 +214,18 @@ void doingSomething11s()
 // Or you can get this run-time error / crash
 void doingSomething101s()
 {
-#if (NRF52_TIMER_INTERRUPT_DEBUG > 0)  
-  static unsigned long previousMillis = lastMillis;
-  unsigned long deltaMillis = millis() - previousMillis;
+#if (NRF52_TIMER_INTERRUPT_DEBUG > 0)
+	static unsigned long previousMillis = lastMillis;
+	unsigned long deltaMillis = millis() - previousMillis;
 
 
-  if (previousMillis > TIMER_INTERVAL_101S)
-  {
-    Serial.print("101s: Delta ms = "); Serial.println(deltaMillis);
-  }
+	if (previousMillis > TIMER_INTERVAL_101S)
+	{
+		Serial.print("101s: Delta ms = ");
+		Serial.println(deltaMillis);
+	}
 
-  previousMillis = millis();
+	previousMillis = millis();
 #endif
 }
 
@@ -233,78 +237,87 @@ void doingSomething101s()
 // 2. Very long "do", "while", "for" loops without predetermined exit time.
 void blynkDoingSomething2s()
 {
-  static unsigned long previousMillis = lastMillis;
-  
-  Serial.print(F("blynkDoingSomething2s: Delta programmed ms = ")); Serial.print(BLYNK_TIMER_MS);
-  Serial.print(F(", actual = ")); Serial.println(millis() - previousMillis);
-  
-  previousMillis = millis();
+	static unsigned long previousMillis = lastMillis;
+
+	Serial.print(F("blynkDoingSomething2s: Delta programmed ms = "));
+	Serial.print(BLYNK_TIMER_MS);
+	Serial.print(F(", actual = "));
+	Serial.println(millis() - previousMillis);
+
+	previousMillis = millis();
 }
 
 void setup()
 {
-  Serial.begin(115200);
-  while (!Serial);
-  
-  Serial.print(F("\nStarting ISR_Timer_Complex_WiFiNINA on ")); Serial.println(BOARD_NAME);
-  Serial.println(NRF52_TIMER_INTERRUPT_VERSION);
-  Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
-  Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
+	Serial.begin(115200);
 
-  // You need this timer for non-critical tasks. Avoid abusing ISR if not absolutely necessary.
-  blynkTimer.setInterval(BLYNK_TIMER_MS, blynkDoingSomething2s);
+	while (!Serial && millis() < 5000);
 
-  // Interval in microsecs
-  if (ITimer.attachInterruptInterval(HW_TIMER_INTERVAL_MS * 1000, TimerHandler))
-  {
-    lastMillis = millis();
-    Serial.print(F("Starting ITimer OK, millis() = ")); Serial.println(lastMillis);
-  }
-  else
-    Serial.println(F("Can't set ITimer. Select another freq. or timer"));
+  delay(500);
 
-  // Just to demonstrate, don't use too many ISR Timers if not absolutely necessary
-  // You can use up to 16 timer for each NRF52_ISR_Timer
-  NRF52_ISR_Timer.setInterval(TIMER_INTERVAL_2S, doingSomething2s);
-  NRF52_ISR_Timer.setInterval(TIMER_INTERVAL_5S, doingSomething5s);
-  NRF52_ISR_Timer.setInterval(TIMER_INTERVAL_11S, doingSomething11s);
-  NRF52_ISR_Timer.setInterval(TIMER_INTERVAL_101S, doingSomething101s);
+	Serial.print(F("\nStarting ISR_Timer_Complex_WiFiNINA on "));
+	Serial.println(BOARD_NAME);
+	Serial.println(NRF52_TIMER_INTERRUPT_VERSION);
+	Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
+	Serial.print(F("CPU Frequency = "));
+	Serial.print(F_CPU / 1000000);
+	Serial.println(F(" MHz"));
+
+	// You need this timer for non-critical tasks. Avoid abusing ISR if not absolutely necessary.
+	blynkTimer.setInterval(BLYNK_TIMER_MS, blynkDoingSomething2s);
+
+	// Interval in microsecs
+	if (ITimer.attachInterruptInterval(HW_TIMER_INTERVAL_MS * 1000, TimerHandler))
+	{
+		lastMillis = millis();
+		Serial.print(F("Starting ITimer OK, millis() = "));
+		Serial.println(lastMillis);
+	}
+	else
+		Serial.println(F("Can't set ITimer. Select another freq. or timer"));
+
+	// Just to demonstrate, don't use too many ISR Timers if not absolutely necessary
+	// You can use up to 16 timer for each NRF52_ISR_Timer
+	NRF52_ISR_Timer.setInterval(TIMER_INTERVAL_2S, doingSomething2s);
+	NRF52_ISR_Timer.setInterval(TIMER_INTERVAL_5S, doingSomething5s);
+	NRF52_ISR_Timer.setInterval(TIMER_INTERVAL_11S, doingSomething11s);
+	NRF52_ISR_Timer.setInterval(TIMER_INTERVAL_101S, doingSomething101s);
 
 #if !(USE_BUILTIN_ETHERNET || USE_UIP_ETHERNET)
-  pinMode(SDCARD_CS, OUTPUT);
-  digitalWrite(SDCARD_CS, HIGH); // Deselect the SD card
+	pinMode(SDCARD_CS, OUTPUT);
+	digitalWrite(SDCARD_CS, HIGH); // Deselect the SD card
 #endif
 
 #if USE_LOCAL_SERVER
-  //Blynk.begin(auth, server, BLYNK_HARDWARE_PORT);
-  Serial.println(F("Start Blynk"));
-  Blynk.begin(auth, ssid, pass, server, BLYNK_HARDWARE_PORT);
+	//Blynk.begin(auth, server, BLYNK_HARDWARE_PORT);
+	Serial.println(F("Start Blynk"));
+	Blynk.begin(auth, ssid, pass, server, BLYNK_HARDWARE_PORT);
 #else
-  Blynk.begin(auth);
-  // You can also specify server:
-  //Blynk.begin(auth, server, BLYNK_HARDWARE_PORT);
+	Blynk.begin(auth);
+	// You can also specify server:
+	//Blynk.begin(auth, server, BLYNK_HARDWARE_PORT);
 #endif
 
-  if (Blynk.connected())
-  {
-    Serial.print(F("IP = "));
-    Serial.println(WiFi.localIP());
-  }
+	if (Blynk.connected())
+	{
+		Serial.print(F("IP = "));
+		Serial.println(WiFi.localIP());
+	}
 }
 
 #define BLOCKING_TIME_MS      3000L
 
 void loop()
 {
-  Blynk.run();
+	Blynk.run();
 
-  // This unadvised blocking task is used to demonstrate the blocking effects onto the execution and accuracy to Software timer
-  // You see the time elapse of NRF52_ISR_Timer still accurate, whereas very unaccurate for Software Timer
-  // The time elapse for 2000ms software timer now becomes 3000ms (BLOCKING_TIME_MS)
-  // While that of NRF52_ISR_Timer is still prefect.
-  delay(BLOCKING_TIME_MS);
+	// This unadvised blocking task is used to demonstrate the blocking effects onto the execution and accuracy to Software timer
+	// You see the time elapse of NRF52_ISR_Timer still accurate, whereas very unaccurate for Software Timer
+	// The time elapse for 2000ms software timer now becomes 3000ms (BLOCKING_TIME_MS)
+	// While that of NRF52_ISR_Timer is still prefect.
+	delay(BLOCKING_TIME_MS);
 
-  // You need this Software timer for non-critical tasks. Avoid abusing ISR if not absolutely necessary
-  // You don't need to and never call NRF52_ISR_Timer.run() here in the loop(). It's already handled by ISR timer.
-  blynkTimer.run();
+	// You need this Software timer for non-critical tasks. Avoid abusing ISR if not absolutely necessary
+	// You don't need to and never call NRF52_ISR_Timer.run() here in the loop(). It's already handled by ISR timer.
+	blynkTimer.run();
 }

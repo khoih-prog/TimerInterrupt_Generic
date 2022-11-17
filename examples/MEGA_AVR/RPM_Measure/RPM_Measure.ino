@@ -61,86 +61,97 @@ volatile int debounceCounter;
 
 void TimerHandler1()
 {
-  static bool started = false;
+	static bool started = false;
 
-  if (!started)
-  {
-    started = true;
-    pinMode(SWPin, INPUT_PULLUP);
-  }
+	if (!started)
+	{
+		started = true;
+		pinMode(SWPin, INPUT_PULLUP);
+	}
 
-  if ( !digitalRead(SWPin) && (debounceCounter >= DEBOUNCING_INTERVAL_MS / TIMER1_INTERVAL_MS ) )
-  {
-    //min time between pulses has passed
-    RPM = (float) ( 60000.0f / ( rotationTime * TIMER1_INTERVAL_MS ) );
+	if ( !digitalRead(SWPin) && (debounceCounter >= DEBOUNCING_INTERVAL_MS / TIMER1_INTERVAL_MS ) )
+	{
+		//min time between pulses has passed
+		RPM = (float) ( 60000.0f / ( rotationTime * TIMER1_INTERVAL_MS ) );
 
-    avgRPM = ( 2 * avgRPM + RPM) / 3,
+		avgRPM = ( 2 * avgRPM + RPM) / 3,
 
 #if (TIMER_INTERRUPT_DEBUG > 1)
-      Serial.print("RPM = "); Serial.print(avgRPM);
-      Serial.print(", rotationTime ms = "); Serial.println(rotationTime * TIMER1_INTERVAL_MS);
+		Serial.print("RPM = ");
+		Serial.print(avgRPM);
+		Serial.print(", rotationTime ms = ");
+		Serial.println(rotationTime * TIMER1_INTERVAL_MS);
 #endif
 
-    rotationTime = 0;
-    debounceCounter = 0;
-  }
-  else
-  {
-    debounceCounter++;
-  }
+		rotationTime = 0;
+		debounceCounter = 0;
+	}
+	else
+	{
+		debounceCounter++;
+	}
 
-  if (rotationTime >= 5000)
-  {
-    // If idle, set RPM to 0, don't increase rotationTime
-    RPM = 0;
-    
-#if (TIMER_INTERRUPT_DEBUG > 1)   
-    Serial.print("RPM = "); Serial.print(RPM); Serial.print(", rotationTime = "); Serial.println(rotationTime);
+	if (rotationTime >= 5000)
+	{
+		// If idle, set RPM to 0, don't increase rotationTime
+		RPM = 0;
+
+#if (TIMER_INTERRUPT_DEBUG > 1)
+		Serial.print("RPM = ");
+		Serial.print(RPM);
+		Serial.print(", rotationTime = ");
+		Serial.println(rotationTime);
 #endif
-    
-    rotationTime = 0;
-  }
-  else
-  {
-    rotationTime++;
-  }
+
+		rotationTime = 0;
+	}
+	else
+	{
+		rotationTime++;
+	}
 }
 
 
 void setup()
 {
-  Serial.begin(115200);
-  while (!Serial);
+	Serial.begin(115200);
 
-  Serial.print(F("\nStarting RPM_Measure on "));
-  Serial.println(BOARD_NAME);
-  Serial.println(MEGA_AVR_TIMER_INTERRUPT_VERSION);
-  Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
+	while (!Serial && millis() < 5000);
 
-  Serial.print(F("TCB Clock Frequency = ")); 
+  delay(500);
 
-#if USING_16MHZ  
-  Serial.println(F("16MHz for highest accuracy"));
-#elif USING_8MHZ  
-  Serial.println(F("8MHz for very high accuracy"));
+	Serial.print(F("\nStarting RPM_Measure on "));
+	Serial.println(BOARD_NAME);
+	Serial.println(MEGA_AVR_TIMER_INTERRUPT_VERSION);
+	Serial.print(F("CPU Frequency = "));
+	Serial.print(F_CPU / 1000000);
+	Serial.println(F(" MHz"));
+
+	Serial.print(F("TCB Clock Frequency = "));
+
+#if USING_16MHZ
+	Serial.println(F("16MHz for highest accuracy"));
+#elif USING_8MHZ
+	Serial.println(F("8MHz for very high accuracy"));
 #else
-  Serial.println(F("250KHz for lower accuracy but longer time"));
+	Serial.println(F("250KHz for lower accuracy but longer time"));
 #endif
 
-  // Timer0 is used for micros(), millis(), delay(), etc and can't be used
-  // Select Timer 1-2 for UNO, 0-5 for MEGA
-  // Timer 2 is 8-bit timer, only for higher frequency
+	// Timer0 is used for micros(), millis(), delay(), etc and can't be used
+	// Select Timer 1-2 for UNO, 0-5 for MEGA
+	// Timer 2 is 8-bit timer, only for higher frequency
 
-  ITimer1.init();
+	ITimer1.init();
 
-  // Using ATmega328 used in UNO => 16MHz CPU clock ,
+	// Using ATmega328 used in UNO => 16MHz CPU clock ,
 
-  if (ITimer1.attachInterruptInterval(TIMER1_INTERVAL_MS, TimerHandler1))
-  {
-    Serial.print(F("Starting  ITimer1 OK, millis() = ")); Serial.println(millis());
-  }
-  else
-    Serial.println(F("Can't set ITimer1. Select another freq. or timer"));
+	if (ITimer1.attachInterruptInterval(TIMER1_INTERVAL_MS, TimerHandler1))
+	{
+		Serial.print(F("Starting  ITimer1 OK, millis() = "));
+		Serial.println(millis());
+	}
+	else
+		Serial.println(F("Can't set ITimer1. Select another freq. or timer"));
 }
 
 void loop()

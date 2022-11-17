@@ -30,7 +30,7 @@
 */
 
 #if !defined(ESP8266)
-  #error This code is designed to run on ESP8266 and ESP8266-based boards! Please check your Tools->Board setting.
+	#error This code is designed to run on ESP8266 and ESP8266-based boards! Please check your Tools->Board setting.
 #endif
 
 // These define's must be placed at the beginning before #include "TimerInterrupt_Generic.h"
@@ -42,30 +42,31 @@
 #include "TimerInterrupt_Generic.h"
 
 #ifndef LED_BUILTIN
-  #define LED_BUILTIN       2         // Pin D4 mapped to pin GPIO2/TXD1 of ESP8266, NodeMCU and WeMoS, control on-board LED
+	#define LED_BUILTIN       2         // Pin D4 mapped to pin GPIO2/TXD1 of ESP8266, NodeMCU and WeMoS, control on-board LED
 #endif
 
 volatile uint32_t lastMillis = 0;
 
 void IRAM_ATTR TimerHandler()
 {
-  static bool toggle = false;
-  static bool started = false;
+	static bool toggle = false;
+	static bool started = false;
 
-  if (!started)
-  {
-    started = true;
-    pinMode(LED_BUILTIN, OUTPUT);
-  }
+	if (!started)
+	{
+		started = true;
+		pinMode(LED_BUILTIN, OUTPUT);
+	}
 
 #if (TIMER_INTERRUPT_DEBUG > 0)
-  Serial.print("Delta ms = "); Serial.println(millis() - lastMillis);
-  lastMillis = millis();
+	Serial.print("Delta ms = ");
+	Serial.println(millis() - lastMillis);
+	lastMillis = millis();
 #endif
 
-  //timer interrupt toggles pin LED_BUILTIN
-  digitalWrite(LED_BUILTIN, toggle);
-  toggle = !toggle;
+	//timer interrupt toggles pin LED_BUILTIN
+	digitalWrite(LED_BUILTIN, toggle);
+	toggle = !toggle;
 }
 
 #define TIMER_INTERVAL_MS        1000
@@ -75,24 +76,29 @@ ESP8266Timer ITimer;
 
 void setup()
 {
-  Serial.begin(115200);
-  while (!Serial);
-  
-  delay(300);
+	Serial.begin(115200);
 
-  Serial.print(F("\nStarting Argument_None on ")); Serial.println(ARDUINO_BOARD);
-  Serial.println(ESP8266_TIMER_INTERRUPT_VERSION);
-  Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
-  Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
+	while (!Serial && millis() < 5000);
 
-  // Interval in microsecs
-  if (ITimer.attachInterruptInterval(TIMER_INTERVAL_MS * 1000, TimerHandler))
-  {
-    lastMillis = millis();
-    Serial.print(F("Starting  ITimer OK, millis() = ")); Serial.println(lastMillis);
-  }
-  else
-    Serial.println(F("Can't set ITimer correctly. Select another freq. or interval"));
+  delay(500);
+
+	Serial.print(F("\nStarting Argument_None on "));
+	Serial.println(ARDUINO_BOARD);
+	Serial.println(ESP8266_TIMER_INTERRUPT_VERSION);
+	Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
+	Serial.print(F("CPU Frequency = "));
+	Serial.print(F_CPU / 1000000);
+	Serial.println(F(" MHz"));
+
+	// Interval in microsecs
+	if (ITimer.attachInterruptInterval(TIMER_INTERVAL_MS * 1000, TimerHandler))
+	{
+		lastMillis = millis();
+		Serial.print(F("Starting  ITimer OK, millis() = "));
+		Serial.println(lastMillis);
+	}
+	else
+		Serial.println(F("Can't set ITimer correctly. Select another freq. or interval"));
 }
 
 void loop()

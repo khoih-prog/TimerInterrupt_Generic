@@ -49,21 +49,21 @@
         defined(ARDUINO_AVR_NG) || defined(ARDUINO_AVR_UNO_WIFI_DEV_ED) || defined(ARDUINO_AVR_DUEMILANOVE) || defined(ARDUINO_AVR_FEATHER328P) || \
         defined(ARDUINO_AVR_METRO) || defined(ARDUINO_AVR_PROTRINKET5) || defined(ARDUINO_AVR_PROTRINKET3) || defined(ARDUINO_AVR_PROTRINKET5FTDI) || \
         defined(ARDUINO_AVR_PROTRINKET3FTDI) )
-  #define USE_TIMER_2     true
-  #warning Using Timer1, Timer2
-#else          
-  #define USE_TIMER_3     true
-  #warning Using Timer1, Timer3
+#define USE_TIMER_2     true
+#warning Using Timer1, Timer2
+#else
+#define USE_TIMER_3     true
+#warning Using Timer1, Timer3
 #endif
 
 #include "TimerInterrupt_Generic.h"
 
 #if !defined(LED_BUILTIN)
-  #define LED_BUILTIN     13
+	#define LED_BUILTIN     13
 #endif
 
 #ifndef LED_BLUE
-  #define LED_BLUE              7
+	#define LED_BLUE              7
 #endif
 
 
@@ -75,88 +75,100 @@ volatile uint32_t TimerCount  = 0;
 
 void printResult(uint32_t currTime)
 {
-  Serial.print(F("Time = ")); Serial.print(currTime); 
-  Serial.print(F(", Timer1Count = ")); Serial.print(Timer1Count);
-  
-  Serial.print(F(", TimerCount = ")); Serial.println(TimerCount);
+	Serial.print(F("Time = "));
+	Serial.print(currTime);
+	Serial.print(F(", Timer1Count = "));
+	Serial.print(Timer1Count);
+
+	Serial.print(F(", TimerCount = "));
+	Serial.println(TimerCount);
 }
 
 void TimerHandler1(void)
 {
-  static bool toggle1 = false;
+	static bool toggle1 = false;
 
-  // Flag for checking to be sure ISR is working as Serial.print is not OK here in ISR
-  Timer1Count++;
+	// Flag for checking to be sure ISR is working as Serial.print is not OK here in ISR
+	Timer1Count++;
 
-  //timer interrupt toggles pin LED_BUILTIN
-  digitalWrite(LED_BUILTIN, toggle1);
-  toggle1 = !toggle1;
+	//timer interrupt toggles pin LED_BUILTIN
+	digitalWrite(LED_BUILTIN, toggle1);
+	toggle1 = !toggle1;
 }
 
 void TimerHandler(void)
 {
-  static bool toggle = false;
+	static bool toggle = false;
 
-  // Flag for checking to be sure ISR is working as Serial.print is not OK here in ISR
-  TimerCount++;
-  
-  //timer interrupt toggles outputPin
-  digitalWrite(LED_BLUE, toggle);
-  toggle = !toggle;
+	// Flag for checking to be sure ISR is working as Serial.print is not OK here in ISR
+	TimerCount++;
+
+	//timer interrupt toggles outputPin
+	digitalWrite(LED_BLUE, toggle);
+	toggle = !toggle;
 }
 
 void setup()
 {
-  pinMode(LED_BUILTIN, OUTPUT);
-  pinMode(LED_BLUE,    OUTPUT);
-  
-  Serial.begin(115200);
-  while (!Serial);
+	pinMode(LED_BUILTIN, OUTPUT);
+	pinMode(LED_BLUE,    OUTPUT);
 
-  Serial.print(F("\nStarting Change_Interval on ")); Serial.println(BOARD_TYPE);
-  Serial.println(TIMER_INTERRUPT_VERSION);
-  Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
-  Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
+	Serial.begin(115200);
 
-  // Select Timer 1-2 for UNO, 1-5 for MEGA, 1,3,4 for 16u4/32u4
-  // Timer 2 is 8-bit timer, only for higher frequency
-  // Timer 4 of 16u4 and 32u4 is 8/10-bit timer, only for higher frequency
-  ITimer1.init();
+	while (!Serial && millis() < 5000);
 
-  // Using ATmega328 used in UNO => 16MHz CPU clock ,
-  // For 16-bit timer 1, 3, 4 and 5, set frequency from 0.2385 to some KHz
-  // For 8-bit timer 2 (prescaler up to 1024, set frequency from 61.5Hz to some KHz
+  delay(500);
 
-  if (ITimer1.attachInterruptInterval(TIMER1_INTERVAL_MS, TimerHandler1))
-  {
-    Serial.print(F("Starting  ITimer1 OK, millis() = ")); Serial.println(millis());
-  }
-  else
-    Serial.println(F("Can't set ITimer1. Select another freq. or timer"));
+	Serial.print(F("\nStarting Change_Interval on "));
+	Serial.println(BOARD_TYPE);
+	Serial.println(TIMER_INTERRUPT_VERSION);
+	Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
+	Serial.print(F("CPU Frequency = "));
+	Serial.print(F_CPU / 1000000);
+	Serial.println(F(" MHz"));
+
+	// Select Timer 1-2 for UNO, 1-5 for MEGA, 1,3,4 for 16u4/32u4
+	// Timer 2 is 8-bit timer, only for higher frequency
+	// Timer 4 of 16u4 and 32u4 is 8/10-bit timer, only for higher frequency
+	ITimer1.init();
+
+	// Using ATmega328 used in UNO => 16MHz CPU clock ,
+	// For 16-bit timer 1, 3, 4 and 5, set frequency from 0.2385 to some KHz
+	// For 8-bit timer 2 (prescaler up to 1024, set frequency from 61.5Hz to some KHz
+
+	if (ITimer1.attachInterruptInterval(TIMER1_INTERVAL_MS, TimerHandler1))
+	{
+		Serial.print(F("Starting  ITimer1 OK, millis() = "));
+		Serial.println(millis());
+	}
+	else
+		Serial.println(F("Can't set ITimer1. Select another freq. or timer"));
 
 #if USE_TIMER_2
-  
-  ITimer2.init();
 
-  if (ITimer2.attachInterruptInterval(TIMER_INTERVAL_MS, TimerHandler))
-  {
-    Serial.print(F("Starting  ITimer2 OK, millis() = ")); Serial.println(millis());
-  }
-  else
-    Serial.println(F("Can't set ITimer2. Select another freq. or timer"));
+	ITimer2.init();
+
+	if (ITimer2.attachInterruptInterval(TIMER_INTERVAL_MS, TimerHandler))
+	{
+		Serial.print(F("Starting  ITimer2 OK, millis() = "));
+		Serial.println(millis());
+	}
+	else
+		Serial.println(F("Can't set ITimer2. Select another freq. or timer"));
 
 #elif USE_TIMER_3
 
-  ITimer3.init();
+	ITimer3.init();
 
-  if (ITimer3.attachInterruptInterval(TIMER_INTERVAL_MS, TimerHandler))
-  {
-    Serial.print(F("Starting  ITimer3 OK, millis() = ")); Serial.println(millis());
-  }
-  else
-    Serial.println(F("Can't set ITimer3. Select another freq. or timer"));
+	if (ITimer3.attachInterruptInterval(TIMER_INTERVAL_MS, TimerHandler))
+	{
+		Serial.print(F("Starting  ITimer3 OK, millis() = "));
+		Serial.println(millis());
+	}
+	else
+		Serial.println(F("Can't set ITimer3. Select another freq. or timer"));
 
-#endif    
+#endif
 }
 
 #define CHECK_INTERVAL_MS     10000L
@@ -164,41 +176,44 @@ void setup()
 
 void loop()
 {
-  static uint32_t lastTime = 0;
-  static uint32_t lastChangeTime = 0;
-  static uint32_t currTime;
-  static uint32_t multFactor = 0;
+	static uint32_t lastTime = 0;
+	static uint32_t lastChangeTime = 0;
+	static uint32_t currTime;
+	static uint32_t multFactor = 0;
 
-  currTime = millis();
+	currTime = millis();
 
-  if (currTime - lastTime > CHECK_INTERVAL_MS)
-  {
-    printResult(currTime);
-    lastTime = currTime;
+	if (currTime - lastTime > CHECK_INTERVAL_MS)
+	{
+		printResult(currTime);
+		lastTime = currTime;
 
-    if (currTime - lastChangeTime > CHANGE_INTERVAL_MS)
-    {
-      //setInterval(unsigned long interval, timerCallback callback)
-      multFactor = (multFactor + 1) % 2;
+		if (currTime - lastChangeTime > CHANGE_INTERVAL_MS)
+		{
+			//setInterval(unsigned long interval, timerCallback callback)
+			multFactor = (multFactor + 1) % 2;
 
-      // interval (in ms) and duration (in milliseconds). Duration = 0 or not specified => run indefinitely
-      // bool setInterval(unsigned long interval, timer_callback callback, unsigned long duration)
-      
-      ITimer1.setInterval(TIMER1_INTERVAL_MS * (multFactor + 1), TimerHandler1);
+			// interval (in ms) and duration (in milliseconds). Duration = 0 or not specified => run indefinitely
+			// bool setInterval(unsigned long interval, timer_callback callback, unsigned long duration)
 
-      Serial.print(F("Changing Interval, Timer1 = ")); Serial.println(TIMER1_INTERVAL_MS * (multFactor + 1)); 
+			ITimer1.setInterval(TIMER1_INTERVAL_MS * (multFactor + 1), TimerHandler1);
+
+			Serial.print(F("Changing Interval, Timer1 = "));
+			Serial.println(TIMER1_INTERVAL_MS * (multFactor + 1));
 
 #if USE_TIMER_2
-      ITimer2.setInterval(TIMER_INTERVAL_MS * (multFactor + 1), TimerHandler);
+			ITimer2.setInterval(TIMER_INTERVAL_MS * (multFactor + 1), TimerHandler);
 
-      Serial.print(F("Changing Interval, Timer2 = ")); Serial.println(TIMER_INTERVAL_MS * (multFactor + 1));  
+			Serial.print(F("Changing Interval, Timer2 = "));
+			Serial.println(TIMER_INTERVAL_MS * (multFactor + 1));
 #elif USE_TIMER_3
-      ITimer3.setInterval(TIMER_INTERVAL_MS * (multFactor + 1), TimerHandler);
+			ITimer3.setInterval(TIMER_INTERVAL_MS * (multFactor + 1), TimerHandler);
 
-      Serial.print(F("Changing Interval, Timer3 = ")); Serial.println(TIMER_INTERVAL_MS * (multFactor + 1));                            
+			Serial.print(F("Changing Interval, Timer3 = "));
+			Serial.println(TIMER_INTERVAL_MS * (multFactor + 1));
 #endif
-      
-      lastChangeTime = currTime;
-    }
-  }
+
+			lastChangeTime = currTime;
+		}
+	}
 }

@@ -37,23 +37,23 @@
 #define TIMER1_INTERVAL_MS    1000
 
 #ifndef LED_BUILTIN
-  #define LED_BUILTIN   13
+	#define LED_BUILTIN   13
 #endif
 
 void TimerHandler1(void)
 {
-  static bool toggle1 = false;
-  static bool started = false;
+	static bool toggle1 = false;
+	static bool started = false;
 
-  if (!started)
-  {
-    started = true;
-    pinMode(LED_BUILTIN, OUTPUT);
-  }
+	if (!started)
+	{
+		started = true;
+		pinMode(LED_BUILTIN, OUTPUT);
+	}
 
-  //timer interrupt toggles pin LED_BUILTIN
-  digitalWrite(LED_BUILTIN, toggle1);
-  toggle1 = !toggle1;
+	//timer interrupt toggles pin LED_BUILTIN
+	digitalWrite(LED_BUILTIN, toggle1);
+	toggle1 = !toggle1;
 }
 
 #if USE_TIMER_2
@@ -62,69 +62,77 @@ void TimerHandler1(void)
 
 void TimerHandler2(void)
 {
-  static bool toggle2 = false;
-  static bool started = false;
+	static bool toggle2 = false;
+	static bool started = false;
 
-  if (!started)
-  {
-    started = true;
-    pinMode(A0, OUTPUT);
-  }
+	if (!started)
+	{
+		started = true;
+		pinMode(A0, OUTPUT);
+	}
 
-  //timer interrupt toggles outputPin
-  digitalWrite(A0, toggle2);
-  toggle2 = !toggle2;
+	//timer interrupt toggles outputPin
+	digitalWrite(A0, toggle2);
+	toggle2 = !toggle2;
 }
 #endif
 
 void setup()
 {
-  Serial.begin(115200);
-  while (!Serial);
+	Serial.begin(115200);
 
-  Serial.print(F("\nStarting Argument_None on ")); Serial.println(BOARD_NAME);
-  Serial.println(MEGA_AVR_TIMER_INTERRUPT_VERSION);
-  Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
-  Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
+	while (!Serial && millis() < 5000);
 
-  Serial.print(F("TCB Clock Frequency = ")); 
+  delay(500);
 
-#if USING_16MHZ  
-  Serial.println(F("16MHz for highest accuracy"));
-#elif USING_8MHZ  
-  Serial.println(F("8MHz for very high accuracy"));
+	Serial.print(F("\nStarting Argument_None on "));
+	Serial.println(BOARD_NAME);
+	Serial.println(MEGA_AVR_TIMER_INTERRUPT_VERSION);
+	Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
+	Serial.print(F("CPU Frequency = "));
+	Serial.print(F_CPU / 1000000);
+	Serial.println(F(" MHz"));
+
+	Serial.print(F("TCB Clock Frequency = "));
+
+#if USING_16MHZ
+	Serial.println(F("16MHz for highest accuracy"));
+#elif USING_8MHZ
+	Serial.println(F("8MHz for very high accuracy"));
 #else
-  Serial.println(F("250KHz for lower accuracy but longer time"));
+	Serial.println(F("250KHz for lower accuracy but longer time"));
 #endif
 
-  // Select Timer 1-2 for UNO, 0-5 for MEGA
-  // Timer 2 is 8-bit timer, only for higher frequency
-  ITimer1.init();
+	// Select Timer 1-2 for UNO, 0-5 for MEGA
+	// Timer 2 is 8-bit timer, only for higher frequency
+	ITimer1.init();
 
-  // Using ATmega328 used in UNO => 16MHz CPU clock ,
-  // For 16-bit timer 1, 3, 4 and 5, set frequency from 0.2385 to some KHz
-  // For 8-bit timer 2 (prescaler up to 1024, set frequency from 61.5Hz to some KHz
+	// Using ATmega328 used in UNO => 16MHz CPU clock ,
+	// For 16-bit timer 1, 3, 4 and 5, set frequency from 0.2385 to some KHz
+	// For 8-bit timer 2 (prescaler up to 1024, set frequency from 61.5Hz to some KHz
 
-  if (ITimer1.attachInterruptInterval(TIMER1_INTERVAL_MS, TimerHandler1))
-  {
-    Serial.print(F("Starting  ITimer1 OK, millis() = ")); Serial.println(millis());
-  }
-  else
-    Serial.println(F("Can't set ITimer1. Select another freq. or timer"));
+	if (ITimer1.attachInterruptInterval(TIMER1_INTERVAL_MS, TimerHandler1))
+	{
+		Serial.print(F("Starting  ITimer1 OK, millis() = "));
+		Serial.println(millis());
+	}
+	else
+		Serial.println(F("Can't set ITimer1. Select another freq. or timer"));
 
 #if USE_TIMER_2
 
-  // Select Timer 1-2 for UNO, 0-5 for MEGA
-  // Timer 2 is 8-bit timer, only for higher frequency
-  ITimer2.init();
+	// Select Timer 1-2 for UNO, 0-5 for MEGA
+	// Timer 2 is 8-bit timer, only for higher frequency
+	ITimer2.init();
 
-  if (ITimer2.attachInterruptInterval(TIMER2_INTERVAL_MS, TimerHandler2))
-  {
-    Serial.print(F("Starting  ITimer2 OK, millis() = ")); Serial.println(millis());
-  }
-  else
-    Serial.println(F("Can't set ITimer2. Select another freq. or timer"));
-    
+	if (ITimer2.attachInterruptInterval(TIMER2_INTERVAL_MS, TimerHandler2))
+	{
+		Serial.print(F("Starting  ITimer2 OK, millis() = "));
+		Serial.println(millis());
+	}
+	else
+		Serial.println(F("Can't set ITimer2. Select another freq. or timer"));
+
 #endif
 }
 

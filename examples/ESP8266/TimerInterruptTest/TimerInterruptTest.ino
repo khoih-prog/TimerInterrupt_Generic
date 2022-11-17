@@ -30,7 +30,7 @@
 */
 
 #if !defined(ESP8266)
-  #error This code is designed to run on ESP8266 and ESP8266-based boards! Please check your Tools->Board setting.
+	#error This code is designed to run on ESP8266 and ESP8266-based boards! Please check your Tools->Board setting.
 #endif
 
 // These define's must be placed at the beginning before #include "TimerInterrupt_Generic.h"
@@ -54,20 +54,20 @@ ESP8266Timer ITimer;
 //=======================================================================
 void IRAM_ATTR TimerHandler()
 {
-  static bool started = false;
+	static bool started = false;
 
-  if (!started)
-  {
-    started = true;
-    pinMode(BUILTIN_LED, OUTPUT);
-  }
+	if (!started)
+	{
+		started = true;
+		pinMode(BUILTIN_LED, OUTPUT);
+	}
 
-  digitalWrite(BUILTIN_LED, statusLed);  //Toggle LED Pin
-  statusLed = !statusLed;
+	digitalWrite(BUILTIN_LED, statusLed);  //Toggle LED Pin
+	statusLed = !statusLed;
 
 #if (TIMER_INTERRUPT_DEBUG > 0)
-  Serial.println("Delta ms = " + String(millis() - lastMillis));
-  lastMillis = millis();
+	Serial.println("Delta ms = " + String(millis() - lastMillis));
+	lastMillis = millis();
 #endif
 }
 //=======================================================================
@@ -75,24 +75,29 @@ void IRAM_ATTR TimerHandler()
 //=======================================================================
 void setup()
 {
-  Serial.begin(115200);
-  while (!Serial);
+	Serial.begin(115200);
 
-  delay(300);
+	while (!Serial && millis() < 5000);
 
-  Serial.print(F("\nStarting TimerInterruptTest on ")); Serial.println(ARDUINO_BOARD);
-  Serial.println(ESP8266_TIMER_INTERRUPT_VERSION);
-  Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
-  Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
+  delay(500);
 
-  // Interval in microsecs
-  if (ITimer.attachInterruptInterval(TIMER_INTERVAL_MS * 1000, TimerHandler))
-  {
-    lastMillis = millis();
-    Serial.print(F("Starting ITimer OK, millis() = ")); Serial.println(lastMillis);
-  }
-  else
-    Serial.println(F("Can't set ITimer correctly. Select another freq. or interval"));
+	Serial.print(F("\nStarting TimerInterruptTest on "));
+	Serial.println(ARDUINO_BOARD);
+	Serial.println(ESP8266_TIMER_INTERRUPT_VERSION);
+	Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
+	Serial.print(F("CPU Frequency = "));
+	Serial.print(F_CPU / 1000000);
+	Serial.println(F(" MHz"));
+
+	// Interval in microsecs
+	if (ITimer.attachInterruptInterval(TIMER_INTERVAL_MS * 1000, TimerHandler))
+	{
+		lastMillis = millis();
+		Serial.print(F("Starting ITimer OK, millis() = "));
+		Serial.println(lastMillis);
+	}
+	else
+		Serial.println(F("Can't set ITimer correctly. Select another freq. or interval"));
 
 }
 //=======================================================================

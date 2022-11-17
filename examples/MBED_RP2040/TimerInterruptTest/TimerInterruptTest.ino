@@ -39,9 +39,9 @@
 
 #if ( defined(ARDUINO_NANO_RP2040_CONNECT) || defined(ARDUINO_RASPBERRY_PI_PICO) || defined(ARDUINO_ADAFRUIT_FEATHER_RP2040) || \
       defined(ARDUINO_GENERIC_RP2040) ) && defined(ARDUINO_ARCH_MBED)
-  #define USING_MBED_RPI_PICO_TIMER_INTERRUPT        true
+#define USING_MBED_RPI_PICO_TIMER_INTERRUPT        true
 #else
-  #error This code is intended to run on the MBED RASPBERRY_PI_PICO platform! Please check your Tools->Board setting.
+#error This code is intended to run on the MBED RASPBERRY_PI_PICO platform! Please check your Tools->Board setting.
 #endif
 
 // These define's must be placed at the beginning before #include "TimerInterrupt_Generic.h"
@@ -51,49 +51,49 @@
 #include "TimerInterrupt_Generic.h"
 
 #ifndef LED_BUILTIN
-  #define LED_BUILTIN       25        // Pin D2 mapped to pin GPIO2/ADC12 of ESP32, control on-board LED
+	#define LED_BUILTIN       25        // Pin D2 mapped to pin GPIO2/ADC12 of ESP32, control on-board LED
 #endif
 
 #define PIN_D1              1         // Pin D1 mapped to pin GPIO1 of RPI_PICO
 
 // Never use Serial.print inside this mbed ISR. Will hang the system
 void TimerHandler0(uint alarm_num)
-{ 
-  static bool toggle0 = false;
+{
+	static bool toggle0 = false;
 
-  ///////////////////////////////////////////////////////////
-  // Always call this for MBED RP2040 before processing ISR
-  TIMER_ISR_START(alarm_num);
-  ///////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////
+	// Always call this for MBED RP2040 before processing ISR
+	TIMER_ISR_START(alarm_num);
+	///////////////////////////////////////////////////////////
 
-  //timer interrupt toggles pin LED_BUILTIN
-  digitalWrite(LED_BUILTIN, toggle0);
-  toggle0 = !toggle0;
+	//timer interrupt toggles pin LED_BUILTIN
+	digitalWrite(LED_BUILTIN, toggle0);
+	toggle0 = !toggle0;
 
-  ////////////////////////////////////////////////////////////
-  // Always call this for MBED RP2040 after processing ISR
-  TIMER_ISR_END(alarm_num);
-  ////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////
+	// Always call this for MBED RP2040 after processing ISR
+	TIMER_ISR_END(alarm_num);
+	////////////////////////////////////////////////////////////
 }
 
 // Never use Serial.print inside this mbed ISR. Will hang the system
 void TimerHandler1(uint alarm_num)
-{ 
-  static bool toggle1 = false;
+{
+	static bool toggle1 = false;
 
-  ///////////////////////////////////////////////////////////
-  // Always call this for MBED RP2040 before processing ISR
-  TIMER_ISR_START(alarm_num);
-  ///////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////
+	// Always call this for MBED RP2040 before processing ISR
+	TIMER_ISR_START(alarm_num);
+	///////////////////////////////////////////////////////////
 
-  //timer interrupt toggles outputPin
-  digitalWrite(PIN_D1, toggle1);
-  toggle1 = !toggle1;
+	//timer interrupt toggles outputPin
+	digitalWrite(PIN_D1, toggle1);
+	toggle1 = !toggle1;
 
-  ////////////////////////////////////////////////////////////
-  // Always call this for MBED RP2040 after processing ISR
-  TIMER_ISR_END(alarm_num);
-  ////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////
+	// Always call this for MBED RP2040 after processing ISR
+	TIMER_ISR_END(alarm_num);
+	////////////////////////////////////////////////////////////
 }
 
 #define TIMER0_INTERVAL_MS        1000
@@ -108,77 +108,86 @@ MBED_RPI_PICO_Timer ITimer1(1);
 
 void setup()
 {
-  pinMode(LED_BUILTIN, OUTPUT);
-  pinMode(PIN_D1, OUTPUT);
-  
-  Serial.begin(115200);
-  while (!Serial);
-  
-  delay(100);
-  
-  Serial.print(F("\nStarting TimerInterruptTest on ")); Serial.println(BOARD_NAME);
-  Serial.println(MBED_RPI_PICO_TIMER_INTERRUPT_VERSION);
-  Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
-  
-  // Interval in microsecs
-  if (ITimer0.attachInterruptInterval(TIMER0_INTERVAL_MS * 1000, TimerHandler0))
-  {
-    Serial.print(F("Starting ITimer0 OK, millis() = ")); Serial.println(millis());
-  }
-  else
-    Serial.println(F("Can't set ITimer0. Select another freq. or timer"));
+	pinMode(LED_BUILTIN, OUTPUT);
+	pinMode(PIN_D1, OUTPUT);
 
-  // Interval in microsecs
-  if (ITimer1.attachInterruptInterval(TIMER1_INTERVAL_MS * 1000, TimerHandler1))
-  {
-    Serial.print(F("Starting ITimer1 OK, millis() = ")); Serial.println(millis());
-  }
-  else
-    Serial.println(F("Can't set ITimer1. Select another freq. or timer"));
+	Serial.begin(115200);
 
-  Serial.flush();  
+	while (!Serial && millis() < 5000);
+
+  delay(500);
+
+	Serial.print(F("\nStarting TimerInterruptTest on "));
+	Serial.println(BOARD_NAME);
+	Serial.println(MBED_RPI_PICO_TIMER_INTERRUPT_VERSION);
+	Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
+
+	// Interval in microsecs
+	if (ITimer0.attachInterruptInterval(TIMER0_INTERVAL_MS * 1000, TimerHandler0))
+	{
+		Serial.print(F("Starting ITimer0 OK, millis() = "));
+		Serial.println(millis());
+	}
+	else
+		Serial.println(F("Can't set ITimer0. Select another freq. or timer"));
+
+	// Interval in microsecs
+	if (ITimer1.attachInterruptInterval(TIMER1_INTERVAL_MS * 1000, TimerHandler1))
+	{
+		Serial.print(F("Starting ITimer1 OK, millis() = "));
+		Serial.println(millis());
+	}
+	else
+		Serial.println(F("Can't set ITimer1. Select another freq. or timer"));
+
+	Serial.flush();
 }
 
 void loop()
 {
-  static unsigned long lastTimer0 = 0;
-  static unsigned long lastTimer1 = 0;
+	static unsigned long lastTimer0 = 0;
+	static unsigned long lastTimer1 = 0;
 
-  static bool timer0Stopped         = false;
-  static bool timer1Stopped         = false;
+	static bool timer0Stopped         = false;
+	static bool timer1Stopped         = false;
 
-  if (millis() - lastTimer0 > TIMER0_DURATION_MS)
-  {
-    lastTimer0 = millis();
+	if (millis() - lastTimer0 > TIMER0_DURATION_MS)
+	{
+		lastTimer0 = millis();
 
-    if (timer0Stopped)
-    {
-      Serial.print(F("Start ITimer0, millis() = ")); Serial.println(millis());
-      ITimer0.restartTimer();
-    }
-    else
-    {
-      Serial.print(F("Stop ITimer0, millis() = ")); Serial.println(millis());
-      ITimer0.stopTimer();
-    }
-    timer0Stopped = !timer0Stopped;
-  }
+		if (timer0Stopped)
+		{
+			Serial.print(F("Start ITimer0, millis() = "));
+			Serial.println(millis());
+			ITimer0.restartTimer();
+		}
+		else
+		{
+			Serial.print(F("Stop ITimer0, millis() = "));
+			Serial.println(millis());
+			ITimer0.stopTimer();
+		}
 
-  if (millis() - lastTimer1 > TIMER1_DURATION_MS)
-  {
-    lastTimer1 = millis();
+		timer0Stopped = !timer0Stopped;
+	}
 
-    if (timer1Stopped)
-    {
-      Serial.print(F("Start ITimer1, millis() = ")); Serial.println(millis());
-      ITimer1.restartTimer();
-    }
-    else
-    {
-      Serial.print(F("Stop ITimer1, millis() = ")); Serial.println(millis());
-      ITimer1.stopTimer();
-    }
-    
-    timer1Stopped = !timer1Stopped;
-  }
+	if (millis() - lastTimer1 > TIMER1_DURATION_MS)
+	{
+		lastTimer1 = millis();
+
+		if (timer1Stopped)
+		{
+			Serial.print(F("Start ITimer1, millis() = "));
+			Serial.println(millis());
+			ITimer1.restartTimer();
+		}
+		else
+		{
+			Serial.print(F("Stop ITimer1, millis() = "));
+			Serial.println(millis());
+			ITimer1.stopTimer();
+		}
+
+		timer1Stopped = !timer1Stopped;
+	}
 }

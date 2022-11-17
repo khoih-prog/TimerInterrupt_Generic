@@ -9,9 +9,9 @@
   The ESP32, ESP32_S2, ESP32_C3 have two timer groups, TIMER_GROUP_0 and TIMER_GROUP_1
   1) each group of ESP32, ESP32_S2 has two general purpose hardware timers, TIMER_0 and TIMER_1
   2) each group of ESP32_C3 has ony one general purpose hardware timer, TIMER_0
-  
-  All the timers are based on 64 bits counters and 16 bit prescalers. The timer counters can be configured to count up or down 
-  and support automatic reload and software reload. They can also generate alarms when they reach a specific value, defined by 
+
+  All the timers are based on 64 bits counters and 16 bit prescalers. The timer counters can be configured to count up or down
+  and support automatic reload and software reload. They can also generate alarms when they reach a specific value, defined by
   the software. The value of the counter can be read by the software program.
 
   Now even you use all these new 16 ISR-based timers,with their maximum interval practically unlimited (limited only by
@@ -34,7 +34,7 @@
 */
 
 #if !defined( ESP32 )
-  #error This code is intended to run on the ESP32 platform! Please check your Tools->Board setting.
+	#error This code is intended to run on the ESP32 platform! Please check your Tools->Board setting.
 #endif
 
 // These define's must be placed at the beginning before #include "_TIMERINTERRUPT_LOGLEVEL_.h"
@@ -43,26 +43,23 @@
 
 #include "TimerInterrupt_Generic.h"
 
-#ifndef LED_BUILTIN
-  #define LED_BUILTIN       2         // Pin D2 mapped to pin GPIO2/ADC12 of ESP32, control on-board LED
-#endif
-
 // Don't use PIN_D1 in core v2.0.0 and v2.0.1. Check https://github.com/espressif/arduino-esp32/issues/5868
-#define PIN_D2              2         // Pin D2 mapped to pin GPIO2/ADC12/TOUCH2/LED_BUILTIN of ESP32
-#define PIN_D3              3         // Pin D3 mapped to pin GPIO3/RX0 of ESP32
+// Don't use PIN_D2 with ESP32_C3 (crash)
+#define PIN_D19             19        // Pin D19 mapped to pin GPIO9 of ESP32
+#define PIN_D3               3        // Pin D3 mapped to pin GPIO3/RX0 of ESP32
 
 // With core v2.0.0+, you can't use Serial.print/println in ISR or crash.
 // and you can't use float calculation inside ISR
 // Only OK in core v1.0.6-
 bool IRAM_ATTR TimerHandler0(void * timerNo)
 {
-  static bool toggle0 = false;
+	static bool toggle0 = false;
 
-  //timer interrupt toggles pin LED_BUILTIN
-  digitalWrite(LED_BUILTIN, toggle0);
-  toggle0 = !toggle0;
+	//timer interrupt toggles pin PIN_D19
+	digitalWrite(PIN_D19, toggle0);
+	toggle0 = !toggle0;
 
-  return true;
+	return true;
 }
 
 // With core v2.0.0+, you can't use Serial.print/println in ISR or crash.
@@ -70,18 +67,18 @@ bool IRAM_ATTR TimerHandler0(void * timerNo)
 // Only OK in core v1.0.6-
 bool IRAM_ATTR TimerHandler1(void * timerNo)
 {
-  /////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////
 
-  static bool toggle1 = false;
+	static bool toggle1 = false;
 
-  //timer interrupt toggles outputPin
-  digitalWrite(PIN_D3, toggle1);
-  toggle1 = !toggle1;
+	//timer interrupt toggles outputPin
+	digitalWrite(PIN_D3, toggle1);
+	toggle1 = !toggle1;
 
-  return true;
+	return true;
 }
 
-#define TIMER0_INTERVAL_MS        1000
+#define TIMER0_INTERVAL_MS        100
 
 #define TIMER1_INTERVAL_MS        5000
 
@@ -91,44 +88,50 @@ ESP32Timer ITimer1(1);
 
 void setup()
 {
-  pinMode(LED_BUILTIN, OUTPUT);
-  pinMode(PIN_D3,      OUTPUT);
+	pinMode(PIN_D19, OUTPUT);
+	pinMode(PIN_D3,  OUTPUT);
 
-  Serial.begin(115200);
-  while (!Serial);
+	Serial.begin(115200);
 
-  delay(100);
+  while (!Serial && millis() < 5000);
 
-  Serial.print(F("\nStarting Argument_None on ")); Serial.println(ARDUINO_BOARD);
-  Serial.println(ESP32_TIMER_INTERRUPT_VERSION);
-  Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
-  Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
+  delay(500);
 
-  // Using ESP32  => 80 / 160 / 240MHz CPU clock ,
-  // For 64-bit timer counter
-  // For 16-bit timer prescaler up to 1024
+	Serial.print(F("\nStarting Argument_None on "));
+	Serial.println(ARDUINO_BOARD);
+	Serial.println(ESP32_TIMER_INTERRUPT_VERSION);
+	Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
+	Serial.print(F("CPU Frequency = "));
+	Serial.print(F_CPU / 1000000);
+	Serial.println(F(" MHz"));
 
-  // Interval in microsecs
-  if (ITimer0.attachInterruptInterval(TIMER0_INTERVAL_MS * 1000, TimerHandler0))
-    //if (ITimer0.attachInterrupt(1, TimerHandler0))
-  {
-    Serial.print(F("Starting  ITimer0 OK, millis() = ")); Serial.println(millis());
-  }
-  else
-    Serial.println(F("Can't set ITimer0. Select another Timer, freq. or timer"));
+	// Using ESP32  => 80 / 160 / 240MHz CPU clock ,
+	// For 64-bit timer counter
+	// For 16-bit timer prescaler up to 1024
+
+	// Interval in microsecs
+	if (ITimer0.attachInterruptInterval(TIMER0_INTERVAL_MS * 1000, TimerHandler0))
+		//if (ITimer0.attachInterrupt(1, TimerHandler0))
+	{
+		Serial.print(F("Starting  ITimer0 OK, millis() = "));
+		Serial.println(millis());
+	}
+	else
+		Serial.println(F("Can't set ITimer0. Select another Timer, freq. or timer"));
 
 
-  // Interval in microsecs
-  if (ITimer1.attachInterruptInterval(TIMER1_INTERVAL_MS * 1000, TimerHandler1))
-    //if (ITimer1.attachInterrupt(2, TimerHandler1))
-  {
-    Serial.print(F("Starting  ITimer1 OK, millis() = ")); Serial.println(millis());
-  }
-  else
-    Serial.println(F("Can't set ITimer1. Select another Timer, freq. or timer"));
+	// Interval in microsecs
+	if (ITimer1.attachInterruptInterval(TIMER1_INTERVAL_MS * 1000, TimerHandler1))
+		//if (ITimer1.attachInterrupt(2, TimerHandler1))
+	{
+		Serial.print(F("Starting  ITimer1 OK, millis() = "));
+		Serial.println(millis());
+	}
+	else
+		Serial.println(F("Can't set ITimer1. Select another Timer, freq. or timer"));
 }
 
 void loop()
 {
-  delay(1);
+	delay(1);
 }

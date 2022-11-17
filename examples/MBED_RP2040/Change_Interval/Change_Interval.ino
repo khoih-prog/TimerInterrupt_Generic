@@ -40,9 +40,9 @@
 
 #if ( defined(ARDUINO_NANO_RP2040_CONNECT) || defined(ARDUINO_RASPBERRY_PI_PICO) || defined(ARDUINO_ADAFRUIT_FEATHER_RP2040) || \
       defined(ARDUINO_GENERIC_RP2040) ) && defined(ARDUINO_ARCH_MBED)
-  #define USING_MBED_RPI_PICO_TIMER_INTERRUPT        true
+#define USING_MBED_RPI_PICO_TIMER_INTERRUPT        true
 #else
-  #error This code is intended to run on the MBED RASPBERRY_PI_PICO platform! Please check your Tools->Board setting.
+#error This code is intended to run on the MBED RASPBERRY_PI_PICO platform! Please check your Tools->Board setting.
 #endif
 
 // These define's must be placed at the beginning before #include "TimerInterrupt_Generic.h"
@@ -52,7 +52,7 @@
 #include "TimerInterrupt_Generic.h"
 
 #ifndef LED_BUILTIN
-  #define LED_BUILTIN       25        // Pin LED_BUILTIN mapped to pin GPIO25 of RPI_PICO, control on-board LED
+	#define LED_BUILTIN       25        // Pin LED_BUILTIN mapped to pin GPIO25 of RPI_PICO, control on-board LED
 #endif
 
 #define PIN_D1              1         // Pin D1 mapped to pin GPIO1 of RPI_PICO
@@ -62,55 +62,58 @@ volatile uint32_t Timer1Count = 0;
 
 // Never use Serial.print inside this mbed ISR. Will hang the system
 void TimerHandler0(uint alarm_num)
-{ 
-  static bool toggle0 = false;
+{
+	static bool toggle0 = false;
 
-  ///////////////////////////////////////////////////////////
-  // Always call this for MBED RP2040 before processing ISR
-  TIMER_ISR_START(alarm_num);
-  ///////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////
+	// Always call this for MBED RP2040 before processing ISR
+	TIMER_ISR_START(alarm_num);
+	///////////////////////////////////////////////////////////
 
-  // Flag for checking to be sure ISR is working as Serial.print is not OK here in ISR
-  Timer0Count++;
+	// Flag for checking to be sure ISR is working as Serial.print is not OK here in ISR
+	Timer0Count++;
 
-  //timer interrupt toggles pin LED_BUILTIN
-  digitalWrite(LED_BUILTIN, toggle0);
-  toggle0 = !toggle0;
+	//timer interrupt toggles pin LED_BUILTIN
+	digitalWrite(LED_BUILTIN, toggle0);
+	toggle0 = !toggle0;
 
-  ////////////////////////////////////////////////////////////
-  // Always call this for MBED RP2040 after processing ISR
-  TIMER_ISR_END(alarm_num);
-  ////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////
+	// Always call this for MBED RP2040 after processing ISR
+	TIMER_ISR_END(alarm_num);
+	////////////////////////////////////////////////////////////
 }
 
 // Never use Serial.print inside this mbed ISR. Will hang the system
 void TimerHandler1(uint alarm_num)
-{ 
-  static bool toggle1 = false;
+{
+	static bool toggle1 = false;
 
-  ///////////////////////////////////////////////////////////
-  // Always call this for MBED RP2040 before processing ISR
-  TIMER_ISR_START(alarm_num);
-  ///////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////
+	// Always call this for MBED RP2040 before processing ISR
+	TIMER_ISR_START(alarm_num);
+	///////////////////////////////////////////////////////////
 
-  // Flag for checking to be sure ISR is working as Serial.print is not OK here in ISR
-  Timer1Count++;
+	// Flag for checking to be sure ISR is working as Serial.print is not OK here in ISR
+	Timer1Count++;
 
-  //timer interrupt toggles PIN_D1
-  digitalWrite(PIN_D1, toggle1);
-  toggle1 = !toggle1;
+	//timer interrupt toggles PIN_D1
+	digitalWrite(PIN_D1, toggle1);
+	toggle1 = !toggle1;
 
-  ////////////////////////////////////////////////////////////
-  // Always call this for MBED RP2040 after processing ISR
-  TIMER_ISR_END(alarm_num);
-  ////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////
+	// Always call this for MBED RP2040 after processing ISR
+	TIMER_ISR_END(alarm_num);
+	////////////////////////////////////////////////////////////
 }
 
 void printResult(uint32_t currTime)
 {
-  Serial.print(F("Time = ")); Serial.print(currTime); 
-  Serial.print(F(", Timer0Count = ")); Serial.print(Timer0Count);
-  Serial.print(F(", Timer1Count = ")); Serial.println(Timer1Count);
+	Serial.print(F("Time = "));
+	Serial.print(currTime);
+	Serial.print(F(", Timer0Count = "));
+	Serial.print(Timer0Count);
+	Serial.print(F(", Timer1Count = "));
+	Serial.println(Timer1Count);
 }
 
 #define TIMER0_INTERVAL_MS        2000
@@ -123,33 +126,37 @@ MBED_RPI_PICO_Timer ITimer1(1);
 
 void setup()
 {
-  pinMode(LED_BUILTIN,  OUTPUT);
-  pinMode(PIN_D1,       OUTPUT);
-  
-  Serial.begin(115200);
-  while (!Serial);
+	pinMode(LED_BUILTIN,  OUTPUT);
+	pinMode(PIN_D1,       OUTPUT);
 
-  delay(100);
+	Serial.begin(115200);
 
-  Serial.print(F("\nStarting Change_Interval on ")); Serial.println(BOARD_NAME);
-  Serial.println(MBED_RPI_PICO_TIMER_INTERRUPT_VERSION);
-  Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
+	while (!Serial && millis() < 5000);
 
-  // Interval in microsecs
-  if (ITimer0.attachInterruptInterval(TIMER0_INTERVAL_MS * 1000, TimerHandler0))
-  {
-    Serial.print(F("Starting  ITimer0 OK, millis() = ")); Serial.println(millis());
-  }
-  else
-    Serial.println(F("Can't set ITimer0. Select another freq. or timer"));
+  delay(500);
 
-  // Interval in microsecs
-  if (ITimer1.attachInterruptInterval(TIMER1_INTERVAL_MS * 1000, TimerHandler1))
-  {
-    Serial.print(F("Starting  ITimer1 OK, millis() = ")); Serial.println(millis());
-  }
-  else
-    Serial.println(F("Can't set ITimer1. Select another freq. or timer"));
+	Serial.print(F("\nStarting Change_Interval on "));
+	Serial.println(BOARD_NAME);
+	Serial.println(MBED_RPI_PICO_TIMER_INTERRUPT_VERSION);
+	Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
+
+	// Interval in microsecs
+	if (ITimer0.attachInterruptInterval(TIMER0_INTERVAL_MS * 1000, TimerHandler0))
+	{
+		Serial.print(F("Starting  ITimer0 OK, millis() = "));
+		Serial.println(millis());
+	}
+	else
+		Serial.println(F("Can't set ITimer0. Select another freq. or timer"));
+
+	// Interval in microsecs
+	if (ITimer1.attachInterruptInterval(TIMER1_INTERVAL_MS * 1000, TimerHandler1))
+	{
+		Serial.print(F("Starting  ITimer1 OK, millis() = "));
+		Serial.println(millis());
+	}
+	else
+		Serial.println(F("Can't set ITimer1. Select another freq. or timer"));
 }
 
 #define CHECK_INTERVAL_MS     10000L
@@ -157,30 +164,32 @@ void setup()
 
 void loop()
 {
-  static uint32_t lastTime = 0;
-  static uint32_t lastChangeTime = 0;
-  static uint32_t currTime;
-  static uint32_t multFactor = 0;
+	static uint32_t lastTime = 0;
+	static uint32_t lastChangeTime = 0;
+	static uint32_t currTime;
+	static uint32_t multFactor = 0;
 
-  currTime = millis();
+	currTime = millis();
 
-  if (currTime - lastTime > CHECK_INTERVAL_MS)
-  {
-    printResult(currTime);
-    lastTime = currTime;
+	if (currTime - lastTime > CHECK_INTERVAL_MS)
+	{
+		printResult(currTime);
+		lastTime = currTime;
 
-    if (currTime - lastChangeTime > CHANGE_INTERVAL_MS)
-    {
-      //setInterval(unsigned long interval, timerCallback callback)
-      multFactor = (multFactor + 1) % 2;
-      
-      ITimer0.setInterval(TIMER0_INTERVAL_MS * 1000 * (multFactor + 1), TimerHandler0);
-      ITimer1.setInterval(TIMER1_INTERVAL_MS * 1000 * (multFactor + 1), TimerHandler1);
+		if (currTime - lastChangeTime > CHANGE_INTERVAL_MS)
+		{
+			//setInterval(unsigned long interval, timerCallback callback)
+			multFactor = (multFactor + 1) % 2;
 
-      Serial.print(F("Changing Interval, Timer0 = ")); Serial.print(TIMER0_INTERVAL_MS * (multFactor + 1));
-      Serial.print(F(",  Timer1 = ")); Serial.println(TIMER1_INTERVAL_MS * (multFactor + 1)); 
+			ITimer0.setInterval(TIMER0_INTERVAL_MS * 1000 * (multFactor + 1), TimerHandler0);
+			ITimer1.setInterval(TIMER1_INTERVAL_MS * 1000 * (multFactor + 1), TimerHandler1);
 
-      lastChangeTime = currTime;
-    }
-  }
+			Serial.print(F("Changing Interval, Timer0 = "));
+			Serial.print(TIMER0_INTERVAL_MS * (multFactor + 1));
+			Serial.print(F(",  Timer1 = "));
+			Serial.println(TIMER1_INTERVAL_MS * (multFactor + 1));
+
+			lastChangeTime = currTime;
+		}
+	}
 }

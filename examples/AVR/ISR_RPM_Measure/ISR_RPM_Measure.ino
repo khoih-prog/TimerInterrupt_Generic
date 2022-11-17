@@ -45,17 +45,17 @@
         defined(ARDUINO_AVR_NG) || defined(ARDUINO_AVR_UNO_WIFI_DEV_ED) || defined(ARDUINO_AVR_DUEMILANOVE) || defined(ARDUINO_AVR_FEATHER328P) || \
         defined(ARDUINO_AVR_METRO) || defined(ARDUINO_AVR_PROTRINKET5) || defined(ARDUINO_AVR_PROTRINKET3) || defined(ARDUINO_AVR_PROTRINKET5FTDI) || \
         defined(ARDUINO_AVR_PROTRINKET3FTDI) )
-  #define USE_TIMER_1     true
-  #warning Using Timer1
-#else          
-  #define USE_TIMER_3     true
-  #warning Using Timer3
+#define USE_TIMER_1     true
+#warning Using Timer1
+#else
+#define USE_TIMER_3     true
+#warning Using Timer3
 #endif
 
 #include "TimerInterrupt_Generic.h"
 
 #if !defined(LED_BUILTIN)
-  #define LED_BUILTIN     13
+	#define LED_BUILTIN     13
 #endif
 
 unsigned int interruptPin = 2;
@@ -77,104 +77,117 @@ volatile bool activeState = false;
 
 void detectRotation(void)
 {
-  activeState = true;
+	activeState = true;
 }
 
 void TimerHandler()
 {
-  if ( activeState )
-  {
-    // Reset to prepare for next round of interrupt
-    activeState = false;
+	if ( activeState )
+	{
+		// Reset to prepare for next round of interrupt
+		activeState = false;
 
-    if (debounceCounter >= DEBOUNCING_INTERVAL_MS / TIMER_INTERVAL_MS )
-    {
+		if (debounceCounter >= DEBOUNCING_INTERVAL_MS / TIMER_INTERVAL_MS )
+		{
 
-      //min time between pulses has passed
-      RPM = (float) ( 60000.0f / ( rotationTime * TIMER_INTERVAL_MS ) );
+			//min time between pulses has passed
+			RPM = (float) ( 60000.0f / ( rotationTime * TIMER_INTERVAL_MS ) );
 
-      avgRPM = ( 2 * avgRPM + RPM) / 3,
-
-#if (TIMER_INTERRUPT_DEBUG > 1)
-      Serial.print("RPM = "); Serial.print(avgRPM);
-      Serial.print(", rotationTime ms = "); Serial.println(rotationTime * TIMER_INTERVAL_MS);
-#endif
-
-      rotationTime = 0;
-      debounceCounter = 0;
-    }
-    else
-      debounceCounter++;
-  }
-  else
-  {
-    debounceCounter++;
-  }
-
-  if (rotationTime >= 5000)
-  {
-    // If idle, set RPM to 0, don't increase rotationTime
-    RPM = 0;
+			avgRPM = ( 2 * avgRPM + RPM) / 3,
 
 #if (TIMER_INTERRUPT_DEBUG > 1)
-    Serial.print("RPM = "); Serial.print(RPM); Serial.print(", rotationTime = "); Serial.println(rotationTime);
+			Serial.print("RPM = ");
+			Serial.print(avgRPM);
+			Serial.print(", rotationTime ms = ");
+			Serial.println(rotationTime * TIMER_INTERVAL_MS);
 #endif
 
-    rotationTime = 0;
-  }
-  else
-  {
-    rotationTime++;
-  }
+			rotationTime = 0;
+			debounceCounter = 0;
+		}
+		else
+			debounceCounter++;
+	}
+	else
+	{
+		debounceCounter++;
+	}
+
+	if (rotationTime >= 5000)
+	{
+		// If idle, set RPM to 0, don't increase rotationTime
+		RPM = 0;
+
+#if (TIMER_INTERRUPT_DEBUG > 1)
+		Serial.print("RPM = ");
+		Serial.print(RPM);
+		Serial.print(", rotationTime = ");
+		Serial.println(rotationTime);
+#endif
+
+		rotationTime = 0;
+	}
+	else
+	{
+		rotationTime++;
+	}
 }
 
 
 void setup()
 {
-  Serial.begin(115200);
-  while (!Serial);
+	Serial.begin(115200);
 
-  Serial.print(F("\nStarting ISR_RPM_Measure on ")); Serial.println(BOARD_TYPE);
-  Serial.println(TIMER_INTERRUPT_VERSION);
-  Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
-  Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
+	while (!Serial && millis() < 5000);
 
-  pinMode(LED_BUILTIN, OUTPUT);
-  pinMode(interruptPin, INPUT_PULLUP);
+  delay(500);
 
-  // Timer0 is used for micros(), millis(), delay(), etc and can't be used
-  // Select Timer 1-2 for UNO, 1-5 for MEGA, 1,3,4 for 16u4/32u4
-  // Timer 2 is 8-bit timer, only for higher frequency
-  // Timer 4 of 16u4 and 32u4 is 8/10-bit timer, only for higher frequency
-  
+	Serial.print(F("\nStarting ISR_RPM_Measure on "));
+	Serial.println(BOARD_TYPE);
+	Serial.println(TIMER_INTERRUPT_VERSION);
+	Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
+	Serial.print(F("CPU Frequency = "));
+	Serial.print(F_CPU / 1000000);
+	Serial.println(F(" MHz"));
+
+	pinMode(LED_BUILTIN, OUTPUT);
+	pinMode(interruptPin, INPUT_PULLUP);
+
+	// Timer0 is used for micros(), millis(), delay(), etc and can't be used
+	// Select Timer 1-2 for UNO, 1-5 for MEGA, 1,3,4 for 16u4/32u4
+	// Timer 2 is 8-bit timer, only for higher frequency
+	// Timer 4 of 16u4 and 32u4 is 8/10-bit timer, only for higher frequency
+
 #if USE_TIMER_1
 
-  ITimer1.init();
+	ITimer1.init();
 
-  // Using ATmega328 used in UNO => 16MHz CPU clock ,
+	// Using ATmega328 used in UNO => 16MHz CPU clock ,
 
-  if (ITimer1.attachInterruptInterval(TIMER_INTERVAL_MS, TimerHandler))
-  {
-    Serial.print(F("Starting  ITimer1 OK, millis() = ")); Serial.println(millis());
-  }
-  else
-    Serial.println(F("Can't set ITimer1. Select another freq. or timer"));
-    
+	if (ITimer1.attachInterruptInterval(TIMER_INTERVAL_MS, TimerHandler))
+	{
+		Serial.print(F("Starting  ITimer1 OK, millis() = "));
+		Serial.println(millis());
+	}
+	else
+		Serial.println(F("Can't set ITimer1. Select another freq. or timer"));
+
 #elif USE_TIMER_3
 
-  ITimer3.init();
+	ITimer3.init();
 
-  if (ITimer3.attachInterruptInterval(TIMER_INTERVAL_MS, TimerHandler))
-  {
-    Serial.print(F("Starting  ITimer3 OK, millis() = ")); Serial.println(millis());
-  }
-  else
-    Serial.println(F("Can't set ITimer3. Select another freq. or timer"));
+	if (ITimer3.attachInterruptInterval(TIMER_INTERVAL_MS, TimerHandler))
+	{
+		Serial.print(F("Starting  ITimer3 OK, millis() = "));
+		Serial.println(millis());
+	}
+	else
+		Serial.println(F("Can't set ITimer3. Select another freq. or timer"));
 
 #endif
 
-  // Assumming the interruptPin will go LOW
-  attachInterrupt(digitalPinToInterrupt(interruptPin), detectRotation, FALLING);
+	// Assumming the interruptPin will go LOW
+	attachInterrupt(digitalPinToInterrupt(interruptPin), detectRotation, FALLING);
 }
 
 void loop()

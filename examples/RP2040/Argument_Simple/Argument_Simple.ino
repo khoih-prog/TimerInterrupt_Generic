@@ -1,6 +1,6 @@
 /****************************************************************************************************************************
   Argument_Simple.ino
-  
+
   For RP2040-based boards such as RASPBERRY_PI_PICO, ADAFRUIT_FEATHER_RP2040 and GENERIC_RP2040.
   Written by Khoi Hoang
 
@@ -36,7 +36,7 @@
 #include "TimerInterrupt_Generic.h"
 
 #if !defined(LED_BUILTIN)
-  #define LED_BUILTIN     25
+	#define LED_BUILTIN     25
 #endif
 
 unsigned int outputPin1 = LED_BUILTIN;
@@ -50,76 +50,90 @@ RPI_PICO_Timer ITimer2(2);
 
 bool TimerHandler1(struct repeating_timer *t)
 {
-  (void) t;
-  
-  static bool toggle1 = false;
+	(void) t;
+
+	static bool toggle1 = false;
 
 #if (TIMER_INTERRUPT_DEBUG > 0)
-  //timer interrupt toggles pin outputPin1
-  Serial.print("Pin"); Serial.print(outputPin1); Serial.println(toggle1 ? F(" ON") : F(" OFF"));
+	//timer interrupt toggles pin outputPin1
+	Serial.print("Pin");
+	Serial.print(outputPin1);
+	Serial.println(toggle1 ? F(" ON") : F(" OFF"));
 #endif
-  
-  digitalWrite(outputPin1, toggle1);
-  toggle1 = !toggle1;
 
-  return true;
+	digitalWrite(outputPin1, toggle1);
+	toggle1 = !toggle1;
+
+	return true;
 }
 
 #define TIMER2_INTERVAL_MS    2000
 
 bool TimerHandler2(struct repeating_timer *t)
 {
-  (void) t;
-  
-  static bool toggle2 = false;
+	(void) t;
+
+	static bool toggle2 = false;
 
 #if (TIMER_INTERRUPT_DEBUG > 0)
-  //timer interrupt toggles pin outputPin2
-  Serial.print("Pin"); Serial.print(outputPin2); Serial.println(toggle2 ? F(" ON") : F(" OFF"));
+	//timer interrupt toggles pin outputPin2
+	Serial.print("Pin");
+	Serial.print(outputPin2);
+	Serial.println(toggle2 ? F(" ON") : F(" OFF"));
 #endif
 
-  //timer interrupt toggles pin outputPin2
-  digitalWrite(outputPin2, toggle2);
-  toggle2 = !toggle2;
+	//timer interrupt toggles pin outputPin2
+	digitalWrite(outputPin2, toggle2);
+	toggle2 = !toggle2;
 
-  return true;
+	return true;
 }
 
 void setup()
 {
-  pinMode(outputPin1, OUTPUT);
-  pinMode(outputPin2, OUTPUT);
-  
-  Serial.begin(115200);
-  while (!Serial && millis() < 5000);
+	pinMode(outputPin1, OUTPUT);
+	pinMode(outputPin2, OUTPUT);
 
-  Serial.print(F("\nStarting Argument_Simple on ")); Serial.println(BOARD_NAME);
-  Serial.println(RPI_PICO_TIMER_INTERRUPT_VERSION);
-  Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
-  Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
+	Serial.begin(115200);
 
-  if (ITimer1.attachInterruptInterval(TIMER1_INTERVAL_MS * 1000, TimerHandler1))
-  {
-    Serial.print(F("Starting ITimer1 OK, millis() = ")); Serial.println(millis());
+	while (!Serial && millis() < 5000);
 
-#if (TIMER_INTERRUPT_DEBUG > 1)    
-    Serial.print(F("OutputPin1 = ")); Serial.print(outputPin1);
-#endif    
-  }
-  else
-    Serial.println(F("Can't set ITimer1. Select another freq. or timer"));
+  delay(500);
+
+	Serial.print(F("\nStarting Argument_Simple on "));
+	Serial.println(BOARD_NAME);
+	Serial.println(RPI_PICO_TIMER_INTERRUPT_VERSION);
+	Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
+	Serial.print(F("CPU Frequency = "));
+	Serial.print(F_CPU / 1000000);
+	Serial.println(F(" MHz"));
+
+	if (ITimer1.attachInterruptInterval(TIMER1_INTERVAL_MS * 1000, TimerHandler1))
+	{
+		Serial.print(F("Starting ITimer1 OK, millis() = "));
+		Serial.println(millis());
+
+#if (TIMER_INTERRUPT_DEBUG > 1)
+		Serial.print(F("OutputPin1 = "));
+		Serial.print(outputPin1);
+#endif
+	}
+	else
+		Serial.println(F("Can't set ITimer1. Select another freq. or timer"));
 
 
-  if (ITimer2.attachInterruptInterval(TIMER2_INTERVAL_MS * 1000, TimerHandler2))
-  {
-    Serial.print(F("Starting  ITimer2 OK, millis() = ")); Serial.println(millis());
+	if (ITimer2.attachInterruptInterval(TIMER2_INTERVAL_MS * 1000, TimerHandler2))
+	{
+		Serial.print(F("Starting  ITimer2 OK, millis() = "));
+		Serial.println(millis());
 
-#if (TIMER_INTERRUPT_DEBUG > 1)    
-    Serial.print(F("OutputPin2 = ")); Serial.print(outputPin2);
-#endif    
-  }
-  else
-    Serial.println(F("Can't set ITimer2. Select another freq. or timer"));
+#if (TIMER_INTERRUPT_DEBUG > 1)
+		Serial.print(F("OutputPin2 = "));
+		Serial.print(outputPin2);
+#endif
+	}
+	else
+		Serial.println(F("Can't set ITimer2. Select another freq. or timer"));
 }
 
 void loop()

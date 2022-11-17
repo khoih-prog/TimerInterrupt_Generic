@@ -36,7 +36,7 @@
 #include "TimerInterrupt_Generic.h"
 
 #if !defined(LED_BUILTIN)
-  #define LED_BUILTIN     25
+	#define LED_BUILTIN     25
 #endif
 
 // Init RPI_PICO_Timer
@@ -44,64 +44,72 @@ RPI_PICO_Timer ITimer1(1);
 
 struct pinStruct
 {
-  unsigned int Pin1;
-  unsigned int Pin2;
-  unsigned int Pin3;
+	unsigned int Pin1;
+	unsigned int Pin2;
+	unsigned int Pin3;
 };
 
 volatile pinStruct myOutputPins = { LED_BUILTIN, 0, 1 };
 
 bool TimerHandler(struct repeating_timer *t)
 {
-  (void) t;
-  
-  static bool toggle = false;
+	(void) t;
 
-  //timer interrupt toggles pins
+	static bool toggle = false;
+
+	//timer interrupt toggles pins
 #if (TIMER_INTERRUPT_DEBUG > 0)
-  Serial.print("Toggle pin1 = "); Serial.println( myOutputPins.Pin1 );
+	Serial.print("Toggle pin1 = ");
+	Serial.println( myOutputPins.Pin1 );
 #endif
-  
-  digitalWrite(myOutputPins.Pin1, toggle);
+
+	digitalWrite(myOutputPins.Pin1, toggle);
 
 #if (TIMER_INTERRUPT_DEBUG > 0)
-  Serial.print("Read pin2  ("); Serial.print( myOutputPins.Pin2 );
-  Serial.print(") = ");
-  Serial.println(digitalRead(myOutputPins.Pin2) ? "HIGH" : "LOW" );                          
+	Serial.print("Read pin2  (");
+	Serial.print( myOutputPins.Pin2 );
+	Serial.print(") = ");
+	Serial.println(digitalRead(myOutputPins.Pin2) ? "HIGH" : "LOW" );
 
-  Serial.print("Read pin3  ("); Serial.print( myOutputPins.Pin1 );
-  Serial.print(") = ");
-  Serial.println(digitalRead(myOutputPins.Pin3) ? "HIGH" : "LOW" );  
+	Serial.print("Read pin3  (");
+	Serial.print( myOutputPins.Pin1 );
+	Serial.print(") = ");
+	Serial.println(digitalRead(myOutputPins.Pin3) ? "HIGH" : "LOW" );
 #endif
-                 
-  toggle = !toggle;
 
-  return true;
+	toggle = !toggle;
+
+	return true;
 }
 
 #define TIMER_INTERVAL_MS    1000
 
 void setup()
 {
-  pinMode(myOutputPins.Pin1, OUTPUT);
-  pinMode(myOutputPins.Pin2, OUTPUT);
-  pinMode(myOutputPins.Pin3, OUTPUT);
-    
-  Serial.begin(115200);
-  while (!Serial && millis() < 5000);
+	pinMode(myOutputPins.Pin1, OUTPUT);
+	pinMode(myOutputPins.Pin2, OUTPUT);
+	pinMode(myOutputPins.Pin3, OUTPUT);
 
-  Serial.print(F("\nStarting Argument_Complex on ")); Serial.println(BOARD_NAME);
-  Serial.println(RPI_PICO_TIMER_INTERRUPT_VERSION);
-  Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
-  //Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
+	Serial.begin(115200);
 
-  // Interval in microsecs
-  if (ITimer1.attachInterruptInterval(TIMER_INTERVAL_MS  * 1000, TimerHandler))
-  {
-    Serial.print(F("Starting ITimer1 OK, millis() = ")); Serial.println(millis());
-  }
-  else
-    Serial.println(F("Can't set ITimer1. Select another freq. or timer"));
+	while (!Serial && millis() < 5000);
+
+  delay(500);
+
+	Serial.print(F("\nStarting Argument_Complex on "));
+	Serial.println(BOARD_NAME);
+	Serial.println(RPI_PICO_TIMER_INTERRUPT_VERSION);
+	Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
+	//Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
+
+	// Interval in microsecs
+	if (ITimer1.attachInterruptInterval(TIMER_INTERVAL_MS  * 1000, TimerHandler))
+	{
+		Serial.print(F("Starting ITimer1 OK, millis() = "));
+		Serial.println(millis());
+	}
+	else
+		Serial.println(F("Can't set ITimer1. Select another freq. or timer"));
 }
 
 void loop()
