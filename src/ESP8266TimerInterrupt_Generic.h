@@ -24,7 +24,7 @@
   Built by Khoi Hoang https://github.com/khoih-prog/TimerInterrupt_Generic
   Licensed under MIT license
 
-  Version: 1.12.0
+  Version: 1.13.0
 
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
@@ -42,6 +42,8 @@
   1.10.0  K.Hoang      10/08/2022 Update to use latest ESP32_New_TimerInterrupt Library version
   1.11.0  K.Hoang      12/08/2022 Add support to new ESP32_C3, ESP32_S2 and ESP32_S3 boards
   1.12.0  K.Hoang      29/09/2022 Update for SAMD, RP2040, MBED_RP2040
+  1.13.0  K.Hoang      16/11/2022 Fix doubled time for ESP32_C3,S2 and S3. Fix poor timer accuracy bug for MBED RP2040
+                                  Fix bug disabling TCB0 for megaAVR
 *****************************************************************************************************************************/
 
 #pragma once
@@ -60,11 +62,11 @@
 #ifndef ESP8266_TIMER_INTERRUPT_VERSION
   #define ESP8266_TIMER_INTERRUPT_VERSION         "ESP8266TimerInterrupt v1.6.0"
 
-	#define ESP8266_TIMER_INTERRUPT_VERSION_MAJOR     1
-	#define ESP8266_TIMER_INTERRUPT_VERSION_MINOR     6
-	#define ESP8266_TIMER_INTERRUPT_VERSION_PATCH     0
+  #define ESP8266_TIMER_INTERRUPT_VERSION_MAJOR     1
+  #define ESP8266_TIMER_INTERRUPT_VERSION_MINOR     6
+  #define ESP8266_TIMER_INTERRUPT_VERSION_PATCH     0
 
-	#define ESP8266_TIMER_INTERRUPT_VERSION_INT      1006000
+  #define ESP8266_TIMER_INTERRUPT_VERSION_INT      1006000
 
 #endif
 
@@ -96,11 +98,11 @@
   };
 
   //timer int_types
-  #define TIM_EDGE	0
-  #define TIM_LEVEL	1
+  #define TIM_EDGE  0
+  #define TIM_LEVEL 1
   //timer reload values
-  #define TIM_SINGLE	0 //on interrupt routine you need to write a new value to start the timer again
-  #define TIM_LOOP	1 //on interrupt the counter will start with the same value again
+  #define TIM_SINGLE  0 //on interrupt routine you need to write a new value to start the timer again
+  #define TIM_LOOP  1 //on interrupt the counter will start with the same value again
 
 */
 
@@ -122,31 +124,31 @@ typedef void (*timer_callback)  ();
   #if (_TIMERINTERRUPT_LOGLEVEL_ > 3)
     #warning Using TIM_DIV1_CLOCK for shortest and most accurate timer
   #endif
-  
+
   #define TIM_CLOCK_FREQ        TIM_DIV1_CLOCK
   #define TIM_DIV               TIM_DIV1
 #elif ( defined(USING_TIM_DIV16) && USING_TIM_DIV16 )
   #if (_TIMERINTERRUPT_LOGLEVEL_ > 3)
     #warning Using TIM_DIV16_CLOCK for medium time and medium accurate timer
   #endif
-  
+
   #define TIM_CLOCK_FREQ        TIM_DIV16_CLOCK
   #define TIM_DIV               TIM_DIV16
 #elif ( defined(USING_TIM_DIV256) && USING_TIM_DIV256 )
   #if (_TIMERINTERRUPT_LOGLEVEL_ > 3)
     #warning Using TIM_DIV256_CLOCK for longest timer but least accurate
   #endif
-  
+
   #define TIM_CLOCK_FREQ        TIM_DIV256_CLOCK
-  #define TIM_DIV               TIM_DIV256  
+  #define TIM_DIV               TIM_DIV256
 #else
   #if (_TIMERINTERRUPT_LOGLEVEL_ > 3)
     #warning Default to using TIM_DIV256_CLOCK for longest timer but least accurate
   #endif
-  
+
   #define TIM_CLOCK_FREQ        TIM_DIV256_CLOCK
   #define TIM_DIV               TIM_DIV256
-#endif  
+#endif
 
 ///////////////////////////////////////////
 
@@ -176,15 +178,16 @@ class ESP8266TimerInterrupt
 
       // ESP8266 only has one usable timer1, max count is only 8,388,607. So to get longer time, we use max available 256 divider
       // Will use later if very low frequency is needed.
-      
+
       if (frequency < minFreq)
       {
-        TISR_LOGERROR3(F("ESP8266TimerInterrupt: Too long Timer, smallest frequency ="), minFreq, F(" for TIM_CLOCK_FREQ ="), TIM_CLOCK_FREQ);
-        
+        TISR_LOGERROR3(F("ESP8266TimerInterrupt: Too long Timer, smallest frequency ="), minFreq, F(" for TIM_CLOCK_FREQ ="),
+                       TIM_CLOCK_FREQ);
+
         return false;
-      }    
-      
-      _frequency  = frequency;     
+      }
+
+      _frequency  = frequency;
       _timerCount = (uint32_t) (TIM_CLOCK_FREQ / frequency);
       _callback   = callback;
 
@@ -280,7 +283,7 @@ class ESP8266TimerInterrupt
     }
 
     ///////////////////////////////////////////
-    
+
 }; // class ESP8266TimerInterrupt
 
 

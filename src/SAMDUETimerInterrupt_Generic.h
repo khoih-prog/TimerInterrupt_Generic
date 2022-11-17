@@ -19,7 +19,7 @@
   Built by Khoi Hoang https://github.com/khoih-prog/TimerInterrupt_Generic
   Licensed under MIT license
 
-  Version: 1.12.0
+  Version: 1.13.0
 
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
@@ -37,6 +37,8 @@
   1.10.0  K.Hoang      10/08/2022 Update to use latest ESP32_New_TimerInterrupt Library version
   1.11.0  K.Hoang      12/08/2022 Add support to new ESP32_C3, ESP32_S2 and ESP32_S3 boards
   1.12.0  K.Hoang      29/09/2022 Update for SAMD, RP2040, MBED_RP2040
+  1.13.0  K.Hoang      16/11/2022 Fix doubled time for ESP32_C3,S2 and S3. Fix poor timer accuracy bug for MBED RP2040
+                                  Fix bug disabling TCB0 for megaAVR
 *****************************************************************************************************************************/
 
 #pragma once
@@ -53,12 +55,12 @@
 
 #ifndef SAMDUE_TIMER_INTERRUPT_VERSION
   #define SAMDUE_TIMER_INTERRUPT_VERSION            "SAMDUETimerInterrupt v1.3.0"
-  
+
   #define SAMDUE_TIMER_INTERRUPT_VERSION_MAJOR      1
   #define SAMDUE_TIMER_INTERRUPT_VERSION_MINOR      3
   #define SAMDUE_TIMER_INTERRUPT_VERSION_PATCH      0
 
-  #define SAMDUE_TIMER_INTERRUPT_VERSION_INT        1003000  
+  #define SAMDUE_TIMER_INTERRUPT_VERSION_INT        1003000
 #endif
 
 #ifndef TIMER_INTERRUPT_DEBUG
@@ -74,19 +76,19 @@
 #define BOARD_NAME       "SAM DUE"
 
 /*
-	This fixes compatibility for Arduino Servo Library.
-	Uncomment to make it compatible.
+  This fixes compatibility for Arduino Servo Library.
+  Uncomment to make it compatible.
 
-	Note that:
-		+ Timers: 0,2,3,4,5 WILL NOT WORK, and will
-				  neither be accessible by Timer0,...
+  Note that:
+    + Timers: 0,2,3,4,5 WILL NOT WORK, and will
+          neither be accessible by Timer0,...
 */
-// #define USING_SERVO_LIB	true
+// #define USING_SERVO_LIB  true
 
 #if USING_SERVO_LIB
-	// Arduino Servo library uses timers 0,2,3,4,5. 
-  // You must have `#define USING_SERVO_LIB	true` in your sketch.
-	#warning Using Servo Library, Timer0, 2, 3, 4 and 5 not available
+  // Arduino Servo library uses timers 0,2,3,4,5.
+  // You must have `#define USING_SERVO_LIB true` in your sketch.
+  #warning Using Servo Library, Timer0, 2, 3, 4 and 5 not available
 #endif
 
 #if defined TC2
@@ -99,16 +101,16 @@ typedef void (*timerCallback)  ();
 
 typedef struct
 {
-	Tc *tc;
-	uint32_t channel;
-	IRQn_Type irq;
+  Tc *tc;
+  uint32_t channel;
+  IRQn_Type irq;
 } DueTimerIRQInfo;
 
 typedef struct
 {
-	const char* tc;
-	uint32_t channel;
-	const char* irq;
+  const char* tc;
+  uint32_t channel;
+  const char* irq;
 } DueTimerIRQInfoStr;
 
 // For printing info of selected Timer
@@ -159,14 +161,14 @@ class DueTimerInterrupt
     static const DueTimerIRQInfo Timers[NUM_TIMERS];
 
   public:
-  
+
     DueTimerInterrupt(const unsigned short& timer) : _timerNumber(timer)
     {
       /*
         The constructor of the class DueTimerInterrupt
       */
     }
-    
+
     static DueTimerInterrupt getAvailable() __attribute__((always_inline))
     {
       /*
@@ -176,30 +178,31 @@ class DueTimerInterrupt
       for (int i = 0; i < NUM_TIMERS; i++)
       {
         if (!_callbacks[i])
-        {   
+        {
           TISR_LOGWARN3(F("Using Timer("), i, F(") ="), TimersInfo[i].tc);
           TISR_LOGWARN3(F("Channel ="), TimersInfo[i].channel, F(", IRQ ="), TimersInfo[i].irq);
 
-          return DueTimerInterrupt(i);         
+          return DueTimerInterrupt(i);
         }
       }
 
       // Default, return Timer0;
       return DueTimerInterrupt(0);
     }
-   
-    DueTimerInterrupt& attachInterruptInterval(const double& microseconds, timerCallback callback) __attribute__((always_inline))
+
+    DueTimerInterrupt& attachInterruptInterval(const double& microseconds,
+                                               timerCallback callback) __attribute__((always_inline))
     {
       _callbacks[_timerNumber] = callback;
 
       return startTimer(microseconds);
     }
-    
+
     DueTimerInterrupt& attachInterrupt(const float& frequency, timerCallback callback) __attribute__((always_inline))
     {
       return attachInterruptInterval((double) (1000000.0f / frequency), callback);
     }
-    
+
     DueTimerInterrupt& attachInterrupt(timerCallback callback) __attribute__((always_inline))
     {
       /*
@@ -210,7 +213,7 @@ class DueTimerInterrupt
 
       return *this;
     }
-    
+
     DueTimerInterrupt& detachInterrupt() __attribute__((always_inline))
     {
       /*
@@ -223,8 +226,8 @@ class DueTimerInterrupt
 
       return *this;
     }
-   
-    DueTimerInterrupt& startTimer(const double& microseconds= -1) __attribute__((always_inline))
+
+    DueTimerInterrupt& startTimer(const double& microseconds = -1) __attribute__((always_inline))
     {
       /*
         Start the timer
@@ -246,8 +249,8 @@ class DueTimerInterrupt
 
       return *this;
     }
-    
-    DueTimerInterrupt& restartTimer(const double& microseconds= -1) __attribute__((always_inline))
+
+    DueTimerInterrupt& restartTimer(const double& microseconds = -1) __attribute__((always_inline))
     {
       /*
         Restart the timer
@@ -268,7 +271,7 @@ class DueTimerInterrupt
       {
         setPeriod(microseconds);
       }
-      
+
       NVIC_ClearPendingIRQ(Timers[_timerNumber].irq);
       NVIC_EnableIRQ(Timers[_timerNumber].irq);
 
@@ -289,7 +292,7 @@ class DueTimerInterrupt
 
       return *this;
     }
-    
+
     DueTimerInterrupt& disableTimer()
     {
       return stopTimer();
@@ -350,7 +353,7 @@ class DueTimerInterrupt
       /*
         Set the timer frequency (in Hz)
       */
-      
+
       double freqToUse = frequency;
 
       // Prevent negative frequencies
@@ -383,12 +386,15 @@ class DueTimerInterrupt
         case TC_CMR_TCCLKS_TIMER_CLOCK1:
           _frequency[_timerNumber] = (double)SystemCoreClock / 2.0 / (double)rc;
           break;
+
         case TC_CMR_TCCLKS_TIMER_CLOCK2:
           _frequency[_timerNumber] = (double)SystemCoreClock / 8.0 / (double)rc;
           break;
+
         case TC_CMR_TCCLKS_TIMER_CLOCK3:
           _frequency[_timerNumber] = (double)SystemCoreClock / 32.0 / (double)rc;
           break;
+
         default: // TC_CMR_TCCLKS_TIMER_CLOCK4
           _frequency[_timerNumber] = (double)SystemCoreClock / 128.0 / (double)rc;
           break;
@@ -398,19 +404,19 @@ class DueTimerInterrupt
       // in UP mode with automatic trigger on RC Compare
       // and sets it up with the determined internal clock as clock input.
       TC_Configure(timerIRQInfo.tc, timerIRQInfo.channel, TC_CMR_WAVE | TC_CMR_WAVSEL_UP_RC | clock);
-      
+
       // Reset counter and fire interrupt when RC value is matched:
       TC_SetRC(timerIRQInfo.tc, timerIRQInfo.channel, rc);
-      
+
       // Enable the RC Compare Interrupt.
       timerIRQInfo.tc->TC_CHANNEL[timerIRQInfo.channel].TC_IER = TC_IER_CPCS;
-      
+
       // ... and disable all others.
       timerIRQInfo.tc->TC_CHANNEL[timerIRQInfo.channel].TC_IDR = ~TC_IER_CPCS;
 
       return *this;
     }
-    
+
     DueTimerInterrupt& setPeriod(const double& microseconds) __attribute__((always_inline))
     {
       /*
@@ -419,12 +425,12 @@ class DueTimerInterrupt
 
       // Convert period in microseconds to frequency in Hz
       double frequency = 1000000.0 / microseconds;
-      
+
       setFrequency(frequency);
 
       return *this;
     }
-    
+
     DueTimerInterrupt& setInterval(const double& microseconds) __attribute__((always_inline))
     {
       return setPeriod(microseconds);
@@ -445,7 +451,7 @@ class DueTimerInterrupt
       */
       return 1.0 / getFrequency() * 1000000;
     }
-    
+
     uint16_t getTimerNumber()
     {
       return _timerNumber;
@@ -483,31 +489,31 @@ const DueTimerIRQInfo DueTimerInterrupt::Timers[NUM_TIMERS] =
 
 // Fix for compatibility with Servo library
 #if USING_SERVO_LIB
-  // Set _callbacks as used, allowing DueTimerInterrupt::getAvailable() to work
-  void (*DueTimerInterrupt::_callbacks[NUM_TIMERS])() =
-  {
-    (void (*)()) 1, // Timer 0 - Occupied
-    (void (*)()) 0, // Timer 1
-    (void (*)()) 1, // Timer 2 - Occupied
-    (void (*)()) 1, // Timer 3 - Occupied
-    (void (*)()) 1, // Timer 4 - Occupied
-    (void (*)()) 1, // Timer 5 - Occupied
-  
-  #if defined(TC2)
-    (void (*)()) 0, // Timer 6
-    (void (*)()) 0, // Timer 7
-    (void (*)()) 0  // Timer 8
-  #endif
-  };
+// Set _callbacks as used, allowing DueTimerInterrupt::getAvailable() to work
+void (*DueTimerInterrupt::_callbacks[NUM_TIMERS])() =
+{
+  (void (*)()) 1, // Timer 0 - Occupied
+  (void (*)()) 0, // Timer 1
+  (void (*)()) 1, // Timer 2 - Occupied
+  (void (*)()) 1, // Timer 3 - Occupied
+  (void (*)()) 1, // Timer 4 - Occupied
+  (void (*)()) 1, // Timer 5 - Occupied
+
+#if defined(TC2)
+  (void (*)()) 0, // Timer 6
+  (void (*)()) 0, // Timer 7
+  (void (*)()) 0  // Timer 8
+#endif
+};
 
 #else
-  void (*DueTimerInterrupt::_callbacks[NUM_TIMERS])() = {};
+void (*DueTimerInterrupt::_callbacks[NUM_TIMERS])() = {};
 #endif
 
 #if defined(TC2)
-  double DueTimerInterrupt::_frequency[NUM_TIMERS] = { -1, -1, -1, -1, -1, -1, -1, -1, -1};
+double DueTimerInterrupt::_frequency[NUM_TIMERS] = { -1, -1, -1, -1, -1, -1, -1, -1, -1};
 #else
-  double DueTimerInterrupt::_frequency[NUM_TIMERS] = { -1, -1, -1, -1, -1, -1};
+double DueTimerInterrupt::_frequency[NUM_TIMERS] = { -1, -1, -1, -1, -1, -1};
 #endif
 
 /*
@@ -532,26 +538,26 @@ DueTimerInterrupt Timer1(1);
   DueTimerInterrupt Timer8(8);
 #endif
 
-DueTimerInterrupt DueTimerPtr[NUM_TIMERS] = 
-{ 
+DueTimerInterrupt DueTimerPtr[NUM_TIMERS] =
+{
 #if ( !USING_SERVO_LIB || !defined(USING_SERVO_LIB) )
   Timer0,
-#endif  
+#endif
 
   Timer1,
-  
-#if ( !USING_SERVO_LIB || !defined(USING_SERVO_LIB) )  
+
+#if ( !USING_SERVO_LIB || !defined(USING_SERVO_LIB) )
   Timer2,
   Timer3,
   Timer4,
   Timer5,
 #endif
- 
-#if defined(TC2) 
-  Timer6, 
-  Timer7, 
+
+#if defined(TC2)
+  Timer6,
+  Timer7,
   Timer8
-#endif  
+#endif
 };
 
 ///////////////////////////////////////////////////////////////////////

@@ -19,7 +19,7 @@
   Built by Khoi Hoang https://github.com/khoih-prog/TimerInterrupt_Generic
   Licensed under MIT license
 
-  Version: 1.12.0
+  Version: 1.13.0
 
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
@@ -37,6 +37,8 @@
   1.10.0  K.Hoang      10/08/2022 Update to use latest ESP32_New_TimerInterrupt Library version
   1.11.0  K.Hoang      12/08/2022 Add support to new ESP32_C3, ESP32_S2 and ESP32_S3 boards
   1.12.0  K.Hoang      29/09/2022 Update for SAMD, RP2040, MBED_RP2040
+  1.13.0  K.Hoang      16/11/2022 Fix doubled time for ESP32_C3,S2 and S3. Fix poor timer accuracy bug for MBED RP2040
+                                  Fix bug disabling TCB0 for megaAVR
 *****************************************************************************************************************************/
 
 #pragma once
@@ -47,12 +49,12 @@
 #if !( defined(STM32F0) || defined(STM32F1) ||  defined(STM32F2) || defined(STM32F3)  ||defined(STM32F4) || defined(STM32F7) || \
        defined(STM32L0) || defined(STM32L1) ||  defined(STM32L4) || defined(STM32H7)  ||defined(STM32G0) || defined(STM32G4) || \
        defined(STM32WB) || defined(STM32MP1) || defined(STM32L5) )
-  #error This code is designed to run on STM32F/L/H/G/WB/MP1 platform! Please check your Tools->Board setting.
+#error This code is designed to run on STM32F/L/H/G/WB/MP1 platform! Please check your Tools->Board setting.
 #endif
 
 #ifndef STM32_TIMER_INTERRUPT_VERSION
   #define STM32_TIMER_INTERRUPT_VERSION           "STM32TimerInterrupt v1.3.0"
-  
+
   #define STM32_TIMER_INTERRUPT_VERSION_MAJOR     1
   #define STM32_TIMER_INTERRUPT_VERSION_MINOR     3
   #define STM32_TIMER_INTERRUPT_VERSION_PATCH     0
@@ -88,12 +90,12 @@ class STM32TimerInterrupt
     STM32TimerInterrupt(TIM_TypeDef* timer)
     {
       _timer = timer;
-      
+
       _hwTimer = new HardwareTimer(_timer);
-      
+
       _callback = NULL;
     };
-    
+
     ~STM32TimerInterrupt()
     {
       if (_hwTimer)
@@ -106,13 +108,14 @@ class STM32TimerInterrupt
     {
       // select timer frequency is 1MHz for better accuracy and use MICROSEC_FORMAT. We don't use 16-bit prescaler for now.
       // Will use later if very low frequency is needed.
-      #define TIM_CLOCK_FREQ        (1000000.0f)
-      
+#define TIM_CLOCK_FREQ        (1000000.0f)
+
       _frequency  = frequency;
-      
+
       _timerCount = (uint32_t) ( TIM_CLOCK_FREQ / frequency );
-      
-      TISR_LOGWARN3(F("Timer Input Freq (Hz) ="), _hwTimer->getTimerClkFreq(), F(", Timer Clock Frequency ="), TIM_CLOCK_FREQ);
+
+      TISR_LOGWARN3(F("Timer Input Freq (Hz) ="), _hwTimer->getTimerClkFreq(), F(", Timer Clock Frequency ="),
+                    TIM_CLOCK_FREQ);
       TISR_LOGWARN3(F("Timer Frequency ="), _frequency, F(", _count ="), (uint32_t) (_timerCount));
 
 

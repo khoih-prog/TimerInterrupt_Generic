@@ -6,12 +6,20 @@
 [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](#Contributing)
 [![GitHub issues](https://img.shields.io/github/issues/khoih-prog/TimerInterrupt_Generic.svg)](http://github.com/khoih-prog/TimerInterrupt_Generic/issues)
 
+
+
+<a href="https://www.buymeacoffee.com/khoihprog6" title="Donate to my libraries using BuyMeACoffee"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Donate to my libraries using BuyMeACoffee" style="height: 50px !important;width: 181px !important;" ></a>
+<a href="https://www.buymeacoffee.com/khoihprog6" title="Donate to my libraries using BuyMeACoffee"><img src="https://img.shields.io/badge/buy%20me%20a%20coffee-donate-orange.svg?logo=buy-me-a-coffee&logoColor=FFDD00" style="height: 20px !important;width: 200px !important;" ></a>
+<a href="https://profile-counter.glitch.me/khoih-prog/count.svg" title="Total khoih-prog Visitor count"><img src="https://profile-counter.glitch.me/khoih-prog/count.svg" style="height: 30px;width: 200px;"></a>
+<a href="https://profile-counter.glitch.me/khoih-prog-TimerInterrupt_Generic/count.svg" title="TimerInterrupt_Generic Visitor count"><img src="https://profile-counter.glitch.me/khoih-prog-TimerInterrupt_Generic/count.svg" style="height: 30px;width: 200px;"></a>
+
 ---
 ---
 
 ## Table of Contents
 
 * [Changelog](#changelog)
+  * [Major Releases v1.13.0](#major-releases-v1130)
   * [Major Releases v1.12.0](#major-releases-v1120)
   * [Major Releases v1.11.0](#major-releases-v1110)
   * [Major Releases v1.10.0](#major-releases-v1100)
@@ -32,6 +40,18 @@
 ---
 
 ## Changelog
+
+### Major Releases v1.13.0
+
+1. Update to use latest versions of the following libraries
+- [ESP32_New_TimerInterrupt](https://github.com/khoih-prog/ESP32_New_TimerInterrupt)
+- [MBED_RPI_PICO_TimerInterrupt](https://github.com/khoih-prog/MBED_RPI_PICO_TimerInterrupt)
+- [megaAVR_TimerInterrupt](https://github.com/khoih-prog/megaAVR_TimerInterrupt)
+- [NRF52_TimerInterrupt](https://github.com/khoih-prog/NRF52_TimerInterrupt)
+- [NRF52_MBED_TimerInterrupt](https://github.com/khoih-prog/NRF52_MBED_TimerInterrupt)
+2. Modify ESP32 examples to avoid using `LED_BUILTIN` / `GPIO2` as it can cause crash in some boards, such as `ESP32_C3`
+3. Use `allman astyle` and add `utils`
+4. Update `Packages_Patches`
 
 ### Major Releases v1.12.0
 

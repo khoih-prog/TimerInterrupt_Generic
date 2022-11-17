@@ -6,8 +6,13 @@
 [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](#Contributing)
 [![GitHub issues](https://img.shields.io/github/issues/khoih-prog/TimerInterrupt_Generic.svg)](http://github.com/khoih-prog/TimerInterrupt_Generic/issues)
 
+
+
 <a href="https://www.buymeacoffee.com/khoihprog6" title="Donate to my libraries using BuyMeACoffee"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Donate to my libraries using BuyMeACoffee" style="height: 50px !important;width: 181px !important;" ></a>
 <a href="https://www.buymeacoffee.com/khoihprog6" title="Donate to my libraries using BuyMeACoffee"><img src="https://img.shields.io/badge/buy%20me%20a%20coffee-donate-orange.svg?logo=buy-me-a-coffee&logoColor=FFDD00" style="height: 20px !important;width: 200px !important;" ></a>
+<a href="https://profile-counter.glitch.me/khoih-prog/count.svg" title="Total khoih-prog Visitor count"><img src="https://profile-counter.glitch.me/khoih-prog/count.svg" style="height: 30px;width: 200px;"></a>
+<a href="https://profile-counter.glitch.me/khoih-prog-TimerInterrupt_Generic/count.svg" title="TimerInterrupt_Generic Visitor count"><img src="https://profile-counter.glitch.me/khoih-prog-TimerInterrupt_Generic/count.svg" style="height: 30px;width: 200px;"></a>
+
 
 ---
 ---
@@ -45,6 +50,7 @@
   * [10. For RTL8720DN boards using AmebaD core](#10-for-rtl8720dn-boards-using-amebad-core)
   * [11. For SAMD21 and SAMD51 boards using ArduinoCore-fab-sam core](#11-For-SAMD21-and-SAMD51-boards-using-ArduinoCore-fab-sam-core)
   * [12. For Seeeduino RP2040 boards](#12-For-Seeeduino-RP2040-boards)
+  * [13. For Seeeduino nRF52840 boards](#13-For-Seeeduino-nRF52840-boards)
 * [Libraries' Patches](#libraries-patches)
   * [1. For application requiring 2K+ HTML page](#1-for-application-requiring-2k-html-page)
   * [2. For Ethernet library](#2-for-ethernet-library)
@@ -267,20 +273,20 @@ For Teensy 4.x, this library will be expanded to use other available hardware ti
  
  2. [`ESP32 Core 2.0.5+`](https://github.com/espressif/arduino-esp32) for ESP32-based boards. [![Latest release](https://img.shields.io/github/release/espressif/arduino-esp32.svg)](https://github.com/espressif/arduino-esp32/releases/latest/)
  3. [`ESP8266 Core 3.0.2+`](https://github.com/esp8266/Arduino) for ESP8266-based boards. [![Latest release](https://img.shields.io/github/release/esp8266/Arduino.svg)](https://github.com/esp8266/Arduino/releases/latest/). To use ESP8266 core 2.7.1+ for LittleFS. 
- 4. [`Arduino AVR core 1.8.5+`](https://github.com/arduino/ArduinoCore-avr) for Arduino (Use Arduino Board Manager) for AVR boards. [![GitHub release](https://img.shields.io/github/release/arduino/ArduinoCore-avr.svg)](https://github.com/arduino/ArduinoCore-avr/releases/latest)
+ 4. [`Arduino AVR core 1.8.6+`](https://github.com/arduino/ArduinoCore-avr) for Arduino (Use Arduino Board Manager) for AVR boards. [![GitHub release](https://img.shields.io/github/release/arduino/ArduinoCore-avr.svg)](https://github.com/arduino/ArduinoCore-avr/releases/latest)
  5. [`Adafruit AVR core 1.4.13+`](https://github.com/adafruit/Adafruit_Arduino_Boards) for Adafruit AVR boards. Use Arduino Board Manager to install. 
  6. [`Sparkfun AVR core 1.1.13+`](https://github.com/sparkfun/Arduino_Boards) for Sparkfun AVR boards. Use Arduino Board Manager to install. 
  7. [`Teensy core v1.57+`](https://www.pjrc.com/teensy/td_download.html) for Teensy (4.1, 4.0, 3.6, 3.5, 3,2, 3.1, 3.0) boards.
  8. [`Arduino SAM DUE core v1.6.12+`](https://github.com/arduino/ArduinoCore-sam) for SAM DUE ARM Cortex-M3 boards.
  9. [`Arduino SAMD core 1.8.13+`](https://github.com/arduino/ArduinoCore-samd) for SAMD ARM Cortex-M0+ boards. [![GitHub release](https://img.shields.io/github/release/arduino/ArduinoCore-samd.svg)](https://github.com/arduino/ArduinoCore-samd/releases/latest)
-10. [`Adafruit SAMD core 1.7.10+`](https://github.com/adafruit/ArduinoCore-samd) for SAMD ARM Cortex-M0+ and M4 boards (Nano 33 IoT, etc.). [![GitHub release](https://img.shields.io/github/release/adafruit/ArduinoCore-samd.svg)](https://github.com/adafruit/ArduinoCore-samd/releases/latest)
+10. [`Adafruit SAMD core 1.7.11+`](https://github.com/adafruit/ArduinoCore-samd) for SAMD ARM Cortex-M0+ and M4 boards (Nano 33 IoT, etc.). [![GitHub release](https://img.shields.io/github/release/adafruit/ArduinoCore-samd.svg)](https://github.com/adafruit/ArduinoCore-samd/releases/latest)
 11. [`Seeeduino SAMD core 1.8.3+`](https://github.com/Seeed-Studio/ArduinoCore-samd) for SAMD21/SAMD51 boards (XIAO M0, Wio Terminal, etc.). [![Latest release](https://img.shields.io/github/release/Seeed-Studio/ArduinoCore-samd.svg)](https://github.com/Seeed-Studio/ArduinoCore-samd/releases/latest/)
 12. [`Sparkfun SAMD core 1.8.1+`](https://github.com/sparkfun/Arduino_Boards) for SAMD21/SAMD51 boards (SparkFun_RedBoard_Turbo, SparkFun_SAMD51_Thing_Plus, etc.).
 13. [`Adafruit nRF52 v1.3.0+`](https://github.com/adafruit/Adafruit_nRF52_Arduino) for nRF52 boards such as Adafruit NRF52840_FEATHER, NRF52832_FEATHER, NRF52840_FEATHER_SENSE, NRF52840_ITSYBITSY, NRF52840_CIRCUITPLAY, NRF52840_CLUE, NRF52840_METRO, NRF52840_PCA10056, PARTICLE_XENON, **NINA_B302_ublox**, etc. [![GitHub release](https://img.shields.io/github/release/adafruit/Adafruit_nRF52_Arduino.svg)](https://github.com/adafruit/Adafruit_nRF52_Arduino/releases/latest)
 14. [`Arduino Core for STM32 v2.3.0+`](https://github.com/stm32duino/Arduino_Core_STM32) for STM32F/L/H/G/WB/MP1 boards. [![GitHub release](https://img.shields.io/github/release/stm32duino/Arduino_Core_STM32.svg)](https://github.com/stm32duino/Arduino_Core_STM32/releases/latest)
 15. [`Arduino megaAVR core 1.8.7+`](https://github.com/arduino/ArduinoCore-megaavr/releases) for Arduino megaAVR boards. Use Arduino Board Manager to install.
-16. [`Arduino mbed_rp2040 core 3.3.0+`](https://github.com/arduino/ArduinoCore-mbed) for Arduino (Use Arduino Board Manager) RP2040-based boards, such as **Arduino Nano RP2040 Connect, RASPBERRY_PI_PICO, etc.**. [![GitHub release](https://img.shields.io/github/release/arduino/ArduinoCore-mbed.svg)](https://github.com/arduino/ArduinoCore-mbed/releases/latest)
-17. [`Earle Philhower's arduino-pico core v2.5.4+`](https://github.com/earlephilhower/arduino-pico) for RP2040-based boards such as **RASPBERRY_PI_PICO, ADAFRUIT_FEATHER_RP2040 and GENERIC_RP2040**, etc. [![GitHub release](https://img.shields.io/github/release/earlephilhower/arduino-pico.svg)](https://github.com/earlephilhower/arduino-pico/releases/latest)
+16. [`Arduino mbed_rp2040 core 3.4.1+`](https://github.com/arduino/ArduinoCore-mbed) for Arduino (Use Arduino Board Manager) RP2040-based boards, such as **Arduino Nano RP2040 Connect, RASPBERRY_PI_PICO, etc.**. [![GitHub release](https://img.shields.io/github/release/arduino/ArduinoCore-mbed.svg)](https://github.com/arduino/ArduinoCore-mbed/releases/latest)
+17. [`Earle Philhower's arduino-pico core v2.6.3+`](https://github.com/earlephilhower/arduino-pico) for RP2040-based boards such as **RASPBERRY_PI_PICO, ADAFRUIT_FEATHER_RP2040 and GENERIC_RP2040**, etc. [![GitHub release](https://img.shields.io/github/release/earlephilhower/arduino-pico.svg)](https://github.com/earlephilhower/arduino-pico/releases/latest)
 18. [`MegaCoreX megaAVR core 1.1.0+`](https://github.com/MCUdude/MegaCoreX/releases) for Arduino megaAVR boards.  [![GitHub release](https://img.shields.io/github/release/MCUdude/MegaCoreX.svg)](https://github.com/MCUdude/MegaCoreX/releases/latest). Follow [**How to install**](https://github.com/MCUdude/MegaCoreX#how-to-install).
 
 ---
@@ -294,7 +300,7 @@ For Teensy 4.x, this library will be expanded to use other available hardware ti
    - [`LwIP library v2.1.2+`](https://github.com/stm32duino/LwIP) for built-in LAN8742A Ethernet on (Nucleo-144, Discovery). [![GitHub release](https://img.shields.io/github/release/stm32duino/LwIP.svg)](https://github.com/stm32duino/LwIP/releases/latest)
    
 21. For W5x00 Ethernet:
-   - [`Ethernet_Generic library v2.6.1+`](https://github.com/khoih-prog/Ethernet_Generic) for W5100, W5200 and W5500/WIZ550io/WIZ850io/USR-ES1 with Wiznet W5500 chip.  [![GitHub release](https://img.shields.io/github/release/khoih-prog/Ethernet_Generic.svg)](https://github.com/khoih-prog/Ethernet_Generic/releases/latest)
+   - [`Ethernet_Generic library v2.7.1+`](https://github.com/khoih-prog/Ethernet_Generic) for W5100, W5200 and W5500/WIZ550io/WIZ850io/USR-ES1 with Wiznet W5500 chip.  [![GitHub release](https://img.shields.io/github/release/khoih-prog/Ethernet_Generic.svg)](https://github.com/khoih-prog/Ethernet_Generic/releases/latest)
    
 22. For ENC28J60 Ethernet:
    - [`EthernetENC library v2.0.3+`](https://github.com/jandrassy/EthernetENC) for ENC28J60. [![GitHub release](https://img.shields.io/github/release/jandrassy/EthernetENC.svg)](https://github.com/jandrassy/EthernetENC/releases/latest). **New and Better**
@@ -302,7 +308,7 @@ For Teensy 4.x, this library will be expanded to use other available hardware ti
    
 ---
 
-23. [`WiFiNINA_Generic library v1.8.14-6+`](https://github.com/khoih-prog/WiFiNINA_Generic) to use WiFiNINA modules/shields. To install. check [![arduino-library-badge](https://www.ardu-badge.com/badge/WiFiNINA_Generic.svg?)](https://www.ardu-badge.com/WiFiNINA_Generic) if using WiFiNINA for boards such as Nano 33 IoT, nRF52, Teensy, etc.
+23. [`WiFiNINA_Generic library v1.8.15-0+`](https://github.com/khoih-prog/WiFiNINA_Generic) to use WiFiNINA modules/shields. To install. check [![arduino-library-badge](https://www.ardu-badge.com/badge/WiFiNINA_Generic.svg?)](https://www.ardu-badge.com/WiFiNINA_Generic) if using WiFiNINA for boards such as Nano 33 IoT, nRF52, Teensy, etc.
 24. [`Blynk_WiFiNINA_WM library 1.1.2+`](https://github.com/khoih-prog/Blynk_WiFiNINA_WM) to use with Blynk-WiFiNINA-related example. To install. check [![arduino-library-badge](https://www.ardu-badge.com/badge/Blynk_WiFiNINA_WM.svg?)](https://www.ardu-badge.com/Blynk_WiFiNINA_WM)
 
 25. To use with certain examples
@@ -323,9 +329,9 @@ You can also use this link [![arduino-library-badge](https://www.ardu-badge.com/
 Another way to install is to:
 
 1. Navigate to [**TimerInterrupt_Generic**](https://github.com/khoih-prog/TimerInterrupt_Generic) page.
-2. Download the latest release `TimerInterrupt_Generic-master.zip`.
-3. Extract the zip file to `TimerInterrupt_Generic-master` directory 
-4. Copy whole `TimerInterrupt_Generic-master` folder to Arduino libraries' directory such as `~/Arduino/libraries/`.
+2. Download the latest release `TimerInterrupt_Generic-main.zip`.
+3. Extract the zip file to `TimerInterrupt_Generic-main` directory 
+4. Copy whole `TimerInterrupt_Generic-main` folder to Arduino libraries' directory such as `~/Arduino/libraries/`.
 
 ### VS Code & PlatformIO
 
@@ -442,16 +448,16 @@ Whenever the above-mentioned compiler error issue is fixed with the new Arduino 
 
 #### 5. For Adafruit SAMD boards
  
- ***To be able to compile, run and automatically detect and display BOARD_NAME on Adafruit SAMD (Itsy-Bitsy M4, etc) boards***, you have to copy the whole [Adafruit SAMD Packages_Patches](Packages_Patches/adafruit/hardware/samd/1.7.10) directory into Adafruit samd directory (~/.arduino15/packages/adafruit/hardware/samd/1.7.10). 
+ ***To be able to compile, run and automatically detect and display BOARD_NAME on Adafruit SAMD (Itsy-Bitsy M4, etc) boards***, you have to copy the whole [Adafruit SAMD Packages_Patches](Packages_Patches/adafruit/hardware/samd/1.7.11) directory into Adafruit samd directory (~/.arduino15/packages/adafruit/hardware/samd/1.7.11). 
 
-Supposing the Adafruit SAMD core version is 1.7.10. This file must be copied into the directory:
+Supposing the Adafruit SAMD core version is 1.7.11. These files must be copied into the directory:
 
-- `~/.arduino15/packages/adafruit/hardware/samd/1.7.10/platform.txt`
-- `~/.arduino15/packages/adafruit/hardware/samd/1.7.10/cores/arduino/Print.h`
-- `~/.arduino15/packages/adafruit/hardware/samd/1.7.10/cores/arduino/Print.cpp`
+- `~/.arduino15/packages/adafruit/hardware/samd/1.7.11/platform.txt`
+- `~/.arduino15/packages/adafruit/hardware/samd/1.7.11/cores/arduino/Print.h`
+- `~/.arduino15/packages/adafruit/hardware/samd/1.7.11/cores/arduino/Print.cpp`
 
 Whenever a new version is installed, remember to copy this file into the new version directory. For example, new version is x.yy.zz
-This file must be copied into the directory:
+These files must be copied into the directory:
 
 - `~/.arduino15/packages/adafruit/hardware/samd/x.yy.zz/platform.txt`
 - `~/.arduino15/packages/adafruit/hardware/samd/x.yy.zz/cores/arduino/Print.h`
@@ -459,17 +465,17 @@ This file must be copied into the directory:
 
 #### 6. For Seeeduino SAMD boards
  
- ***To be able to compile, run and automatically detect and display BOARD_NAME on Seeeduino SAMD (XIAO M0, Wio Terminal, etc) boards***, you have to copy the whole [Seeeduino SAMD Packages_Patches](Packages_Patches/Seeeduino/hardware/samd/1.8.2) directory into Seeeduino samd directory (~/.arduino15/packages/Seeeduino/hardware/samd/1.8.2). 
+ ***To be able to compile, run and automatically detect and display BOARD_NAME on Seeeduino SAMD (XIAO M0, Wio Terminal, etc) boards***, you have to copy the whole [Seeeduino SAMD Packages_Patches](Packages_Patches/Seeeduino/hardware/samd/1.8.3) directory into Seeeduino samd directory (~/.arduino15/packages/Seeeduino/hardware/samd/1.8.3). 
 
-Supposing the Seeeduino SAMD core version is 1.8.2. This file must be copied into the directory:
+Supposing the Seeeduino SAMD core version is 1.8.3. These files must be copied into the directory:
 
-- `~/.arduino15/packages/Seeeduino/hardware/samd/1.8.2/platform.txt`
-- `~/.arduino15/packages/Seeeduino/hardware/samd/1.8.2/cores/arduino/Arduino.h`
-- `~/.arduino15/packages/Seeeduino/hardware/samd/1.8.2/cores/arduino/Print.h`
-- `~/.arduino15/packages/Seeeduino/hardware/samd/1.8.2/cores/arduino/Print.cpp`
+- `~/.arduino15/packages/Seeeduino/hardware/samd/1.8.3/platform.txt`
+- `~/.arduino15/packages/Seeeduino/hardware/samd/1.8.3/cores/arduino/Arduino.h`
+- `~/.arduino15/packages/Seeeduino/hardware/samd/1.8.3/cores/arduino/Print.h`
+- `~/.arduino15/packages/Seeeduino/hardware/samd/1.8.3/cores/arduino/Print.cpp`
 
 Whenever a new version is installed, remember to copy this file into the new version directory. For example, new version is x.yy.zz
-This file must be copied into the directory:
+These files must be copied into the directory:
 
 - `~/.arduino15/packages/Seeeduino/hardware/samd/x.yy.zz/platform.txt`
 - `~/.arduino15/packages/Seeeduino/hardware/samd/x.yy.zz/cores/arduino/Arduino.h`
@@ -550,12 +556,12 @@ With core after v1.5.0, this step is not necessary anymore thanks to the PR [Add
 
 #### 9. For Portenta_H7 boards using Arduino IDE in Linux
 
-  **To be able to upload firmware to Portenta_H7 using Arduino IDE in Linux (Ubuntu, etc.)**, you have to copy the file [portenta_post_install.sh](Packages_Patches/arduino/hardware/mbed_portenta/3.3.0/portenta_post_install.sh) into mbed_portenta directory (~/.arduino15/packages/arduino/hardware/mbed_portenta/3.3.0/portenta_post_install.sh). 
+  **To be able to upload firmware to Portenta_H7 using Arduino IDE in Linux (Ubuntu, etc.)**, you have to copy the file [portenta_post_install.sh](Packages_Patches/arduino/hardware/mbed_portenta/3.4.1/portenta_post_install.sh) into mbed_portenta directory (~/.arduino15/packages/arduino/hardware/mbed_portenta/3.4.1/portenta_post_install.sh). 
   
   Then run the following command using `sudo`
   
 ```
-$ cd ~/.arduino15/packages/arduino/hardware/mbed_portenta/3.3.0
+$ cd ~/.arduino15/packages/arduino/hardware/mbed_portenta/3.4.1
 $ chmod 755 portenta_post_install.sh
 $ sudo ./portenta_post_install.sh
 ```
@@ -568,9 +574,9 @@ This will create the file `/etc/udev/rules.d/49-portenta_h7.rules` as follows:
 SUBSYSTEMS=="usb", ATTRS{idVendor}=="2341", ATTRS{idProduct}=="035b", GROUP="plugdev", MODE="0666"
 ```
 
-Supposing the ArduinoCore-mbed core version is 3.3.0. Now only one file must be copied into the directory:
+Supposing the ArduinoCore-mbed core version is 3.4.1. Now only one file must be copied into the directory:
 
-- `~/.arduino15/packages/arduino/hardware/mbed_portenta/3.3.0/portenta_post_install.sh`
+- `~/.arduino15/packages/arduino/hardware/mbed_portenta/3.4.1/portenta_post_install.sh`
 
 Whenever a new version is installed, remember to copy this files into the new version directory. For example, new version is x.yy.zz
 
@@ -595,11 +601,11 @@ This file must be copied into the directory:
 
 #### 11. For SAMD21 and SAMD51 boards using ArduinoCore-fab-sam core
  
- To avoid compile error relating to SAMD21/SAMD51, you have to copy the file [ArduinoCore-fab-sam core pgmspace.h](Packages_Patches/Fab_SAM_Arduino/hardware/samd/1.7.0/boards.txt) into `ArduinoCore-fab-sam` samd directory (~/.arduino15/packages/Fab_SAM_Arduino/hardware/samd/1.7.0/boards.txt). 
+ To avoid compile error relating to SAMD21/SAMD51, you have to copy the file [ArduinoCore-fab-sam core pgmspace.h](Packages_Patches/Fab_SAM_Arduino/hardware/samd/1.9.0/boards.txt) into `ArduinoCore-fab-sam` samd directory (~/.arduino15/packages/Fab_SAM_Arduino/hardware/samd/1.9.0/boards.txt). 
 
-Supposing the `ArduinoCore-fab-sam` samd core version is 1.7.0. This file must be copied into the directory:
+Supposing the `ArduinoCore-fab-sam` samd core version is 1.9.0. This file must be copied into the directory:
 
-- `~/.arduino15/packages/Fab_SAM_Arduino/hardware/samd/1.7.0/boards.txt`
+- `~/.arduino15/packages/Fab_SAM_Arduino/hardware/samd/1.9.0/boards.txt`
 
 Whenever a new version is installed, remember to copy this file into the new version directory. For example, new version is x.yy.zz
 This file must be copied into the directory:
@@ -611,16 +617,39 @@ This file must be copied into the directory:
  
  ***To be able to compile, run and automatically detect and display BOARD_NAME on Seeeduino RP2040 (XIAO RP2040, Wio RP2040 Mini) boards***, you have to copy the whole [Seeeduino RP2040 Packages_Patches](Packages_Patches/Seeeduino/hardware/rp2040/2.7.2) directory into Seeeduino samd directory (~/.arduino15/packages/Seeeduino/hardware/rp2040/2.7.2). 
 
-Supposing the Seeeduino SAMD core version is 2.7.2. This file must be copied into the directory:
+Supposing the Seeeduino RP2040 core version is 2.7.2. These files must be copied into the directory:
 
 - `~/.arduino15/packages/Seeeduino/hardware/rp2040/2.7.2/boards.txt`
 - `~/.arduino15/packages/Seeeduino/hardware/rp2040/2.7.2/variants/Seeed_XIAO_RP2040/pins_arduino.h`
 
 Whenever a new version is installed, remember to copy this file into the new version directory. For example, new version is x.yy.zz
-This file must be copied into the directory:
+These files must be copied into the directory:
 
 - `~/.arduino15/packages/Seeeduino/hardware/samd/x.yy.zz/boards.txt`
 - `~/.arduino15/packages/Seeeduino/hardware/samd/x.yy.zz/variants/Seeed_XIAO_RP2040/pins_arduino.h`
+
+
+---
+
+#### 13. For Seeeduino nRF52840 boards
+
+**To be able to compile and run on Xiao nRF52840 boards**, you have to copy the whole [nRF52 1.0.0](Packages_Patches/Seeeduino/hardware/nrf52/1.0.0) directory into Seeeduino nRF52 directory (~/.arduino15/packages/Seeeduino/hardware/nrf52/1.0.0). 
+
+Supposing the Seeeduino nRF52 version is 1.0.0. These files must be copied into the directory:
+
+- **`~/.arduino15/packages/Seeeduino/hardware/nrf52/1.0.0/platform.txt`**
+- **`~/.arduino15/packages/Seeeduino/hardware/nrf52/1.0.0/cores/nRF5/Print.h`**
+- **`~/.arduino15/packages/Seeeduino/hardware/nrf52/1.0.0/cores/nRF5/Print.cpp`**
+- **`~/.arduino15/packages/Seeeduino/hardware/nrf52/1.0.0/cores/nRF5/Udp.h`**
+
+Whenever a new version is installed, remember to copy these files into the new version directory. For example, new version is x.yy.z
+These files must be copied into the directory:
+
+- **`~/.arduino15/packages/Seeeduino/hardware/nrf52/x.yy.z/platform.txt`**
+- **`~/.arduino15/packages/Seeeduino/hardware/nrf52/x.yy.z/cores/nRF5/Print.h`**
+- **`~/.arduino15/packages/Seeeduino/hardware/nrf52/x.yy.z/cores/nRF5/Print.cpp`**
+- **`~/.arduino15/packages/Seeeduino/hardware/nrf52/x.yy.z/cores/nRF5/Udp.h`**
+
 
 
 ---
@@ -736,22 +765,22 @@ Please have a look at [**ESP_WiFiManager Issue 39: Not able to read analog port 
 
 #### 2. ESP32 ADCs functions
 
-- ADC1 controls ADC function for pins **GPIO32-GPIO39**
-- ADC2 controls ADC function for pins **GPIO0, 2, 4, 12-15, 25-27**
+- `ADC1` controls ADC function for pins **GPIO32-GPIO39**
+- `ADC2` controls ADC function for pins **GPIO0, 2, 4, 12-15, 25-27**
 
 #### 3.. ESP32 WiFi uses ADC2 for WiFi functions
 
-Look in file [**adc_common.c**](https://github.com/espressif/esp-idf/blob/main/components/driver/adc_common.c#L61)
+Look in file [**adc_common.c**](https://github.com/espressif/esp-idf/blob/master/components/driver/adc_common.c)
 
-> In ADC2, there're two locks used for different cases:
+> In `ADC2`, there're two locks used for different cases:
 > 1. lock shared with app and Wi-Fi:
 >    ESP32:
->         When Wi-Fi using the ADC2, we assume it will never stop, so app checks the lock and returns immediately if failed.
+>         When Wi-Fi using the `ADC2`, we assume it will never stop, so app checks the lock and returns immediately if failed.
 >    ESP32S2:
 >         The controller's control over the ADC is determined by the arbiter. There is no need to control by lock.
 > 
 > 2. lock shared between tasks:
->    when several tasks sharing the ADC2, we want to guarantee
+>    when several tasks sharing the `ADC2`, we want to guarantee
 >    all the requests will be handled.
 >    Since conversions are short (about 31us), app returns the lock very soon,
 >    we use a spinlock to stand there waiting to do conversions one by one.
@@ -759,10 +788,10 @@ Look in file [**adc_common.c**](https://github.com/espressif/esp-idf/blob/main/c
 > adc2_spinlock should be acquired first, then adc2_wifi_lock or rtc_spinlock.
 
 
-- In order to use ADC2 for other functions, we have to **acquire complicated firmware locks and very difficult to do**
-- So, it's not advisable to use ADC2 with WiFi/BlueTooth (BT/BLE).
-- Use ADC1, and pins GPIO32-GPIO39
-- If somehow it's a must to use those pins serviced by ADC2 (**GPIO0, 2, 4, 12, 13, 14, 15, 25, 26 and 27**), use the **fix mentioned at the end** of [**ESP_WiFiManager Issue 39: Not able to read analog port when using the autoconnect example**](https://github.com/khoih-prog/ESP_WiFiManager/issues/39) to work with ESP32 WiFi/BlueTooth (BT/BLE).
+- In order to use `ADC2` for other functions, we have to **acquire complicated firmware locks and very difficult to do**
+- So, it's not advisable to use `ADC2` with WiFi/BlueTooth (BT/BLE).
+- Use `ADC1`, and pins `GPIO32-GPIO39`
+- If somehow it's a must to use those pins serviced by `ADC2` (**GPIO0, 2, 4, 12, 13, 14, 15, 25, 26 and 27**), use the **fix mentioned at the end** of [**ESP_WiFiManager Issue 39: Not able to read analog port when using the autoconnect example**](https://github.com/khoih-prog/ESP_WiFiManager/issues/39) to work with ESP32 WiFi/BlueTooth (BT/BLE).
 
 ---
 
@@ -793,17 +822,12 @@ Please have a look at [ESP8266TimerInterrupt Issue 8: **ESP8266Timer and PWM -->
 
 ### 1. For ESP32
 
-The ESP32, ESP32_S2, ESP32_S3, ESP32_C3 have two timer groups, TIMER_GROUP_0 and TIMER_GROUP_1 (for ESP32 core v2.0.0+)
-
-  1) each group of ESP32, ESP32_S2, ESP32_S3 has two general purpose hardware timers, TIMER_0 and TIMER_1
-  2) each group of ESP32_C3 has ony one general purpose hardware timer, TIMER_0
-
-All the timers are based on 64 bits counters and 16 bit prescalers. 
-
-The timer counters can be configured to count up or down and support automatic reload and software reload.
-
-They can also generate alarms when they reach a specific value, defined by the software. The value of the counter can be read by 
-the software program.
+  - **The ESP32, ESP32_S2 and ESP32_S3 has two timer groups, each one with two general purpose hardware timers.**
+  - **The ESP32_C3 has two timer groups, each one with only one general purpose hardware timer.**
+  - All the timers are based on **64-bit counters (except 54-bit counter for ESP32_S3 counter) and 16-bit prescalers.**
+  - The timer counters can be configured to count up or down and support automatic reload and software reload.
+  - They can also generate alarms when they reach a specific value, defined by the software. 
+  - The value of the counter can be read by the software program.
 
 ---
 
@@ -867,7 +891,7 @@ For example, **STM32F103C8T6** has one advance timer, while **STM32F103VET6** ha
 
 
 <p align="center">
-    <img src="https://github.com/khoih-prog/STM32_TimerInterrupt/blob/main/pics/STM32Timers.png">
+    <img src="https://github.com/khoih-prog/STM32_TimerInterrupt/raw/main/pics/STM32Timers.png">
 </p>
 
 
@@ -2105,7 +2129,7 @@ While software timer, **programmed for 2s, is activated after 10.917s !!!**. The
 ```
 Starting ISR_Timer_Complex_Ethernet on SAM DUE
 SAMDUETimerInterrupt v1.3.0
-TimerInterrupt_Generic v1.12.0
+TimerInterrupt_Generic v1.13.0
 Using Timer(0) = TC0, channel = 0, IRQ = TC0_IRQn
 Timer(0), us = 50000.00
 ITimer attached to Timer(0)
@@ -2197,8 +2221,8 @@ While software timer, **programmed for 2s, is activated after 4.867s !!!**. Then
 
 ```
 Starting ISR_Timer_Complex_Ethernet on NRF52840_FEATHER
-NRF52TimerInterrupt v1.4.1
-TimerInterrupt_Generic v1.12.0
+NRF52TimerInterrupt v1.4.2
+TimerInterrupt_Generic v1.13.0
 NRF52TimerInterrupt: F_CPU (MHz) = 64, Timer = NRF_TIMER2
 NRF52TimerInterrupt: _fre = 1000000.00, _count = 50000
 Starting  ITimer OK, millis() = 1419
@@ -2291,7 +2315,7 @@ In this example, 16 independent ISR Timers are used, yet utilized just one Hardw
 ```
 Starting ISR_16_Timers_Array_Complex on SAMD_NANO_33_IOT
 SAMDTimerInterrupt v1.10.1
-TimerInterrupt_Generic v1.12.0
+TimerInterrupt_Generic v1.13.0
 CPU Frequency = 48 MHz
 Starting ITimer OK, millis() = 1180
 SimpleTimer : 2, ms : 11180, Dms : 10000
@@ -2443,7 +2467,7 @@ The following is the sample terminal output when running example [**TimerInterru
 ```
 Starting TimerInterruptTest on Teensy 4.0
 Teensy_TimerInterrupt v1.3.0
-TimerInterrupt_Generic v1.12.0
+TimerInterrupt_Generic v1.13.0
 CPU Frequency = 600 MHz
 TEENSY_TIMER_1, F_BUS_ACTUAL (MHz) = 150, request interval = 30000, actual interval (us) = 29999
 Prescale = 7, _timerCount = 17578
@@ -2487,8 +2511,8 @@ The following is the sample terminal output when running example [ISR_16_Timers_
 
 ```
 Starting ISR_16_Timers_Array_Complex on ESP32_DEV
-ESP32_New_TimerInterrupt v1.4.0
-TimerInterrupt_Generic v1.12.0
+ESP32_New_TimerInterrupt v1.5.0
+TimerInterrupt_Generic v1.13.0
 CPU Frequency = 240 MHz
 Starting ITimer OK, millis() = 2045
 SimpleTimer : 2, ms : 12044, Dms : 9999
@@ -2640,7 +2664,7 @@ The following is the sample terminal output when running example [ISR_16_Timers_
 ```
 Starting ISR_16_Timers_Array_Complex on ESP8266_NODEMCU_ESP12E
 ESP8266TimerInterrupt v1.6.0
-TimerInterrupt_Generic v1.12.0
+TimerInterrupt_Generic v1.13.0
 CPU Frequency = 160 MHz
 Starting ITimer OK, millis() = 177
 SimpleTimer : 2, ms : 10179, Dms : 10000
@@ -2790,7 +2814,7 @@ The following is the sample terminal output when running example [ISR_16_Timers_
 ```
 Starting ISR_16_Timers_Array_Complex on NUCLEO_F767ZI
 STM32_TimerInterrupt v1.3.0
-TimerInterrupt_Generic v1.12.0
+TimerInterrupt_Generic v1.13.0
 CPU Frequency = 216 MHz
 Starting ITimer OK, millis() = 105
 SimpleTimer : 2, ms : 10110, Dms : 10005
@@ -2941,7 +2965,7 @@ The following is the sample terminal output when running example [**TimerInterru
 ```
 Starting TimerInterruptTest on NUCLEO_F767ZI
 STM32_TimerInterrupt v1.3.0
-TimerInterrupt_Generic v1.12.0
+TimerInterrupt_Generic v1.13.0
 CPU Frequency = 216 MHz
 STM32TimerInterrupt: Timer Input Freq (Hz) = 216000000, _fre = 1000000.00, _count = 1000000
 Starting  ITimer0 OK, millis() = 108
@@ -2997,8 +3021,8 @@ While software timer, **programmed for 2s, is activated after more than 3.000s i
 
 ```
 Starting ISR_16_Timers_Array_Complex on Nano 33 BLE
-NRF52_MBED_TimerInterrupt v1.4.0
-TimerInterrupt_Generic v1.12.0
+NRF52_MBED_TimerInterrupt v1.4.1
+TimerInterrupt_Generic v1.13.0
 Starting ITimer OK, millis() = 810
 SimpleTimer : 2, ms : 3810, Dms : 3000
 Timer : 0, programmed : 5000, actual : 0
@@ -3474,8 +3498,8 @@ SimpleTimer : 2, ms : 85118, Dms : 3011
 
 ```
 Starting ISR_16_Timers_Array_Complex on megaAVR Nano Every
-megaAVR_TimerInterrupt v1.6.1
-TimerInterrupt_Generic v1.12.0
+megaAVR_TimerInterrupt v1.7.0
+TimerInterrupt_Generic v1.13.0
 CPU Frequency = 16 MHz
 TCB Clock Frequency = 16MHz for highest accuracy
 [TISR] TCB 1
@@ -3586,8 +3610,8 @@ SimpleTimer : 2, ms : 90506, Dms : 10064
 ```
 
 Starting ISR_16_Timers_Array_Complex on megaAVR Nano Every
-megaAVR_TimerInterrupt v1.6.1
-TimerInterrupt_Generic v1.12.0
+megaAVR_TimerInterrupt v1.7.0
+TimerInterrupt_Generic v1.13.0
 CPU Frequency = 16 MHz
 TCB Clock Frequency = 8MHz for very high accuracy
 Starting  ITimer1 OK, millis() = 10
@@ -3655,8 +3679,8 @@ Timer : 15, programmed : 80000, actual : 80000
 
 ```
 Starting ISR_16_Timers_Array_Complex on megaAVR Nano Every
-megaAVR_TimerInterrupt v1.6.1
-TimerInterrupt_Generic v1.12.0
+megaAVR_TimerInterrupt v1.7.0
+TimerInterrupt_Generic v1.13.0
 CPU Frequency = 16 MHz
 TCB Clock Frequency = 250KHz for lower accuracy but longer time
 Starting  ITimer1 OK, millis() = 11
@@ -3780,17 +3804,17 @@ Submit issues to: [TimerInterrupt_Generic issues](https://github.com/khoih-prog/
  1. Basic hardware timers for 
 
 - [x] AVR. Sync with `v1.8.0`. Latest [![GitHub release](https://img.shields.io/github/release/khoih-prog/TimerInterrupt.svg)](https://github.com/khoih-prog/TimerInterrupt/releases/latest)
-- [x] megaAVR. Sync with `v1.6.1`. Latest [![GitHub release](https://img.shields.io/github/release/khoih-prog/megaAVR_TimerInterrupt.svg)](https://github.com/khoih-prog/megaAVR_TimerInterrupt/releases/latest)
+- [x] megaAVR. Sync with `v1.7.0`. Latest [![GitHub release](https://img.shields.io/github/release/khoih-prog/megaAVR_TimerInterrupt.svg)](https://github.com/khoih-prog/megaAVR_TimerInterrupt/releases/latest)
 - [x] ESP8266. Sync with `v1.6.0`. Latest [![GitHub release](https://img.shields.io/github/release/khoih-prog/ESP8266TimerInterrupt.svg)](https://github.com/khoih-prog/ESP8266TimerInterrupt/releases/latest)
-- [x] ESP32. Sync with `v1.4.0`. Latest [![GitHub release](https://img.shields.io/github/release/khoih-prog/ESP32_New_TimerInterrupt.svg)](https://github.com/khoih-prog/ESP32_New_TimerInterrupt/releases/latest)
+- [x] ESP32. Sync with `v1.5.0`. Latest [![GitHub release](https://img.shields.io/github/release/khoih-prog/ESP32_New_TimerInterrupt.svg)](https://github.com/khoih-prog/ESP32_New_TimerInterrupt/releases/latest)
 - [x] SAMD. Sync with `v1.10.1`. Latest [![GitHub release](https://img.shields.io/github/release/khoih-prog/SAMD_TimerInterrupt.svg)](https://github.com/khoih-prog/SAMD_TimerInterrupt/releases/latest)
 - [x] SAM DUE. Sync with `v1.3.0`. Latest [![GitHub release](https://img.shields.io/github/release/khoih-prog/SAMDUE_TimerInterrupt.svg)](https://github.com/khoih-prog/SAMDUE_TimerInterrupt/releases/latest)
-- [x] nRF52. Sync with `v1.4.1`. Latest [![GitHub release](https://img.shields.io/github/release/khoih-prog/NRF52_TimerInterrupt.svg)](https://github.com/khoih-prog/NRF52_TimerInterrupt/releases/latest)
+- [x] nRF52. Sync with `v1.4.2`. Latest [![GitHub release](https://img.shields.io/github/release/khoih-prog/NRF52_TimerInterrupt.svg)](https://github.com/khoih-prog/NRF52_TimerInterrupt/releases/latest)
 - [x] Teensy. Sync with `v1.3.0`. Latest [![GitHub release](https://img.shields.io/github/release/khoih-prog/Teensy_TimerInterrupt.svg)](https://github.com/khoih-prog/Teensy_TimerInterrupt/releases/latest)
-- [x] Mbed-OS nRF52 Nano-33-BLE. Sync with `v1.4.0`. Latest [![GitHub release](https://img.shields.io/github/release/khoih-prog/NRF52_MBED_TimerInterrupt.svg)](https://github.com/khoih-prog/NRF52_MBED_TimerInterrupt/releases/latest)
+- [x] Mbed-OS nRF52 Nano-33-BLE. Sync with `v1.4.1`. Latest [![GitHub release](https://img.shields.io/github/release/khoih-prog/NRF52_MBED_TimerInterrupt.svg)](https://github.com/khoih-prog/NRF52_MBED_TimerInterrupt/releases/latest)
 - [x] STM32F/L/H/G/WB/MP1. Sync with `v1.3.0`. Latest [![GitHub release](https://img.shields.io/github/release/khoih-prog/STM32_TimerInterrupt.svg)](https://github.com/khoih-prog/STM32_TimerInterrupt/releases/latest)
 - [x] Raspberry Pi pico. Sync with `v1.3.1`. Latest [![GitHub release](https://img.shields.io/github/release/khoih-prog/RPI_PICO_TimerInterrupt.svg)](https://github.com/khoih-prog/RPI_PICO_TimerInterrupt/releases/latest)
-- [x] MBED Raspberry Pi pico. Sync with `v1.1.2`. Latest [![GitHub release](https://img.shields.io/github/release/khoih-prog/MBED_RPI_PICO_TimerInterrupt.svg)](https://github.com/khoih-prog/MBED_RPI_PICO_TimerInterrupt/releases/latest)
+- [x] MBED Raspberry Pi pico. Sync with `v1.2.0`. Latest [![GitHub release](https://img.shields.io/github/release/khoih-prog/MBED_RPI_PICO_TimerInterrupt.svg)](https://github.com/khoih-prog/MBED_RPI_PICO_TimerInterrupt/releases/latest)
 - [ ] Portenta H7. Latest [![GitHub release](https://img.shields.io/github/release/khoih-prog/Portenta_H7_TimerInterrupt.svg)](https://github.com/khoih-prog/Portenta_H7_TimerInterrupt/releases/latest)
 - [ ] RTL8720DN. Latest [![GitHub release](https://img.shields.io/github/release/khoih-prog/RTL8720_TimerInterrupt.svg)](https://github.com/khoih-prog/RTL8720_TimerInterrupt/releases/latest)
 - [ ] AVR_Dx. Latest [![GitHub release](https://img.shields.io/github/release/khoih-prog/Dx_TimerInterrupt.svg)](https://github.com/khoih-prog/Dx_TimerInterrupt/releases/latest)
@@ -3815,7 +3839,7 @@ Submit issues to: [TimerInterrupt_Generic issues](https://github.com/khoih-prog/
 14. Optimize library code by using `reference-passing` instead of `value-passing`
 15. Using `float` instead of `ulong` for better interval accuracy
 16. Drop `src_cpp` and `src_h` directories
-
+17. Use `allman astyle` and add `utils`
 
 ---
 ---
@@ -3868,6 +3892,6 @@ If you want to contribute to this project:
 
 ## Copyright
 
-Copyright 2020- Khoi Hoang
+Copyright (C) 2020- Khoi Hoang
 
 

@@ -19,7 +19,7 @@
   Built by Khoi Hoang https://github.com/khoih-prog/TimerInterrupt_Generic
   Licensed under MIT license
 
-  Version: 1.12.0
+  Version: 1.13.0
 
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
@@ -37,6 +37,8 @@
   1.10.0  K.Hoang      10/08/2022 Update to use latest ESP32_New_TimerInterrupt Library version
   1.11.0  K.Hoang      12/08/2022 Add support to new ESP32_C3, ESP32_S2 and ESP32_S3 boards
   1.12.0  K.Hoang      29/09/2022 Update for SAMD, RP2040, MBED_RP2040
+  1.13.0  K.Hoang      16/11/2022 Fix doubled time for ESP32_C3,S2 and S3. Fix poor timer accuracy bug for MBED RP2040
+                                  Fix bug disabling TCB0 for megaAVR
 *****************************************************************************************************************************/
 
 #pragma once
@@ -48,7 +50,7 @@
 
 #ifndef TIMER_INTERRUPT_GENERIC_VERSION
   #define TIMER_INTERRUPT_GENERIC_VERSION          "TimerInterrupt_Generic v1.12.0"
-  
+
   #define TIMER_INTERRUPT_GENERIC_VERSION_MAJOR     1
   #define TIMER_INTERRUPT_GENERIC_VERSION_MINOR     12
   #define TIMER_INTERRUPT_GENERIC_VERSION_PATCH     0
@@ -71,18 +73,18 @@
 #if !( ARDUINO_ESP32S2_DEV || ARDUINO_FEATHERS2 || ARDUINO_ESP32S2_THING_PLUS || ARDUINO_MICROS2 || \
       ARDUINO_METRO_ESP32S2 || ARDUINO_MAGTAG29_ESP32S2 || ARDUINO_FUNHOUSE_ESP32S2 || \
       ARDUINO_ADAFRUIT_FEATHER_ESP32S2_NOPSRAM || ARDUINO_ADAFRUIT_QTPY_ESP32S2)
-  #define CONFIG_ESP32_APPTRACE_ENABLE
+#define CONFIG_ESP32_APPTRACE_ENABLE
 #endif
 
 #if ( defined(ESP8266) || ESP8266 )
-  extern "C"
-  {
-    #include "ets_sys.h"
-    #include "os_type.h"
-    #include "mem.h"
-  }
+extern "C"
+{
+#include "ets_sys.h"
+#include "os_type.h"
+#include "mem.h"
+}
 #else
-  #include <inttypes.h>
+#include <inttypes.h>
 #endif
 
 ///////////////////////////////////////////
@@ -104,7 +106,7 @@ typedef void (*timerCallback_p)(void *);
 
 ///////////////////////////////////////////
 
-class ISR_Timer 
+class ISR_Timer
 {
   public:
     // maximum number of timers
@@ -183,7 +185,7 @@ class ISR_Timer
     ///////////////////////////////////////////
 
     // returns the number of available timers
-    uint8_t IRAM_ATTR_PREFIX getNumAvailableTimers() 
+    uint8_t IRAM_ATTR_PREFIX getNumAvailableTimers()
     {
       return MAX_NUMBER_TIMERS - numTimers;
     };
@@ -207,7 +209,7 @@ class ISR_Timer
 
     ///////////////////////////////////////////
 
-    typedef struct 
+    typedef struct
     {
       unsigned long prev_millis;        // value returned by the millis() function in the previous run() call
       void*         callback;           // pointer to the callback function
