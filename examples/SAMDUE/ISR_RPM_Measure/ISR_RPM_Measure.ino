@@ -2,20 +2,20 @@
   ISR_RPM_Measure.ino
   For SAM DUE boards
   Written by Khoi Hoang
-  
+
   Now even you use all these new 16 ISR-based timers,with their maximum interval practically unlimited (limited only by
   unsigned long miliseconds), you just consume only one Hardware timer and avoid conflicting with other cores' tasks.
   The accuracy is nearly perfect compared to software timers. The most important feature is they're ISR-based timers
   Therefore, their executions are not blocked by bad-behaving functions / tasks.
   This important feature is absolutely necessary for mission-critical tasks.
-  
+
   Based on SimpleTimer - A timer library for Arduino.
   Author: mromani@ottotecnica.com
   Copyright (c) 2010 OTTOTECNICA Italy
-  
+
   Based on BlynkTimer.h
   Author: Volodymyr Shymanskyy
-  
+
   Built by Khoi Hoang https://github.com/khoih-prog/TimerInterrupt_Generic
   Licensed under MIT license
 *****************************************************************************************************************************/
@@ -42,7 +42,7 @@
 */
 
 #if !( defined(ARDUINO_SAM_DUE) || defined(__SAM3X8E__) )
-  #error This code is designed to run on SAM DUE board / platform! Please check your Tools->Board setting.
+	#error This code is designed to run on SAM DUE board / platform! Please check your Tools->Board setting.
 #endif
 
 // These define's must be placed at the beginning before #include "TimerInterrupt_Generic.h"
@@ -59,11 +59,11 @@
 //#endif
 
 #ifndef LED_BLUE
-  #define LED_BLUE          2
+	#define LED_BLUE          2
 #endif
 
 #ifndef LED_RED
-  #define LED_RED           8
+	#define LED_RED           8
 #endif
 
 unsigned int interruptPin = 7;
@@ -83,88 +83,104 @@ volatile bool activeState = false;
 
 void detectRotation()
 {
-  activeState = true;
+	activeState = true;
 }
 
 void TimerHandler1()
 {
-  if ( activeState )
-  {
-    // Reset to prepare for next round of interrupt
-    activeState = false;
+	if ( activeState )
+	{
+		// Reset to prepare for next round of interrupt
+		activeState = false;
 
-    if (debounceCounter >= DEBOUNCING_INTERVAL_MS / TIMER1_INTERVAL_MS )
-    {
+		if (debounceCounter >= DEBOUNCING_INTERVAL_MS / TIMER1_INTERVAL_MS )
+		{
 
-      //min time between pulses has passed
-      RPM = (float) ( 60000.0f / ( rotationTime * TIMER1_INTERVAL_MS ) );
+			//min time between pulses has passed
+			RPM = (float) ( 60000.0f / ( rotationTime * TIMER1_INTERVAL_MS ) );
 
-      avgRPM = ( 2 * avgRPM + RPM) / 3,
+			avgRPM = ( 2 * avgRPM + RPM) / 3,
 
 #if (TIMER_INTERRUPT_DEBUG > 1)
-      Serial.print("RPM = "); Serial.print(avgRPM);
-      Serial.print(", rotationTime ms = "); Serial.println(rotationTime * TIMER1_INTERVAL_MS);
+			Serial.print("RPM = ");
+			Serial.print(avgRPM);
+			Serial.print(", rotationTime ms = ");
+			Serial.println(rotationTime * TIMER1_INTERVAL_MS);
 #endif
 
-      rotationTime = 0;
-      debounceCounter = 0;
-    }
-    else
-      debounceCounter++;
-  }
-  else
-  {
-    debounceCounter++;
-  }
+			rotationTime = 0;
+			debounceCounter = 0;
+		}
+		else
+			debounceCounter++;
+	}
+	else
+	{
+		debounceCounter++;
+	}
 
-  if (rotationTime >= 5000)
-  {
-    // If idle, set RPM to 0, don't increase rotationTime
-    RPM = 0;
+	if (rotationTime >= 5000)
+	{
+		// If idle, set RPM to 0, don't increase rotationTime
+		RPM = 0;
 
-#if (TIMER_INTERRUPT_DEBUG > 1)   
-    Serial.print("RPM = "); Serial.print(RPM); Serial.print(", rotationTime = "); Serial.println(rotationTime);
+#if (TIMER_INTERRUPT_DEBUG > 1)
+		Serial.print("RPM = ");
+		Serial.print(RPM);
+		Serial.print(", rotationTime = ");
+		Serial.println(rotationTime);
 #endif
-    
-    rotationTime = 0;
-  }
-  else
-  {
-    rotationTime++;
-  }
+
+		rotationTime = 0;
+	}
+	else
+	{
+		rotationTime++;
+	}
 }
 
 uint16_t attachDueInterrupt(double microseconds, timerCallback callback, const char* TimerName)
 {
-  DueTimerInterrupt dueTimerInterrupt = DueTimer.getAvailable();
-  
-  dueTimerInterrupt.attachInterruptInterval(microseconds, callback);
+	DueTimerInterrupt dueTimerInterrupt = DueTimer.getAvailable();
 
-  uint16_t timerNumber = dueTimerInterrupt.getTimerNumber();
-  
-  Serial.print(TimerName); Serial.print(F(" attached to Timer(")); Serial.print(timerNumber); Serial.println(F(")"));
+	dueTimerInterrupt.attachInterruptInterval(microseconds, callback);
 
-  return timerNumber;
+	uint16_t timerNumber = dueTimerInterrupt.getTimerNumber();
+
+	Serial.print(TimerName);
+	Serial.print(F(" attached to Timer("));
+	Serial.print(timerNumber);
+	Serial.println(F(")"));
+
+	return timerNumber;
 }
 
 void setup()
 {
-  pinMode(interruptPin, INPUT_PULLUP);
-  
-  Serial.begin(115200);
-  while (!Serial);
-  
-  Serial.print(F("\nStarting ISR_RPM_Measure on ")); Serial.println(BOARD_NAME);
-  Serial.println(SAMDUE_TIMER_INTERRUPT_VERSION);
-  Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
-  Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
-  Serial.print(F("Timer Frequency = ")); Serial.print(SystemCoreClock / 1000000); Serial.println(F(" MHz"));
+	pinMode(interruptPin, INPUT_PULLUP);
 
-  // Interval in microsecs
-  attachDueInterrupt(TIMER1_INTERVAL_MS * 1000, TimerHandler1, "ITimer1");
+	Serial.begin(115200);
 
-  // Assumming the interruptPin will go LOW
-  attachInterrupt(digitalPinToInterrupt(interruptPin), detectRotation, FALLING);
+	while (!Serial && millis() < 5000);
+
+  delay(500);
+
+	Serial.print(F("\nStarting ISR_RPM_Measure on "));
+	Serial.println(BOARD_NAME);
+	Serial.println(SAMDUE_TIMER_INTERRUPT_VERSION);
+	Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
+	Serial.print(F("CPU Frequency = "));
+	Serial.print(F_CPU / 1000000);
+	Serial.println(F(" MHz"));
+	Serial.print(F("Timer Frequency = "));
+	Serial.print(SystemCoreClock / 1000000);
+	Serial.println(F(" MHz"));
+
+	// Interval in microsecs
+	attachDueInterrupt(TIMER1_INTERVAL_MS * 1000, TimerHandler1, "ITimer1");
+
+	// Assumming the interruptPin will go LOW
+	attachInterrupt(digitalPinToInterrupt(interruptPin), detectRotation, FALLING);
 }
 
 void loop()

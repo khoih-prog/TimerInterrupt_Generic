@@ -2,10 +2,10 @@
   ISR_RPM_Measure.ino
   For STM32 boards
   Written by Khoi Hoang
-  
+
   Built by Khoi Hoang https://github.com/khoih-prog/TimerInterrupt_Generic
   Licensed under MIT license
-  
+
   Now even you use all these new 16 ISR-based timers,with their maximum interval practically unlimited (limited only by
   unsigned long miliseconds), you just consume only one STM32 timer and avoid conflicting with other cores' tasks.
   The accuracy is nearly perfect compared to software timers. The most important feature is they're ISR-based timers
@@ -37,7 +37,7 @@
 #if !( defined(STM32F0) || defined(STM32F1) || defined(STM32F2) || defined(STM32F3)  ||defined(STM32F4) || defined(STM32F7) || \
        defined(STM32L0) || defined(STM32L1) || defined(STM32L4) || defined(STM32H7)  ||defined(STM32G0) || defined(STM32G4) || \
        defined(STM32WB) || defined(STM32MP1) || defined(STM32L5) )
-  #error This code is designed to run on STM32F/L/H/G/WB/MP1 platform! Please check your Tools->Board setting.
+#error This code is designed to run on STM32F/L/H/G/WB/MP1 platform! Please check your Tools->Board setting.
 #endif
 
 // These define's must be placed at the beginning before #include "TimerInterrupt_Generic.h"
@@ -50,15 +50,15 @@
 #include "TimerInterrupt_Generic.h"
 
 #ifndef LED_BUILTIN
-  #define LED_BUILTIN       PB0               // Pin 33/PB0 control on-board LED_GREEN on F767ZI
+	#define LED_BUILTIN       PB0               // Pin 33/PB0 control on-board LED_GREEN on F767ZI
 #endif
 
 #ifndef LED_BLUE
-  #define LED_BLUE          PB7               // Pin 73/PB7 control on-board LED_BLUE on F767ZI
+	#define LED_BLUE          PB7               // Pin 73/PB7 control on-board LED_BLUE on F767ZI
 #endif
 
 #ifndef LED_RED
-  #define LED_RED           PB14              // Pin 74/PB14 control on-board LED_BLUE on F767ZI
+	#define LED_RED           PB14              // Pin 74/PB14 control on-board LED_BLUE on F767ZI
 #endif
 
 unsigned int interruptPin = D7;
@@ -71,7 +71,7 @@ unsigned int interruptPin = D7;
 // Depending on the board, you can select STM32 Hardware Timer from TIM1-TIM22
 // For example, F767ZI can select Timer from TIM1-TIM14
 // If you select a Timer not correctly, you'll get a message from ci[ompiler
-// 'TIMxx' was not declared in this scope; did you mean 'TIMyy'? 
+// 'TIMxx' was not declared in this scope; did you mean 'TIMyy'?
 
 // Init STM32 timer TIM2
 STM32Timer ITimer1(TIM2);
@@ -86,83 +86,93 @@ volatile bool activeState = false;
 
 void detectRotation(void)
 {
-  activeState = true;
+	activeState = true;
 }
 
 void TimerHandler1()
 {
-  static bool started = false;
+	static bool started = false;
 
-  if ( activeState )
-  {
-    // Reset to prepare for next round of interrupt
-    activeState = false;
+	if ( activeState )
+	{
+		// Reset to prepare for next round of interrupt
+		activeState = false;
 
-    if (debounceCounter >= DEBOUNCING_INTERVAL_MS / TIMER1_INTERVAL_MS )
-    {
+		if (debounceCounter >= DEBOUNCING_INTERVAL_MS / TIMER1_INTERVAL_MS )
+		{
 
-      //min time between pulses has passed
-      RPM = (float) ( 60000.0f / ( rotationTime * TIMER1_INTERVAL_MS ) );
+			//min time between pulses has passed
+			RPM = (float) ( 60000.0f / ( rotationTime * TIMER1_INTERVAL_MS ) );
 
-      avgRPM = ( 2 * avgRPM + RPM) / 3,
+			avgRPM = ( 2 * avgRPM + RPM) / 3,
 
 #if (TIMER_INTERRUPT_DEBUG > 1)
-      Serial.print("RPM = "); Serial.print(avgRPM);
-      Serial.print(", rotationTime ms = "); Serial.println(rotationTime * TIMER1_INTERVAL_MS);
+			Serial.print("RPM = ");
+			Serial.print(avgRPM);
+			Serial.print(", rotationTime ms = ");
+			Serial.println(rotationTime * TIMER1_INTERVAL_MS);
 #endif
 
-      rotationTime = 0;
-      debounceCounter = 0;
-    }
-    else
-      debounceCounter++;
-  }
-  else
-  {
-    debounceCounter++;
-  }
+			rotationTime = 0;
+			debounceCounter = 0;
+		}
+		else
+			debounceCounter++;
+	}
+	else
+	{
+		debounceCounter++;
+	}
 
-  if (rotationTime >= 5000)
-  {
-    // If idle, set RPM to 0, don't increase rotationTime
-    RPM = 0;
+	if (rotationTime >= 5000)
+	{
+		// If idle, set RPM to 0, don't increase rotationTime
+		RPM = 0;
 
-#if (TIMER_INTERRUPT_DEBUG > 1)   
-    Serial.print("RPM = "); Serial.print(RPM); Serial.print(", rotationTime = "); Serial.println(rotationTime);
+#if (TIMER_INTERRUPT_DEBUG > 1)
+		Serial.print("RPM = ");
+		Serial.print(RPM);
+		Serial.print(", rotationTime = ");
+		Serial.println(rotationTime);
 #endif
-    
-    rotationTime = 0;
-  }
-  else
-  {
-    rotationTime++;
-  }
+
+		rotationTime = 0;
+	}
+	else
+	{
+		rotationTime++;
+	}
 }
 
 void setup()
 {
-  pinMode(interruptPin, INPUT_PULLUP);
-  
-  Serial.begin(115200);
-  while (!Serial);
+	pinMode(interruptPin, INPUT_PULLUP);
 
-  delay(100);
+	Serial.begin(115200);
 
-  Serial.print(F("\nStarting ISR_RPM_Measure on ")); Serial.println(BOARD_NAME);
-  Serial.println(STM32_TIMER_INTERRUPT_VERSION);
-  Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
-  Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
-  
-  // Interval in microsecs, must multiply to 1000 here or crash
-  if (ITimer1.attachInterruptInterval(TIMER1_INTERVAL_MS * 1000, TimerHandler1))
-  {
-    Serial.print(F("Starting ITimer1 OK, millis() = ")); Serial.println(millis());
-  }
-  else
-    Serial.println(F("Can't set ITimer1. Select another freq. or timer"));
+	while (!Serial && millis() < 5000);
 
-  // Assumming the interruptPin will go LOW
-  attachInterrupt(digitalPinToInterrupt(interruptPin), detectRotation, FALLING);
+  delay(500);
+
+	Serial.print(F("\nStarting ISR_RPM_Measure on "));
+	Serial.println(BOARD_NAME);
+	Serial.println(STM32_TIMER_INTERRUPT_VERSION);
+	Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
+	Serial.print(F("CPU Frequency = "));
+	Serial.print(F_CPU / 1000000);
+	Serial.println(F(" MHz"));
+
+	// Interval in microsecs, must multiply to 1000 here or crash
+	if (ITimer1.attachInterruptInterval(TIMER1_INTERVAL_MS * 1000, TimerHandler1))
+	{
+		Serial.print(F("Starting ITimer1 OK, millis() = "));
+		Serial.println(millis());
+	}
+	else
+		Serial.println(F("Can't set ITimer1. Select another freq. or timer"));
+
+	// Assumming the interruptPin will go LOW
+	attachInterrupt(digitalPinToInterrupt(interruptPin), detectRotation, FALLING);
 }
 
 void loop()

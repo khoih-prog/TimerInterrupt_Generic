@@ -2,10 +2,10 @@
   SAMD21_MultiTimers.ino
   For SAMD boards
   Written by Khoi Hoang
-  
+
   Built by Khoi Hoang https://github.com/khoih-prog/SAMD_TimerInterrupt
   Licensed under MIT license
-  
+
   Now even you use all these new 16 ISR-based timers,with their maximum interval practically unlimited (limited only by
   unsigned long miliseconds), you just consume only one SAMD timer and avoid conflicting with other cores' tasks.
   The accuracy is nearly perfect compared to software timers. The most important feature is they're ISR-based timers
@@ -30,7 +30,7 @@
       || defined(ARDUINO_SAMD_CIRCUITPLAYGROUND_EXPRESS) || defined(__SAMD21E15A__) || defined(__SAMD21E16A__) || defined(__SAMD21E17A__) \
       || defined(__SAMD21E18A__) || defined(__SAMD21G15A__) || defined(__SAMD21G16A__) || defined(__SAMD21G17A__) || defined(__SAMD21G18A__) \
       || defined(__SAMD21J15A__) || defined(__SAMD21J16A__) || defined(__SAMD21J17A__) || defined(__SAMD21J18A__) )
-  #error This code is designed to run on SAMD21 platform! Please check your Tools->Board setting.
+#error This code is designed to run on SAMD21 platform! Please check your Tools->Board setting.
 #endif
 
 /////////////////////////////////////////////////////////////////
@@ -74,93 +74,110 @@ uint32_t TIMER_INTERVAL_MS[MAX_TIMER]   = { 100, 200, 500, 1000, 2000 };
 
 const char* TIMER_NAME[MAX_TIMER]       = { "TC3 ", "TC4 ", "TC5 ", "TCC ", "TCC1" };
 
-void TimerHandler_TIMER_TC3() 
+void TimerHandler_TIMER_TC3()
 {
-  checkTimer[TIMER_TC3]++;
+	checkTimer[TIMER_TC3]++;
 }
 
-void TimerHandler_TIMER_TC4() 
+void TimerHandler_TIMER_TC4()
 {
-  checkTimer[TIMER_TC4]++;
+	checkTimer[TIMER_TC4]++;
 }
 
-void TimerHandler_TIMER_TC5() 
+void TimerHandler_TIMER_TC5()
 {
-  checkTimer[TIMER_TC5]++;
+	checkTimer[TIMER_TC5]++;
 }
 
-void TimerHandler_TIMER_TCC() 
+void TimerHandler_TIMER_TCC()
 {
-  checkTimer[TIMER_TCC]++;
+	checkTimer[TIMER_TCC]++;
 }
 
-void TimerHandler_TIMER_TCC1() 
+void TimerHandler_TIMER_TCC1()
 {
-  checkTimer[TIMER_TCC1]++;
+	checkTimer[TIMER_TCC1]++;
 }
 
-void setup() 
+void setup()
 {
-  Serial.begin(115200);
-  while (!Serial && millis() < 5000);
+	Serial.begin(115200);
 
-  Serial.print(F("\nStarting SAMD21_MultiTimers on ")); Serial.println(BOARD_NAME);
-  Serial.println(SAMD_TIMER_INTERRUPT_VERSION);
-  Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
-  Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
+	while (!Serial && millis() < 5000);
+
+	Serial.print(F("\nStarting SAMD21_MultiTimers on "));
+	Serial.println(BOARD_NAME);
+	Serial.println(SAMD_TIMER_INTERRUPT_VERSION);
+	Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
+	Serial.print(F("CPU Frequency = "));
+	Serial.print(F_CPU / 1000000);
+	Serial.println(F(" MHz"));
 
 #if USING_TIMER_TC3
-  if (ITimer0.attachInterruptInterval_MS(TIMER_INTERVAL_MS[TIMER_TC3], TimerHandler_TIMER_TC3))
-    Serial.println("Starting  TIMER_TC3 OK, millis() = " + String(millis()));
-  else
-    Serial.println("Can't set TIMER_TC3. Select another freq. or timer");
+
+	if (ITimer0.attachInterruptInterval_MS(TIMER_INTERVAL_MS[TIMER_TC3], TimerHandler_TIMER_TC3))
+		Serial.println("Starting  TIMER_TC3 OK, millis() = " + String(millis()));
+	else
+		Serial.println("Can't set TIMER_TC3. Select another freq. or timer");
+
 #endif
 
 #if USING_TIMER_TC4
-  if (ITimer1.attachInterruptInterval_MS(TIMER_INTERVAL_MS[TIMER_TC4], TimerHandler_TIMER_TC4))
-    Serial.println("Starting  TIMER_TC4 OK, millis() = " + String(millis()));
-  else
-    Serial.println("Can't set TIMER_TC4. Select another freq. or timer");
+
+	if (ITimer1.attachInterruptInterval_MS(TIMER_INTERVAL_MS[TIMER_TC4], TimerHandler_TIMER_TC4))
+		Serial.println("Starting  TIMER_TC4 OK, millis() = " + String(millis()));
+	else
+		Serial.println("Can't set TIMER_TC4. Select another freq. or timer");
+
 #endif
 
 #if USING_TIMER_TC5
-  if (ITimer2.attachInterruptInterval_MS(TIMER_INTERVAL_MS[TIMER_TC5], TimerHandler_TIMER_TC5))
-    Serial.println("Starting  TIMER_TC5 OK, millis() = " + String(millis()));
-  else
-    Serial.println("Can't set TIMER_TC5. Select another freq. or timer");
+
+	if (ITimer2.attachInterruptInterval_MS(TIMER_INTERVAL_MS[TIMER_TC5], TimerHandler_TIMER_TC5))
+		Serial.println("Starting  TIMER_TC5 OK, millis() = " + String(millis()));
+	else
+		Serial.println("Can't set TIMER_TC5. Select another freq. or timer");
+
 #endif
 
 #if USING_TIMER_TCC
-  if (ITimer3.attachInterruptInterval_MS(TIMER_INTERVAL_MS[TIMER_TCC], TimerHandler_TIMER_TCC))
-    Serial.println("Starting  TIMER_TCC OK, millis() = " + String(millis()));
-  else
-    Serial.println("Can't set TIMER_TCC. Select another freq. or timer");
+
+	if (ITimer3.attachInterruptInterval_MS(TIMER_INTERVAL_MS[TIMER_TCC], TimerHandler_TIMER_TCC))
+		Serial.println("Starting  TIMER_TCC OK, millis() = " + String(millis()));
+	else
+		Serial.println("Can't set TIMER_TCC. Select another freq. or timer");
+
 #endif
 
 #if USING_TIMER_TCC1
-  if (ITimer4.attachInterruptInterval_MS(TIMER_INTERVAL_MS[TIMER_TCC1], TimerHandler_TIMER_TCC1))
-    Serial.println("Starting  TIMER_TCC1 OK, millis() = " + String(millis()));
-  else
-    Serial.println("Can't set TIMER_TCC1. Select another freq. or timer");
+
+	if (ITimer4.attachInterruptInterval_MS(TIMER_INTERVAL_MS[TIMER_TCC1], TimerHandler_TIMER_TCC1))
+		Serial.println("Starting  TIMER_TCC1 OK, millis() = " + String(millis()));
+	else
+		Serial.println("Can't set TIMER_TCC1. Select another freq. or timer");
+
 #endif
 }
 
 #define DELAY_TIME_MS     60000
 
-void loop() 
+void loop()
 {
-  delay(DELAY_TIME_MS);
+	delay(DELAY_TIME_MS);
 
-  Serial.println("========================================"); 
+	Serial.println("========================================");
 
-  for (uint8_t index = TIMER_TC3; index < MAX_TIMER; index++)
-  {
-    if (checkTimer[index] > 0)
-    {
-      // Be sure timer is enabled
-      Serial.print(TIMER_NAME[index]); Serial.print(" Actual/Programmed (ms) ");  Serial.print(DELAY_TIME_MS / checkTimer[index]); 
-      Serial.print("/"); Serial.println(TIMER_INTERVAL_MS[index]); 
-      checkTimer[index] = 0;
-    }
-  }
+	for (uint8_t index = TIMER_TC3; index < MAX_TIMER; index++)
+	{
+		if (checkTimer[index] > 0)
+		{
+			// Be sure timer is enabled
+			Serial.print(TIMER_NAME[index]);
+			Serial.print(" Actual/Programmed (ms) ");
+			Serial.print(DELAY_TIME_MS / checkTimer[index]);
+			Serial.print("/");
+			Serial.println(TIMER_INTERVAL_MS[index]);
+			checkTimer[index] = 0;
+		}
+	}
 }

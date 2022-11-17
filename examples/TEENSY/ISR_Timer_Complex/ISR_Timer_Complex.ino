@@ -2,20 +2,20 @@
   ISR_Timer_Complex.ino
   For Teensy boards
   Written by Khoi Hoang
-  
+
   Now even you use all these new 16 ISR-based timers,with their maximum interval practically unlimited (limited only by
   unsigned long miliseconds), you just consume only one Hardware timer and avoid conflicting with other cores' tasks.
   The accuracy is nearly perfect compared to software timers. The most important feature is they're ISR-based timers
   Therefore, their executions are not blocked by bad-behaving functions / tasks.
   This important feature is absolutely necessary for mission-critical tasks.
-  
+
   Based on SimpleTimer - A timer library for Arduino.
   Author: mromani@ottotecnica.com
   Copyright (c) 2010 OTTOTECNICA Italy
-  
+
   Based on BlynkTimer.h
   Author: Volodymyr Shymanskyy
-  
+
   Built by Khoi Hoang https://github.com/khoih-prog/TimerInterrupt_Generic
   Licensed under MIT license
 *****************************************************************************************************************************/
@@ -49,7 +49,7 @@
 */
 
 #if !( defined(CORE_TEENSY) || defined(TEENSYDUINO) )
-  #error This code is designed to run on Teensy platform! Please check your Tools->Board setting.
+	#error This code is designed to run on Teensy platform! Please check your Tools->Board setting.
 #endif
 
 // These define's must be placed at the beginning before #include "TimerInterrupt_Generic.h"
@@ -65,15 +65,15 @@
 #include <SimpleTimer.h>              // https://github.com/schinken/SimpleTimer
 
 #ifndef LED_BUILTIN
-  #define LED_BUILTIN       13
+	#define LED_BUILTIN       13
 #endif
 
 #ifndef LED_BLUE
-  #define LED_BLUE          2
+	#define LED_BLUE          2
 #endif
 
 #ifndef LED_RED
-  #define LED_RED           3
+	#define LED_RED           3
 #endif
 
 #define HW_TIMER_INTERVAL_MS      1L
@@ -90,7 +90,7 @@ TeensyTimer ITimer(TEENSY_TIMER_1);
 ISR_Timer Teensy_ISR_Timer;
 
 #ifndef LED_BUILTIN
-  #define LED_BUILTIN       13
+	#define LED_BUILTIN       13
 #endif
 
 #define LED_TOGGLE_INTERVAL_MS        2000L
@@ -102,27 +102,27 @@ ISR_Timer Teensy_ISR_Timer;
 
 void TimerHandler()
 {
-  static bool toggle  = false;
-  static bool started = false;
-  static int timeRun  = 0;
+	static bool toggle  = false;
+	static bool started = false;
+	static int timeRun  = 0;
 
-  Teensy_ISR_Timer.run();
+	Teensy_ISR_Timer.run();
 
-  // Toggle LED every LED_TOGGLE_INTERVAL_MS = 5000ms = 5s
-  if (++timeRun == (LED_TOGGLE_INTERVAL_MS / HW_TIMER_INTERVAL_MS) )
-  {
-    timeRun = 0;
+	// Toggle LED every LED_TOGGLE_INTERVAL_MS = 5000ms = 5s
+	if (++timeRun == (LED_TOGGLE_INTERVAL_MS / HW_TIMER_INTERVAL_MS) )
+	{
+		timeRun = 0;
 
-    if (!started)
-    {
-      started = true;
-      pinMode(LED_BUILTIN, OUTPUT);
-    }
+		if (!started)
+		{
+			started = true;
+			pinMode(LED_BUILTIN, OUTPUT);
+		}
 
-    //timer interrupt toggles pin LED_BUILTIN
-    digitalWrite(LED_BUILTIN, toggle);
-    toggle = !toggle;
-  }
+		//timer interrupt toggles pin LED_BUILTIN
+		digitalWrite(LED_BUILTIN, toggle);
+		toggle = !toggle;
+	}
 }
 
 // In Teensy, avoid doing something fancy in ISR, for example complex Serial.print with String() argument
@@ -130,18 +130,18 @@ void TimerHandler()
 // Or you can get this run-time error / crash
 void doingSomething2s()
 {
-#if (TIMER_INTERRUPT_DEBUG > 0)  
-  static unsigned long previousMillis = lastMillis;
-  unsigned long deltaMillis = millis() - previousMillis;
+#if (TIMER_INTERRUPT_DEBUG > 0)
+	static unsigned long previousMillis = lastMillis;
+	unsigned long deltaMillis = millis() - previousMillis;
 
 
-  if (previousMillis > TIMER_INTERVAL_2S)
-  {
-    Serial.print("2s: Delta ms = ");
-    Serial.println(deltaMillis);
-  }
+	if (previousMillis > TIMER_INTERVAL_2S)
+	{
+		Serial.print("2s: Delta ms = ");
+		Serial.println(deltaMillis);
+	}
 
-  previousMillis = millis();
+	previousMillis = millis();
 #endif
 }
 
@@ -150,18 +150,18 @@ void doingSomething2s()
 // Or you can get this run-time error / crash
 void doingSomething5s()
 {
-#if (TIMER_INTERRUPT_DEBUG > 0)  
-  static unsigned long previousMillis = lastMillis;
-  unsigned long deltaMillis = millis() - previousMillis;
+#if (TIMER_INTERRUPT_DEBUG > 0)
+	static unsigned long previousMillis = lastMillis;
+	unsigned long deltaMillis = millis() - previousMillis;
 
 
-  if (previousMillis > TIMER_INTERVAL_5S)
-  {
-    Serial.print("5s: Delta ms = ");
-    Serial.println(deltaMillis);
-  }
+	if (previousMillis > TIMER_INTERVAL_5S)
+	{
+		Serial.print("5s: Delta ms = ");
+		Serial.println(deltaMillis);
+	}
 
-  previousMillis = millis();
+	previousMillis = millis();
 #endif
 }
 
@@ -170,18 +170,18 @@ void doingSomething5s()
 // Or you can get this run-time error / crash
 void doingSomething11s()
 {
-#if (TIMER_INTERRUPT_DEBUG > 0)  
-  static unsigned long previousMillis = lastMillis;
-  unsigned long deltaMillis = millis() - previousMillis;
+#if (TIMER_INTERRUPT_DEBUG > 0)
+	static unsigned long previousMillis = lastMillis;
+	unsigned long deltaMillis = millis() - previousMillis;
 
 
-  if (previousMillis > TIMER_INTERVAL_11S)
-  {
-    Serial.print("11s: Delta ms = ");
-    Serial.println(deltaMillis);
-  }
+	if (previousMillis > TIMER_INTERVAL_11S)
+	{
+		Serial.print("11s: Delta ms = ");
+		Serial.println(deltaMillis);
+	}
 
-  previousMillis = millis();
+	previousMillis = millis();
 #endif
 }
 
@@ -190,18 +190,18 @@ void doingSomething11s()
 // Or you can get this run-time error / crash
 void doingSomething101s()
 {
-#if (TIMER_INTERRUPT_DEBUG > 0)  
-  static unsigned long previousMillis = lastMillis;
-  unsigned long deltaMillis = millis() - previousMillis;
+#if (TIMER_INTERRUPT_DEBUG > 0)
+	static unsigned long previousMillis = lastMillis;
+	unsigned long deltaMillis = millis() - previousMillis;
 
 
-  if (previousMillis > TIMER_INTERVAL_101S)
-  {
-    Serial.print("101s: Delta ms = ");
-    Serial.println(deltaMillis);
-  }
+	if (previousMillis > TIMER_INTERVAL_101S)
+	{
+		Serial.print("101s: Delta ms = ");
+		Serial.println(deltaMillis);
+	}
 
-  previousMillis = millis();
+	previousMillis = millis();
 #endif
 }
 
@@ -216,55 +216,64 @@ SimpleTimer simpleTimer;
 // 2. Very long "do", "while", "for" loops without predetermined exit time.
 void simpleTimerDoingSomething2s()
 {
-  static unsigned long previousMillis = lastMillis;
+	static unsigned long previousMillis = lastMillis;
 
-  Serial.print(F("blynkDoingSomething2s: Delta programmed ms = ")); Serial.print(SIMPLE_TIMER_MS);
-  Serial.print(F(", actual = ")); Serial.println(millis() - previousMillis);
-  
-  previousMillis = millis();
+	Serial.print(F("blynkDoingSomething2s: Delta programmed ms = "));
+	Serial.print(SIMPLE_TIMER_MS);
+	Serial.print(F(", actual = "));
+	Serial.println(millis() - previousMillis);
+
+	previousMillis = millis();
 }
 
 void setup()
 {
-  Serial.begin(115200);
-  while (!Serial);
-  
-  Serial.print(F("\nStarting ISR_Timer_Complex on ")); Serial.println(BOARD_NAME);
-  Serial.println(TEENSY_TIMER_INTERRUPT_VERSION);
-  Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
-  Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
+	Serial.begin(115200);
 
-  // Interval in microsecs
-  if (ITimer.attachInterruptInterval(HW_TIMER_INTERVAL_MS * 1000, TimerHandler))
-  {
-    lastMillis = millis();
-    Serial.print(F("Starting ITimer OK, millis() = ")); Serial.println(lastMillis);
-  }
-  else
-    Serial.println(F("Can't set ITimer. Select another freq. or timer"));
+	while (!Serial && millis() < 5000);
 
-  // Just to demonstrate, don't use too many ISR Timers if not absolutely necessary
-  // You can use up to 16 timer for each Teensy_ISR_Timer
-  Teensy_ISR_Timer.setInterval(TIMER_INTERVAL_2S, doingSomething2s);
-  Teensy_ISR_Timer.setInterval(TIMER_INTERVAL_5S, doingSomething5s);
-  Teensy_ISR_Timer.setInterval(TIMER_INTERVAL_11S, doingSomething11s);
-  Teensy_ISR_Timer.setInterval(TIMER_INTERVAL_101S, doingSomething101s);
+  delay(500);
 
-  // You need this timer for non-critical tasks. Avoid abusing ISR if not absolutely necessary.
-  simpleTimer.setInterval(SIMPLE_TIMER_MS, simpleTimerDoingSomething2s);
+	Serial.print(F("\nStarting ISR_Timer_Complex on "));
+	Serial.println(BOARD_NAME);
+	Serial.println(TEENSY_TIMER_INTERRUPT_VERSION);
+	Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
+	Serial.print(F("CPU Frequency = "));
+	Serial.print(F_CPU / 1000000);
+	Serial.println(F(" MHz"));
+
+	// Interval in microsecs
+	if (ITimer.attachInterruptInterval(HW_TIMER_INTERVAL_MS * 1000, TimerHandler))
+	{
+		lastMillis = millis();
+		Serial.print(F("Starting ITimer OK, millis() = "));
+		Serial.println(lastMillis);
+	}
+	else
+		Serial.println(F("Can't set ITimer. Select another freq. or timer"));
+
+	// Just to demonstrate, don't use too many ISR Timers if not absolutely necessary
+	// You can use up to 16 timer for each Teensy_ISR_Timer
+	Teensy_ISR_Timer.setInterval(TIMER_INTERVAL_2S, doingSomething2s);
+	Teensy_ISR_Timer.setInterval(TIMER_INTERVAL_5S, doingSomething5s);
+	Teensy_ISR_Timer.setInterval(TIMER_INTERVAL_11S, doingSomething11s);
+	Teensy_ISR_Timer.setInterval(TIMER_INTERVAL_101S, doingSomething101s);
+
+	// You need this timer for non-critical tasks. Avoid abusing ISR if not absolutely necessary.
+	simpleTimer.setInterval(SIMPLE_TIMER_MS, simpleTimerDoingSomething2s);
 }
 
 #define BLOCKING_TIME_MS      10000L
 
 void loop()
 {
-  // This unadvised blocking task is used to demonstrate the blocking effects onto the execution and accuracy to Software timer
-  // You see the time elapse of Teensy_ISR_Timer still accurate, whereas very unaccurate for Software Timer
-  // The time elapse for 2000ms software timer now becomes 3000ms (BLOCKING_TIME_MS)
-  // While that of Teensy_ISR_Timer is still prefect.
-  delay(BLOCKING_TIME_MS);
+	// This unadvised blocking task is used to demonstrate the blocking effects onto the execution and accuracy to Software timer
+	// You see the time elapse of Teensy_ISR_Timer still accurate, whereas very unaccurate for Software Timer
+	// The time elapse for 2000ms software timer now becomes 3000ms (BLOCKING_TIME_MS)
+	// While that of Teensy_ISR_Timer is still prefect.
+	delay(BLOCKING_TIME_MS);
 
-  // You need this Software timer for non-critical tasks. Avoid abusing ISR if not absolutely necessary
-  // You don't need to and never call Teensy_ISR_Timer.run() here in the loop(). It's already handled by ISR timer.
-  simpleTimer.run();
+	// You need this Software timer for non-critical tasks. Avoid abusing ISR if not absolutely necessary
+	// You don't need to and never call Teensy_ISR_Timer.run() here in the loop(). It's already handled by ISR timer.
+	simpleTimer.run();
 }

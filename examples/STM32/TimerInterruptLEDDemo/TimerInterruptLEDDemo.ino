@@ -2,10 +2,10 @@
   TimerInterruptLEDDemo.ino
   For STM32 boards
   Written by Khoi Hoang
-  
+
   Built by Khoi Hoang https://github.com/khoih-prog/TimerInterrupt_Generic
   Licensed under MIT license
-  
+
   Now even you use all these new 16 ISR-based timers,with their maximum interval practically unlimited (limited only by
   unsigned long miliseconds), you just consume only one STM32 timer and avoid conflicting with other cores' tasks.
   The accuracy is nearly perfect compared to software timers. The most important feature is they're ISR-based timers
@@ -28,7 +28,7 @@
 #if !( defined(STM32F0) || defined(STM32F1) || defined(STM32F2) || defined(STM32F3)  ||defined(STM32F4) || defined(STM32F7) || \
        defined(STM32L0) || defined(STM32L1) || defined(STM32L4) || defined(STM32H7)  ||defined(STM32G0) || defined(STM32G4) || \
        defined(STM32WB) || defined(STM32MP1) || defined(STM32L5) )
-  #error This code is designed to run on STM32F/L/H/G/WB/MP1 platform! Please check your Tools->Board setting.
+#error This code is designed to run on STM32F/L/H/G/WB/MP1 platform! Please check your Tools->Board setting.
 #endif
 
 // These define's must be placed at the beginning before #include "TimerInterrupt_Generic.h"
@@ -39,17 +39,17 @@
 #define _TIMERINTERRUPT_LOGLEVEL_     0
 
 #ifndef LED_BUILTIN
-  #define LED_BUILTIN       PB0               // Pin 33/PB0 control on-board LED_GREEN on F767ZI
+	#define LED_BUILTIN       PB0               // Pin 33/PB0 control on-board LED_GREEN on F767ZI
 #endif
 
 #ifndef LED_BLUE
-  #define LED_BLUE          PB7               // Pin 73/PB7 control on-board LED_BLUE on F767ZI
+	#define LED_BLUE          PB7               // Pin 73/PB7 control on-board LED_BLUE on F767ZI
 #endif
 
 #ifndef LED_RED
-  #define LED_RED           PB14              // Pin 74/PB14 control on-board LED_BLUE on F767ZI
+	#define LED_RED           PB14              // Pin 74/PB14 control on-board LED_BLUE on F767ZI
 #endif
-   
+
 #include "TimerInterrupt_Generic.h"
 #include "ISR_Timer_Generic.h"
 
@@ -59,7 +59,7 @@
 // Depending on the board, you can select STM32 Hardware Timer from TIM1-TIM22
 // For example, F767ZI can select Timer from TIM1-TIM14
 // If you select a Timer not correctly, you'll get a message from ci[ompiler
-// 'TIMxx' was not declared in this scope; did you mean 'TIMyy'? 
+// 'TIMxx' was not declared in this scope; did you mean 'TIMyy'?
 
 // Init STM32 timer TIM1
 STM32Timer ITimer(TIM1);
@@ -74,7 +74,7 @@ ISR_Timer STM32_ISR_Timer;
 
 void TimerHandler()
 {
-  STM32_ISR_Timer.run();
+	STM32_ISR_Timer.run();
 }
 
 // In STM32, avoid doing something fancy in ISR, for example complex Serial.print with String() argument
@@ -82,55 +82,60 @@ void TimerHandler()
 // Or you can get this run-time error / crash
 void doingSomething1()
 {
-  digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
+	digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
 }
 
 void doingSomething2()
 {
-  digitalWrite(LED_BLUE, !digitalRead(LED_BLUE));
+	digitalWrite(LED_BLUE, !digitalRead(LED_BLUE));
 }
 void doingSomething3()
 {
-  digitalWrite(LED_RED, !digitalRead(LED_RED));
+	digitalWrite(LED_RED, !digitalRead(LED_RED));
 }
 
 void setup()
 {
-  Serial.begin(115200);
-  while (!Serial);
+	Serial.begin(115200);
 
-  delay(100);
+	while (!Serial && millis() < 5000);
 
-  Serial.print(F("\nStarting TimerInterruptLEDDemo on ")); Serial.println(BOARD_NAME);
-  Serial.println(STM32_TIMER_INTERRUPT_VERSION);
-  Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
-  Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
+  delay(500);
 
-  // Instantiate HardwareTimer object. Thanks to 'new' instanciation, HardwareTimer is not destructed when setup() function is finished.
-  //HardwareTimer *MyTim = new HardwareTimer(Instance);
+	Serial.print(F("\nStarting TimerInterruptLEDDemo on "));
+	Serial.println(BOARD_NAME);
+	Serial.println(STM32_TIMER_INTERRUPT_VERSION);
+	Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
+	Serial.print(F("CPU Frequency = "));
+	Serial.print(F_CPU / 1000000);
+	Serial.println(F(" MHz"));
 
-  // configure pin in output mode
-  pinMode(LED_BUILTIN,  OUTPUT);
-  pinMode(LED_BLUE,     OUTPUT);
-  pinMode(LED_RED,      OUTPUT);
+	// Instantiate HardwareTimer object. Thanks to 'new' instanciation, HardwareTimer is not destructed when setup() function is finished.
+	//HardwareTimer *MyTim = new HardwareTimer(Instance);
 
-  // Interval in microsecs
-  if (ITimer.attachInterruptInterval(HW_TIMER_INTERVAL_MS * 1000, TimerHandler))
-  {
-    Serial.print(F("Starting ITimer OK, millis() = ")); Serial.println(millis());
-  }
-  else
-    Serial.println(F("Can't set ITimer. Select another freq. or timer"));
+	// configure pin in output mode
+	pinMode(LED_BUILTIN,  OUTPUT);
+	pinMode(LED_BLUE,     OUTPUT);
+	pinMode(LED_RED,      OUTPUT);
 
-  // Just to demonstrate, don't use too many ISR Timers if not absolutely necessary
-  // You can use up to 16 timer for each STM32_ISR_Timer
-  STM32_ISR_Timer.setInterval(TIMER_INTERVAL_0_5S,  doingSomething1);
-  STM32_ISR_Timer.setInterval(TIMER_INTERVAL_1S,    doingSomething2);
-  STM32_ISR_Timer.setInterval(TIMER_INTERVAL_1_5S,  doingSomething3);
+	// Interval in microsecs
+	if (ITimer.attachInterruptInterval(HW_TIMER_INTERVAL_MS * 1000, TimerHandler))
+	{
+		Serial.print(F("Starting ITimer OK, millis() = "));
+		Serial.println(millis());
+	}
+	else
+		Serial.println(F("Can't set ITimer. Select another freq. or timer"));
+
+	// Just to demonstrate, don't use too many ISR Timers if not absolutely necessary
+	// You can use up to 16 timer for each STM32_ISR_Timer
+	STM32_ISR_Timer.setInterval(TIMER_INTERVAL_0_5S,  doingSomething1);
+	STM32_ISR_Timer.setInterval(TIMER_INTERVAL_1S,    doingSomething2);
+	STM32_ISR_Timer.setInterval(TIMER_INTERVAL_1_5S,  doingSomething3);
 }
 
 
 void loop()
 {
-  /* Nothing to do all is done by hardware. Even no interrupt required. */
+	/* Nothing to do all is done by hardware. Even no interrupt required. */
 }

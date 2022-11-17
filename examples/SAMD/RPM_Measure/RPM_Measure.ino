@@ -2,10 +2,10 @@
   RPM_Measure.ino
   For SAMD boards
   Written by Khoi Hoang
-  
+
   Built by Khoi Hoang https://github.com/khoih-prog/SAMD_TimerInterrupt
   Licensed under MIT license
-  
+
   Now even you use all these new 16 ISR-based timers,with their maximum interval practically unlimited (limited only by
   unsigned long miliseconds), you just consume only one SAMD timer and avoid conflicting with other cores' tasks.
   The accuracy is nearly perfect compared to software timers. The most important feature is they're ISR-based timers
@@ -50,7 +50,7 @@
       || defined(__SAMD21E15A__) || defined(__SAMD21E16A__) || defined(__SAMD21E17A__) || defined(__SAMD21E18A__) \
       || defined(__SAMD21G15A__) || defined(__SAMD21G16A__) || defined(__SAMD21G17A__) || defined(__SAMD21G18A__) \
       || defined(__SAMD21J15A__) || defined(__SAMD21J16A__) || defined(__SAMD21J17A__) || defined(__SAMD21J18A__) )
-  #error This code is designed to run on SAMD21/SAMD51 platform! Please check your Tools->Board setting.
+#error This code is designed to run on SAMD21/SAMD51 platform! Please check your Tools->Board setting.
 #endif
 
 /////////////////////////////////////////////////////////////////
@@ -83,11 +83,11 @@
 //#endif
 
 #ifndef LED_BLUE
-  #define LED_BLUE          2
+	#define LED_BLUE          2
 #endif
 
 #ifndef LED_RED
-  #define LED_RED           8
+	#define LED_RED           8
 #endif
 
 unsigned int SWPin = 7;
@@ -104,31 +104,31 @@ unsigned int SWPin = 7;
 
 #if (TIMER_INTERRUPT_USING_SAMD21)
 
-  #if USING_TIMER_TC3
-    #define SELECTED_TIMER      TIMER_TC3
-  #elif USING_TIMER_TC4
-    #define SELECTED_TIMER      TIMER_TC4
-  #elif USING_TIMER_TC5
-    #define SELECTED_TIMER      TIMER_TC5
-  #elif USING_TIMER_TCC
-    #define SELECTED_TIMER      TIMER_TCC
-  #elif USING_TIMER_TCC1
-    #define SELECTED_TIMER      TIMER_TCC1
-  #elif USING_TIMER_TCC2
-    #define SELECTED_TIMER      TIMER_TCC
-  #else
-    #error You have to select 1 Timer  
-  #endif
+	#if USING_TIMER_TC3
+		#define SELECTED_TIMER      TIMER_TC3
+	#elif USING_TIMER_TC4
+		#define SELECTED_TIMER      TIMER_TC4
+	#elif USING_TIMER_TC5
+		#define SELECTED_TIMER      TIMER_TC5
+	#elif USING_TIMER_TCC
+		#define SELECTED_TIMER      TIMER_TCC
+	#elif USING_TIMER_TCC1
+		#define SELECTED_TIMER      TIMER_TCC1
+	#elif USING_TIMER_TCC2
+		#define SELECTED_TIMER      TIMER_TCC
+	#else
+		#error You have to select 1 Timer
+	#endif
 
 #else
 
-  #if !(USING_TIMER_TC3)
-    #error You must select TC3 for SAMD51
-  #endif
-  
-  #define SELECTED_TIMER      TIMER_TC3
+	#if !(USING_TIMER_TC3)
+		#error You must select TC3 for SAMD51
+	#endif
 
-#endif  
+	#define SELECTED_TIMER      TIMER_TC3
+
+#endif
 
 // Init selected SAMD timer
 SAMDTimer ITimer(SELECTED_TIMER);
@@ -143,72 +143,82 @@ volatile int debounceCounter;
 
 void TimerHandler()
 {
-  static bool started = false;
+	static bool started = false;
 
-  if (!started)
-  {
-    started = true;
-    pinMode(SWPin, INPUT_PULLUP);
-  }
+	if (!started)
+	{
+		started = true;
+		pinMode(SWPin, INPUT_PULLUP);
+	}
 
-  if ( !digitalRead(SWPin) && (debounceCounter >= DEBOUNCING_INTERVAL_MS / TIMER_INTERVAL_MS ) )
-  {
-    //min time between pulses has passed
-    RPM = (float) ( 60000.0f / ( rotationTime * TIMER_INTERVAL_MS ) );
+	if ( !digitalRead(SWPin) && (debounceCounter >= DEBOUNCING_INTERVAL_MS / TIMER_INTERVAL_MS ) )
+	{
+		//min time between pulses has passed
+		RPM = (float) ( 60000.0f / ( rotationTime * TIMER_INTERVAL_MS ) );
 
-    avgRPM = ( 2 * avgRPM + RPM) / 3,
+		avgRPM = ( 2 * avgRPM + RPM) / 3,
 
 #if (TIMER_INTERRUPT_DEBUG > 1)
-      Serial.print("RPM = "); Serial.print(avgRPM);
-      Serial.print(", rotationTime ms = "); Serial.println(rotationTime * TIMER_INTERVAL_MS);
+		Serial.print("RPM = ");
+		Serial.print(avgRPM);
+		Serial.print(", rotationTime ms = ");
+		Serial.println(rotationTime * TIMER_INTERVAL_MS);
 #endif
 
-    rotationTime = 0;
-    debounceCounter = 0;
-  }
-  else
-  {
-    debounceCounter++;
-  }
+		rotationTime = 0;
+		debounceCounter = 0;
+	}
+	else
+	{
+		debounceCounter++;
+	}
 
-  if (rotationTime >= 5000)
-  {
-    // If idle, set RPM to 0, don't increase rotationTime
-    RPM = 0;
-    
-#if (TIMER_INTERRUPT_DEBUG > 1)   
-    Serial.print("RPM = "); Serial.print(RPM); Serial.print(", rotationTime = "); Serial.println(rotationTime);
+	if (rotationTime >= 5000)
+	{
+		// If idle, set RPM to 0, don't increase rotationTime
+		RPM = 0;
+
+#if (TIMER_INTERRUPT_DEBUG > 1)
+		Serial.print("RPM = ");
+		Serial.print(RPM);
+		Serial.print(", rotationTime = ");
+		Serial.println(rotationTime);
 #endif
-    
-    rotationTime = 0;
-  }
-  else
-  {
-    rotationTime++;
-  }
+
+		rotationTime = 0;
+	}
+	else
+	{
+		rotationTime++;
+	}
 }
 
 void setup()
 {
-  Serial.begin(115200);
-  while (!Serial && millis() < 5000);
+	Serial.begin(115200);
 
-  delay(100);
+	while (!Serial && millis() < 5000);
 
-  Serial.print(F("\nStarting RPM_Measure on ")); Serial.println(BOARD_NAME);
-  Serial.println(SAMD_TIMER_INTERRUPT_VERSION);
-  Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
-  Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
+	delay(100);
 
-  // Interval in millisecs
-  if (ITimer.attachInterruptInterval_MS(TIMER_INTERVAL_MS, TimerHandler))
-  {
-    Serial.print(F("Starting ITimer OK, millis() = ")); Serial.println(millis());
-  }
-  else
-    Serial.println(F("Can't set ITimer. Select another freq. or timer"));
+	Serial.print(F("\nStarting RPM_Measure on "));
+	Serial.println(BOARD_NAME);
+	Serial.println(SAMD_TIMER_INTERRUPT_VERSION);
+	Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
+	Serial.print(F("CPU Frequency = "));
+	Serial.print(F_CPU / 1000000);
+	Serial.println(F(" MHz"));
 
-  Serial.flush();   
+	// Interval in millisecs
+	if (ITimer.attachInterruptInterval_MS(TIMER_INTERVAL_MS, TimerHandler))
+	{
+		Serial.print(F("Starting ITimer OK, millis() = "));
+		Serial.println(millis());
+	}
+	else
+		Serial.println(F("Can't set ITimer. Select another freq. or timer"));
+
+	Serial.flush();
 }
 
 void loop()

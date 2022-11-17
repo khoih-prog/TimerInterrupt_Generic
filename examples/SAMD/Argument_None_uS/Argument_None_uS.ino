@@ -2,10 +2,10 @@
   Argument_None_uS.ino
   For SAMD boards
   Written by Khoi Hoang
-  
+
   Built by Khoi Hoang https://github.com/khoih-prog/TimerInterrupt_Generic
   Licensed under MIT license
-  
+
   Now even you use all these new 16 ISR-based timers,with their maximum interval practically unlimited (limited only by
   unsigned long miliseconds), you just consume only one SAMD timer and avoid conflicting with other cores' tasks.
   The accuracy is nearly perfect compared to software timers. The most important feature is they're ISR-based timers
@@ -33,7 +33,7 @@
       || defined(__SAMD21E15A__) || defined(__SAMD21E16A__) || defined(__SAMD21E17A__) || defined(__SAMD21E18A__) \
       || defined(__SAMD21G15A__) || defined(__SAMD21G16A__) || defined(__SAMD21G17A__) || defined(__SAMD21G18A__) \
       || defined(__SAMD21J15A__) || defined(__SAMD21J16A__) || defined(__SAMD21J17A__) || defined(__SAMD21J18A__) )
-  #error This code is designed to run on SAMD21/SAMD51 platform! Please check your Tools->Board setting.
+#error This code is designed to run on SAMD21/SAMD51 platform! Please check your Tools->Board setting.
 #endif
 
 /////////////////////////////////////////////////////////////////
@@ -62,7 +62,7 @@
 #include "TimerInterrupt_Generic.h"
 
 #ifndef LED_BUILTIN
-  #define LED_BUILTIN       13
+	#define LED_BUILTIN       13
 #endif
 
 // TC3, TC4, TC5 max permissible TIMER_INTERVAL_MS is 1398.101 ms, larger will overflow, therefore not permitted
@@ -76,19 +76,19 @@ volatile uint32_t preMillisTimer = 0;
 // SAMD51 Hardware Timer only TC3
 
 #if USING_TIMER_TC3
-  #define SELECTED_TIMER      TIMER_TC3
+	#define SELECTED_TIMER      TIMER_TC3
 #elif USING_TIMER_TC4
-  #define SELECTED_TIMER      TIMER_TC4
+	#define SELECTED_TIMER      TIMER_TC4
 #elif USING_TIMER_TC5
-  #define SELECTED_TIMER      TIMER_TC5
+	#define SELECTED_TIMER      TIMER_TC5
 #elif USING_TIMER_TCC
-  #define SELECTED_TIMER      TIMER_TCC
+	#define SELECTED_TIMER      TIMER_TCC
 #elif USING_TIMER_TCC1
-  #define SELECTED_TIMER      TIMER_TCC1
+	#define SELECTED_TIMER      TIMER_TCC1
 #elif USING_TIMER_TCC2
-  #define SELECTED_TIMER      TIMER_TCC
+	#define SELECTED_TIMER      TIMER_TCC
 #else
-  #error You have to select 1 Timer  
+	#error You have to select 1 Timer
 #endif
 
 // Init selected SAMD timer
@@ -98,44 +98,49 @@ SAMDTimer ITimer(SELECTED_TIMER);
 
 void TimerHandler()
 {
-  static bool toggle = false;
-  static uint32_t count = 0;
+	static bool toggle = false;
+	static uint32_t count = 0;
 
-  // Blink once every 1000 interrupt times => ( 1000 * TIMER_INTERVAL_US )
-  if (++count >= 1000)
-  {
-    count = 0;
-    //timer interrupt toggles pin LED_BUILTIN
-    digitalWrite(LED_BUILTIN, toggle);
-    toggle = !toggle;
-  }
+	// Blink once every 1000 interrupt times => ( 1000 * TIMER_INTERVAL_US )
+	if (++count >= 1000)
+	{
+		count = 0;
+		//timer interrupt toggles pin LED_BUILTIN
+		digitalWrite(LED_BUILTIN, toggle);
+		toggle = !toggle;
+	}
 }
 
 //////////////////////////////////////////////
 
 void setup()
 {
-  pinMode(LED_BUILTIN, OUTPUT);
-  
-  Serial.begin(115200);
-  while (!Serial && millis() < 5000);
+	pinMode(LED_BUILTIN, OUTPUT);
 
-  delay(100);
+	Serial.begin(115200);
 
-  Serial.print(F("\nStarting Argument_None_uS on ")); Serial.println(BOARD_NAME);
-  Serial.println(SAMD_TIMER_INTERRUPT_VERSION);
-  Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
-  Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
-  
-  // Interval in millisecs
-  //if (ITimer.attachInterruptInterval_MS(TIMER_INTERVAL_MS, TimerHandler))
-  if (ITimer.attachInterruptInterval(TIMER_INTERVAL_US, TimerHandler))
-  {
-    preMillisTimer = millis();
-    Serial.print(F("Starting  ITimer OK, millis() = ")); Serial.println(preMillisTimer);
-  }
-  else
-    Serial.println(F("Can't set ITimer. Select another freq. or timer"));
+	while (!Serial && millis() < 5000);
+
+	delay(100);
+
+	Serial.print(F("\nStarting Argument_None_uS on "));
+	Serial.println(BOARD_NAME);
+	Serial.println(SAMD_TIMER_INTERRUPT_VERSION);
+	Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
+	Serial.print(F("CPU Frequency = "));
+	Serial.print(F_CPU / 1000000);
+	Serial.println(F(" MHz"));
+
+	// Interval in millisecs
+	//if (ITimer.attachInterruptInterval_MS(TIMER_INTERVAL_MS, TimerHandler))
+	if (ITimer.attachInterruptInterval(TIMER_INTERVAL_US, TimerHandler))
+	{
+		preMillisTimer = millis();
+		Serial.print(F("Starting  ITimer OK, millis() = "));
+		Serial.println(preMillisTimer);
+	}
+	else
+		Serial.println(F("Can't set ITimer. Select another freq. or timer"));
 }
 
 //////////////////////////////////////////////

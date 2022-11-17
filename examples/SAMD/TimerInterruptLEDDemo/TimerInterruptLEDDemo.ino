@@ -2,10 +2,10 @@
   TimerInterruptLEDDemo.ino
   For SAMD boards
   Written by Khoi Hoang
-  
+
   Built by Khoi Hoang https://github.com/khoih-prog/SAMD_TimerInterrupt
   Licensed under MIT license
-  
+
   Now even you use all these new 16 ISR-based timers,with their maximum interval practically unlimited (limited only by
   unsigned long miliseconds), you just consume only one SAMD timer and avoid conflicting with other cores' tasks.
   The accuracy is nearly perfect compared to software timers. The most important feature is they're ISR-based timers
@@ -33,7 +33,7 @@
       || defined(__SAMD21E15A__) || defined(__SAMD21E16A__) || defined(__SAMD21E17A__) || defined(__SAMD21E18A__) \
       || defined(__SAMD21G15A__) || defined(__SAMD21G16A__) || defined(__SAMD21G17A__) || defined(__SAMD21G18A__) \
       || defined(__SAMD21J15A__) || defined(__SAMD21J16A__) || defined(__SAMD21J17A__) || defined(__SAMD21J18A__) )
-  #error This code is designed to run on SAMD21/SAMD51 platform! Please check your Tools->Board setting.
+#error This code is designed to run on SAMD21/SAMD51 platform! Please check your Tools->Board setting.
 #endif
 
 /////////////////////////////////////////////////////////////////
@@ -63,13 +63,13 @@
 //#endif
 
 #ifndef LED_BLUE
-  #define LED_BLUE          2
+	#define LED_BLUE          2
 #endif
 
 #ifndef LED_RED
-  #define LED_RED           8
+	#define LED_RED           8
 #endif
-   
+
 #include "TimerInterrupt_Generic.h"
 #include "SAMD_ISR_Timer.h"
 
@@ -81,31 +81,31 @@
 
 #if (TIMER_INTERRUPT_USING_SAMD21)
 
-  #if USING_TIMER_TC3
-    #define SELECTED_TIMER      TIMER_TC3
-  #elif USING_TIMER_TC4
-    #define SELECTED_TIMER      TIMER_TC4
-  #elif USING_TIMER_TC5
-    #define SELECTED_TIMER      TIMER_TC5
-  #elif USING_TIMER_TCC
-    #define SELECTED_TIMER      TIMER_TCC
-  #elif USING_TIMER_TCC1
-    #define SELECTED_TIMER      TIMER_TCC1
-  #elif USING_TIMER_TCC2
-    #define SELECTED_TIMER      TIMER_TCC
-  #else
-    #error You have to select 1 Timer  
-  #endif
+	#if USING_TIMER_TC3
+		#define SELECTED_TIMER      TIMER_TC3
+	#elif USING_TIMER_TC4
+		#define SELECTED_TIMER      TIMER_TC4
+	#elif USING_TIMER_TC5
+		#define SELECTED_TIMER      TIMER_TC5
+	#elif USING_TIMER_TCC
+		#define SELECTED_TIMER      TIMER_TCC
+	#elif USING_TIMER_TCC1
+		#define SELECTED_TIMER      TIMER_TCC1
+	#elif USING_TIMER_TCC2
+		#define SELECTED_TIMER      TIMER_TCC
+	#else
+		#error You have to select 1 Timer
+	#endif
 
 #else
 
-  #if !(USING_TIMER_TC3)
-    #error You must select TC3 for SAMD51
-  #endif
-  
-  #define SELECTED_TIMER      TIMER_TC3
+	#if !(USING_TIMER_TC3)
+		#error You must select TC3 for SAMD51
+	#endif
 
-#endif  
+	#define SELECTED_TIMER      TIMER_TC3
+
+#endif
 
 // Init selected SAMD timer
 SAMDTimer ITimer(SELECTED_TIMER);
@@ -122,7 +122,7 @@ SAMD_ISR_Timer ISR_Timer;
 
 void TimerHandler(void)
 {
-  ISR_Timer.run();
+	ISR_Timer.run();
 }
 
 // In SAMD, avoid doing something fancy in ISR, for example complex Serial.print with String() argument
@@ -130,58 +130,63 @@ void TimerHandler(void)
 // Or you can get this run-time error / crash
 void doingSomething1()
 {
-  digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
-  Serial.println(F("G"));
+	digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
+	Serial.println(F("G"));
 }
 
 void doingSomething2()
 {
-  digitalWrite(LED_BLUE, !digitalRead(LED_BLUE));
-  Serial.println(F("B"));
+	digitalWrite(LED_BLUE, !digitalRead(LED_BLUE));
+	Serial.println(F("B"));
 }
 void doingSomething3()
 {
-  digitalWrite(LED_RED, !digitalRead(LED_RED));
-  Serial.println(F("R"));
+	digitalWrite(LED_RED, !digitalRead(LED_RED));
+	Serial.println(F("R"));
 }
 
 void setup()
 {
-  Serial.begin(115200);
-  while (!Serial && millis() < 5000);
+	Serial.begin(115200);
 
-  delay(100);
+	while (!Serial && millis() < 5000);
 
-  Serial.print(F("\nStarting TimerInterruptLEDDemo on ")); Serial.println(BOARD_NAME);
-  Serial.println(SAMD_TIMER_INTERRUPT_VERSION);
-  Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
-  Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
+	delay(100);
 
-  // Instantiate HardwareTimer object. Thanks to 'new' instanciation, HardwareTimer is not destructed when setup() function is finished.
-  //HardwareTimer *MyTim = new HardwareTimer(Instance);
+	Serial.print(F("\nStarting TimerInterruptLEDDemo on "));
+	Serial.println(BOARD_NAME);
+	Serial.println(SAMD_TIMER_INTERRUPT_VERSION);
+	Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
+	Serial.print(F("CPU Frequency = "));
+	Serial.print(F_CPU / 1000000);
+	Serial.println(F(" MHz"));
 
-  // configure pin in output mode
-  pinMode(LED_BUILTIN,  OUTPUT);
-  pinMode(LED_BLUE,     OUTPUT);
-  pinMode(LED_RED,      OUTPUT);
+	// Instantiate HardwareTimer object. Thanks to 'new' instanciation, HardwareTimer is not destructed when setup() function is finished.
+	//HardwareTimer *MyTim = new HardwareTimer(Instance);
 
-  // Interval in millisecs
-  if (ITimer.attachInterruptInterval_MS(HW_TIMER_INTERVAL_MS, TimerHandler))
-  {
-    Serial.print(F("Starting ITimer OK, millis() = ")); Serial.println(millis());
-  }
-  else
-    Serial.println(F("Can't set ITimer. Select another freq. or timer"));
+	// configure pin in output mode
+	pinMode(LED_BUILTIN,  OUTPUT);
+	pinMode(LED_BLUE,     OUTPUT);
+	pinMode(LED_RED,      OUTPUT);
 
-  // Just to demonstrate, don't use too many ISR Timers if not absolutely necessary
-  // You can use up to 16 timer for each ISR_Timer
-  ISR_Timer.setInterval(TIMER_INTERVAL_1S,  doingSomething1);
-  ISR_Timer.setInterval(TIMER_INTERVAL_2S,  doingSomething2);
-  ISR_Timer.setInterval(TIMER_INTERVAL_5S,  doingSomething3);
+	// Interval in millisecs
+	if (ITimer.attachInterruptInterval_MS(HW_TIMER_INTERVAL_MS, TimerHandler))
+	{
+		Serial.print(F("Starting ITimer OK, millis() = "));
+		Serial.println(millis());
+	}
+	else
+		Serial.println(F("Can't set ITimer. Select another freq. or timer"));
+
+	// Just to demonstrate, don't use too many ISR Timers if not absolutely necessary
+	// You can use up to 16 timer for each ISR_Timer
+	ISR_Timer.setInterval(TIMER_INTERVAL_1S,  doingSomething1);
+	ISR_Timer.setInterval(TIMER_INTERVAL_2S,  doingSomething2);
+	ISR_Timer.setInterval(TIMER_INTERVAL_5S,  doingSomething3);
 }
 
 
 void loop()
 {
-  /* Nothing to do all is done by hardware. Even no interrupt required. */
+	/* Nothing to do all is done by hardware. Even no interrupt required. */
 }

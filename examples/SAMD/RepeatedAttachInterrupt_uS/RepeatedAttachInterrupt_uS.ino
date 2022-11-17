@@ -2,10 +2,10 @@
   RepeatedAttachInterrupt_uS.ino
   For SAMD boards
   Written by Khoi Hoang
-  
+
   Built by Khoi Hoang https://github.com/khoih-prog/SAMD_TimerInterrupt
   Licensed under MIT license
-  
+
   Now even you use all these new 16 ISR-based timers,with their maximum interval practically unlimited (limited only by
   unsigned long miliseconds), you just consume only one SAMD timer and avoid conflicting with other cores' tasks.
   The accuracy is nearly perfect compared to software timers. The most important feature is they're ISR-based timers
@@ -36,7 +36,7 @@
       || defined(__SAMD21E15A__) || defined(__SAMD21E16A__) || defined(__SAMD21E17A__) || defined(__SAMD21E18A__) \
       || defined(__SAMD21G15A__) || defined(__SAMD21G16A__) || defined(__SAMD21G17A__) || defined(__SAMD21G18A__) \
       || defined(__SAMD21J15A__) || defined(__SAMD21J16A__) || defined(__SAMD21J17A__) || defined(__SAMD21J18A__) )
-  #error This code is designed to run on SAMD21/SAMD51 platform! Please check your Tools->Board setting.
+#error This code is designed to run on SAMD21/SAMD51 platform! Please check your Tools->Board setting.
 #endif
 
 /////////////////////////////////////////////////////////////////
@@ -65,19 +65,19 @@
 #include "TimerInterrupt_Generic.h"
 
 #if USING_TIMER_TC3
-  #define SELECTED_TIMER      TIMER_TC3
+	#define SELECTED_TIMER      TIMER_TC3
 #elif USING_TIMER_TC4
-  #define SELECTED_TIMER      TIMER_TC4
+	#define SELECTED_TIMER      TIMER_TC4
 #elif USING_TIMER_TC5
-  #define SELECTED_TIMER      TIMER_TC5
+	#define SELECTED_TIMER      TIMER_TC5
 #elif USING_TIMER_TCC
-  #define SELECTED_TIMER      TIMER_TCC
+	#define SELECTED_TIMER      TIMER_TCC
 #elif USING_TIMER_TCC1
-  #define SELECTED_TIMER      TIMER_TCC1
+	#define SELECTED_TIMER      TIMER_TCC1
 #elif USING_TIMER_TCC2
-  #define SELECTED_TIMER      TIMER_TCC
+	#define SELECTED_TIMER      TIMER_TCC
 #else
-  #error You have to select 1 Timer  
+	#error You have to select 1 Timer
 #endif
 
 // Init selected SAMD timer
@@ -87,47 +87,59 @@ volatile uint32_t myClockTimer = 0, lastMicros = 0;
 
 void clock(void)
 {
-  myClockTimer = micros() - lastMicros; //2us come from here
-  lastMicros = micros();
+	myClockTimer = micros() - lastMicros; //2us come from here
+	lastMicros = micros();
 }
 
 void setup()
 {
-  Serial.begin(115200);
-  while (!Serial && millis() < 5000);
+	Serial.begin(115200);
 
-  delay(100);
+	while (!Serial && millis() < 5000);
 
-  Serial.print(F("\nStarting RepeatedAttachInterrupt_uS on ")); Serial.println(BOARD_NAME);
-  Serial.println(SAMD_TIMER_INTERRUPT_VERSION);
-  Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
-  Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
+	delay(100);
+
+	Serial.print(F("\nStarting RepeatedAttachInterrupt_uS on "));
+	Serial.println(BOARD_NAME);
+	Serial.println(SAMD_TIMER_INTERRUPT_VERSION);
+	Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
+	Serial.print(F("CPU Frequency = "));
+	Serial.print(F_CPU / 1000000);
+	Serial.println(F(" MHz"));
 }
 
 void loop()
 {
-  ITimer.attachInterruptInterval(19995, clock);
-  delay(5000);
-  Serial.print(F("myClockTimer (19995) = ")); Serial.println(myClockTimer);
-  ITimer.attachInterruptInterval(19995, clock);
-  delay(5000);
-  Serial.print(F("myClockTimer (19995) = ")); Serial.println(myClockTimer);
-  ITimer.attachInterruptInterval(19995, clock);
-  delay(5000);
-  Serial.print(F("myClockTimer (19995) = ")); Serial.println(myClockTimer);
-  ITimer.attachInterruptInterval(19000, clock);
-  delay(5000);
-  Serial.print(F("myClockTimer (19000) = ")); Serial.println(myClockTimer);
-  ITimer.attachInterruptInterval(20005, clock);
-  delay(5000);
-  Serial.print(F("myClockTimer (20005) = ")); Serial.println(myClockTimer);
-  ITimer.attachInterruptInterval(30000, clock);
-  delay(5000);
-  Serial.print(F("myClockTimer (30000) = ")); Serial.println(myClockTimer);
-  ITimer.attachInterruptInterval(19995, clock);
-  delay(5000);
-  Serial.print(F("myClockTimer (19995) = ")); Serial.println(myClockTimer);
-  ITimer.attachInterruptInterval(30000, clock);
-  delay(5000);
-  Serial.print(F("myClockTimer (30000) = ")); Serial.println(myClockTimer);
+	ITimer.attachInterruptInterval(19995, clock);
+	delay(5000);
+	Serial.print(F("myClockTimer (19995) = "));
+	Serial.println(myClockTimer);
+	ITimer.attachInterruptInterval(19995, clock);
+	delay(5000);
+	Serial.print(F("myClockTimer (19995) = "));
+	Serial.println(myClockTimer);
+	ITimer.attachInterruptInterval(19995, clock);
+	delay(5000);
+	Serial.print(F("myClockTimer (19995) = "));
+	Serial.println(myClockTimer);
+	ITimer.attachInterruptInterval(19000, clock);
+	delay(5000);
+	Serial.print(F("myClockTimer (19000) = "));
+	Serial.println(myClockTimer);
+	ITimer.attachInterruptInterval(20005, clock);
+	delay(5000);
+	Serial.print(F("myClockTimer (20005) = "));
+	Serial.println(myClockTimer);
+	ITimer.attachInterruptInterval(30000, clock);
+	delay(5000);
+	Serial.print(F("myClockTimer (30000) = "));
+	Serial.println(myClockTimer);
+	ITimer.attachInterruptInterval(19995, clock);
+	delay(5000);
+	Serial.print(F("myClockTimer (19995) = "));
+	Serial.println(myClockTimer);
+	ITimer.attachInterruptInterval(30000, clock);
+	delay(5000);
+	Serial.print(F("myClockTimer (30000) = "));
+	Serial.println(myClockTimer);
 }

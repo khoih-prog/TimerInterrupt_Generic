@@ -2,10 +2,10 @@
   SwitchDebounce.ino
   For SAMD boards
   Written by Khoi Hoang
-  
+
   Built by Khoi Hoang https://github.com/khoih-prog/SAMD_TimerInterrupt
   Licensed under MIT license
-  
+
   Now even you use all these new 16 ISR-based timers,with their maximum interval practically unlimited (limited only by
   unsigned long miliseconds), you just consume only one SAMD timer and avoid conflicting with other cores' tasks.
   The accuracy is nearly perfect compared to software timers. The most important feature is they're ISR-based timers
@@ -38,7 +38,7 @@
       || defined(__SAMD21E15A__) || defined(__SAMD21E16A__) || defined(__SAMD21E17A__) || defined(__SAMD21E18A__) \
       || defined(__SAMD21G15A__) || defined(__SAMD21G16A__) || defined(__SAMD21G17A__) || defined(__SAMD21G18A__) \
       || defined(__SAMD21J15A__) || defined(__SAMD21J16A__) || defined(__SAMD21J17A__) || defined(__SAMD21J18A__) )
-  #error This code is designed to run on SAMD21/SAMD51 platform! Please check your Tools->Board setting.
+#error This code is designed to run on SAMD21/SAMD51 platform! Please check your Tools->Board setting.
 #endif
 
 /////////////////////////////////////////////////////////////////
@@ -70,11 +70,11 @@
 //#endif
 
 #ifndef LED_BLUE
-  #define LED_BLUE          2
+	#define LED_BLUE          2
 #endif
 
 #ifndef LED_RED
-  #define LED_RED           8
+	#define LED_RED           8
 #endif
 
 unsigned int SWPin = 7;
@@ -92,31 +92,31 @@ unsigned int SWPin = 7;
 
 #if (TIMER_INTERRUPT_USING_SAMD21)
 
-  #if USING_TIMER_TC3
-    #define SELECTED_TIMER      TIMER_TC3
-  #elif USING_TIMER_TC4
-    #define SELECTED_TIMER      TIMER_TC4
-  #elif USING_TIMER_TC5
-    #define SELECTED_TIMER      TIMER_TC5
-  #elif USING_TIMER_TCC
-    #define SELECTED_TIMER      TIMER_TCC
-  #elif USING_TIMER_TCC1
-    #define SELECTED_TIMER      TIMER_TCC1
-  #elif USING_TIMER_TCC2
-    #define SELECTED_TIMER      TIMER_TCC
-  #else
-    #error You have to select 1 Timer  
-  #endif
+	#if USING_TIMER_TC3
+		#define SELECTED_TIMER      TIMER_TC3
+	#elif USING_TIMER_TC4
+		#define SELECTED_TIMER      TIMER_TC4
+	#elif USING_TIMER_TC5
+		#define SELECTED_TIMER      TIMER_TC5
+	#elif USING_TIMER_TCC
+		#define SELECTED_TIMER      TIMER_TCC
+	#elif USING_TIMER_TCC1
+		#define SELECTED_TIMER      TIMER_TCC1
+	#elif USING_TIMER_TCC2
+		#define SELECTED_TIMER      TIMER_TCC
+	#else
+		#error You have to select 1 Timer
+	#endif
 
 #else
 
-  #if !(USING_TIMER_TC3)
-    #error You must select TC3 for SAMD51
-  #endif
-  
-  #define SELECTED_TIMER      TIMER_TC3
+	#if !(USING_TIMER_TC3)
+		#error You must select TC3 for SAMD51
+	#endif
 
-#endif  
+	#define SELECTED_TIMER      TIMER_TC3
+
+#endif
 
 // Init selected SAMD timer
 SAMDTimer ITimer(SELECTED_TIMER);
@@ -128,113 +128,124 @@ volatile bool SWLongPressed = false;
 
 void TimerHandler()
 {
-  static unsigned int debounceCountSWPressed  = 0;
-  static unsigned int debounceCountSWReleased = 0;
+	static unsigned int debounceCountSWPressed  = 0;
+	static unsigned int debounceCountSWReleased = 0;
 
 #if (TIMER_INTERRUPT_DEBUG > 1)
-  static unsigned long SWPressedTime;
-  static unsigned long SWReleasedTime;
+	static unsigned long SWPressedTime;
+	static unsigned long SWReleasedTime;
 
-  unsigned long currentMillis = millis();
+	unsigned long currentMillis = millis();
 #endif
 
-  static bool started = false;
+	static bool started = false;
 
-  if (!started)
-  {
-    started = true;
-    pinMode(SWPin, INPUT_PULLUP);
-  }
+	if (!started)
+	{
+		started = true;
+		pinMode(SWPin, INPUT_PULLUP);
+	}
 
-  if ( (!digitalRead(SWPin)) )
-  {
-    // Start debouncing counting debounceCountSWPressed and clear debounceCountSWReleased
-    debounceCountSWReleased = 0;
+	if ( (!digitalRead(SWPin)) )
+	{
+		// Start debouncing counting debounceCountSWPressed and clear debounceCountSWReleased
+		debounceCountSWReleased = 0;
 
-    if (++debounceCountSWPressed >= DEBOUNCING_INTERVAL_MS / TIMER_INTERVAL_MS)
-    {
-      // Call and flag SWPressed
-      if (!SWPressed)
-      {
-#if (TIMER_INTERRUPT_DEBUG > 1)   
-        SWPressedTime = currentMillis;
-        
-        Serial.print("SW Press, from millis() = "); Serial.println(SWPressedTime - DEBOUNCING_INTERVAL_MS);
-#endif
-
-        SWPressed = true;
-        // Do something for SWPressed here in ISR
-        // But it's better to use outside software timer to do your job instead of inside ISR
-        //Your_Response_To_Press();
-      }
-
-      if (debounceCountSWPressed >= LONG_PRESS_INTERVAL_MS / TIMER_INTERVAL_MS)
-      {
-        // Call and flag SWLongPressed
-        if (!SWLongPressed)
-        {
+		if (++debounceCountSWPressed >= DEBOUNCING_INTERVAL_MS / TIMER_INTERVAL_MS)
+		{
+			// Call and flag SWPressed
+			if (!SWPressed)
+			{
 #if (TIMER_INTERRUPT_DEBUG > 1)
-          Serial.print("SW Long Pressed, total time ms = "); Serial.print(currentMillis);
-          Serial.print(" - "); Serial.print(SWPressedTime - DEBOUNCING_INTERVAL_MS);
-          Serial.print(" = "); Serial.println(currentMillis - SWPressedTime + DEBOUNCING_INTERVAL_MS);                                           
-#endif          
+				SWPressedTime = currentMillis;
 
-          SWLongPressed = true;
-          // Do something for SWLongPressed here in ISR
-          // But it's better to use outside software timer to do your job instead of inside ISR
-          //Your_Response_To_Long_Press();
-        }
-      }
-    }
-  }
-  else
-  {
-    // Start debouncing counting debounceCountSWReleased and clear debounceCountSWPressed
-    if ( SWPressed && (++debounceCountSWReleased >= DEBOUNCING_INTERVAL_MS / TIMER_INTERVAL_MS))
-    {
-#if (TIMER_INTERRUPT_DEBUG > 1)      
-      SWReleasedTime = currentMillis;
-
-      // Call and flag SWPressed
-      Serial.print("SW Released, from millis() = "); Serial.println(SWReleasedTime);
+				Serial.print("SW Press, from millis() = ");
+				Serial.println(SWPressedTime - DEBOUNCING_INTERVAL_MS);
 #endif
 
-      SWPressed     = false;
-      SWLongPressed = false;
+				SWPressed = true;
+				// Do something for SWPressed here in ISR
+				// But it's better to use outside software timer to do your job instead of inside ISR
+				//Your_Response_To_Press();
+			}
 
-      // Do something for !SWPressed here in ISR
-      // But it's better to use outside software timer to do your job instead of inside ISR
-      //Your_Response_To_Release();
-
-      // Call and flag SWPressed
+			if (debounceCountSWPressed >= LONG_PRESS_INTERVAL_MS / TIMER_INTERVAL_MS)
+			{
+				// Call and flag SWLongPressed
+				if (!SWLongPressed)
+				{
 #if (TIMER_INTERRUPT_DEBUG > 1)
-      Serial.print("SW Pressed total time ms = "); Serial.println(SWReleasedTime - SWPressedTime);
+					Serial.print("SW Long Pressed, total time ms = ");
+					Serial.print(currentMillis);
+					Serial.print(" - ");
+					Serial.print(SWPressedTime - DEBOUNCING_INTERVAL_MS);
+					Serial.print(" = ");
+					Serial.println(currentMillis - SWPressedTime + DEBOUNCING_INTERVAL_MS);
 #endif
 
-      debounceCountSWPressed = 0;
-    }
-  }
+					SWLongPressed = true;
+					// Do something for SWLongPressed here in ISR
+					// But it's better to use outside software timer to do your job instead of inside ISR
+					//Your_Response_To_Long_Press();
+				}
+			}
+		}
+	}
+	else
+	{
+		// Start debouncing counting debounceCountSWReleased and clear debounceCountSWPressed
+		if ( SWPressed && (++debounceCountSWReleased >= DEBOUNCING_INTERVAL_MS / TIMER_INTERVAL_MS))
+		{
+#if (TIMER_INTERRUPT_DEBUG > 1)
+			SWReleasedTime = currentMillis;
+
+			// Call and flag SWPressed
+			Serial.print("SW Released, from millis() = ");
+			Serial.println(SWReleasedTime);
+#endif
+
+			SWPressed     = false;
+			SWLongPressed = false;
+
+			// Do something for !SWPressed here in ISR
+			// But it's better to use outside software timer to do your job instead of inside ISR
+			//Your_Response_To_Release();
+
+			// Call and flag SWPressed
+#if (TIMER_INTERRUPT_DEBUG > 1)
+			Serial.print("SW Pressed total time ms = ");
+			Serial.println(SWReleasedTime - SWPressedTime);
+#endif
+
+			debounceCountSWPressed = 0;
+		}
+	}
 }
 
 void setup()
 {
-  Serial.begin(115200);
-  while (!Serial && millis() < 5000);
+	Serial.begin(115200);
 
-  delay(100);
+	while (!Serial && millis() < 5000);
 
-  Serial.print(F("\nStarting SwitchDebounce on ")); Serial.println(BOARD_NAME);
-  Serial.println(SAMD_TIMER_INTERRUPT_VERSION);
-  Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
-  Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
-  
-  // Interval in mililisecs
-  if (ITimer.attachInterruptInterval_MS(TIMER_INTERVAL_MS, TimerHandler))
-  {
-    Serial.print(F("Starting ITimer OK, millis() = ")); Serial.println(millis());
-  }
-  else
-    Serial.println(F("Can't set ITimer. Select another freq. or timer"));
+	delay(100);
+
+	Serial.print(F("\nStarting SwitchDebounce on "));
+	Serial.println(BOARD_NAME);
+	Serial.println(SAMD_TIMER_INTERRUPT_VERSION);
+	Serial.println(TIMER_INTERRUPT_GENERIC_VERSION);
+	Serial.print(F("CPU Frequency = "));
+	Serial.print(F_CPU / 1000000);
+	Serial.println(F(" MHz"));
+
+	// Interval in mililisecs
+	if (ITimer.attachInterruptInterval_MS(TIMER_INTERVAL_MS, TimerHandler))
+	{
+		Serial.print(F("Starting ITimer OK, millis() = "));
+		Serial.println(millis());
+	}
+	else
+		Serial.println(F("Can't set ITimer. Select another freq. or timer"));
 }
 
 void loop()
